@@ -38,7 +38,6 @@ public class Client {
             return;
         }
         short bufferlen = (short) byteToShort(new byte[]{data[5], data[4]});
-        System.out.println("client received len: " + bufferlen);
         byte[] realData = Arrays.copyOfRange(data, 6, bufferlen + 6);         //crc 뺀 data로 계산해야 함
         short crc = crc16_compute(realData);
         bufferlen += 6;                 //STX, ID, length 6byte 더해줘야 실제 crc 시작 인덱스
@@ -76,6 +75,24 @@ public class Client {
 
         return bufferToSend;
 
+    }
+
+    public static byte[] setRequest(byte[] bufferToSend, char id_1, char id_2, int bufferlen){
+        bufferToSend[0] = 'A';
+        bufferToSend[1] = 'T';
+        bufferToSend[2] = (byte) id_1;
+        bufferToSend[3] = (byte) id_2;
+        bufferToSend[6] = 0x1;
+
+        bufferToSend[4] = (byte) (bufferlen & 0xFF);
+        bufferToSend[5] = (byte) ((bufferlen >> 8 )& 0xFF);
+
+        int offset = bufferlen + 6;
+        short crc = crc16_compute(Arrays.copyOfRange(bufferToSend, 6, bufferlen + 6));
+        bufferToSend[offset++] = (byte) (crc & 0xFF);
+        bufferToSend[offset++] = (byte) ((crc >> 8)& 0xFF);
+
+        return bufferToSend;
     }
 
 
@@ -204,6 +221,31 @@ public class Client {
             int recvBufferlen = byteToShort(new byte[]{bufferToReceive[5], bufferToReceive[4]});
             String language = new String(bufferToReceive, 8, recvBufferlen - 2);
             System.out.println("Language Info: " + language);
+        }
+        else  if(mode == 231){          //Language SET
+            byte[] bufferToSend = new byte[1000];
+            byte[] bufferToReceive = new byte[1000];
+            String language;
+            int bufferlen;
+            System.out.print("Enter new Language Setting : ");
+            language = sc.nextLine();
+
+            bufferlen = (short) (language.length() + 1);
+
+            System.arraycopy(language.getBytes(), 0, bufferToSend, 7, bufferlen - 1);
+            bufferToSend = setRequest(bufferToSend, 'L', 'N', bufferlen);
+
+            System.out.println(new String(bufferToSend, 7, bufferlen - 1));
+
+            DatagramPacket dpSend = new DatagramPacket(bufferToSend, bufferToSend.length, ia, 6999);
+            dsSend.send(dpSend);
+            DatagramPacket dpReceive = new DatagramPacket(bufferToReceive, bufferToReceive.length);
+            dsReceive.receive(dpReceive);
+
+            crc16_check(bufferToReceive);
+            if(bufferToReceive[7] == 0x00){
+                System.out.println("Language Setting has been successfully changed to [" + language + "]");
+            }
         }
         else if(mode == 240){           //Screen Reader GET
             byte[] bufferToSend;

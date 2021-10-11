@@ -75,6 +75,7 @@ public class Server {
         return bufferToSend;
     }
 
+
     /*
     public static byte[] setReply(){
 
@@ -145,7 +146,29 @@ public class Server {
                     System.out.println("Send Language Info [" + language + "]");
                 }
                 else if(opcode == 0x1){     //Language SET
+                    System.out.println("Language SET MODE start");
 
+                    short bufferlen;
+                    bufferlen = (short) byteToShort(new byte[]{bufferToReceive[5], bufferToReceive[4]});
+                    System.out.println(bufferlen);
+                    String newLanguage = new String(bufferToReceive, 7, bufferlen - 1);
+
+                    language = newLanguage;             //원래의 설정값을 뽑아온 새 설정값으로 변경
+                    System.out.println("New Language Setting: " + newLanguage);
+
+
+                    bufferlen = 2;
+                    bufferToSend[4] = (byte) (bufferlen & 0xFF);    //4, 5 index에 length 정보 세팅
+                    bufferToSend[5] = (byte) ((bufferlen >> 8 )& 0xFF);
+                    bufferToSend[7] = RESULT_CODE;
+
+                    int offset = bufferlen + 6;
+                    short crc = crc16_compute(Arrays.copyOfRange(bufferToSend, 6, bufferlen + 6));
+                    bufferToSend[offset++] = (byte) (crc & 0xFF);
+                    bufferToSend[offset++] = (byte) ((crc >> 8)& 0xFF);
+
+                    DatagramPacket dpSend = new DatagramPacket(bufferToSend, bufferToSend.length, ia, 7000);
+                    dsSend.send(dpSend);
                 }
                 break;
 

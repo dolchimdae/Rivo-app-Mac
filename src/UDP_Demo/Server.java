@@ -106,6 +106,9 @@ public class Server {
             DatagramPacket dpReceive = new DatagramPacket(bufferToReceive, bufferToReceive.length);        //Client가 보낸 요청 수신
             ds.receive(dpReceive);
 
+            System.out.println(bufferToReceive[7]);
+            System.out.println(bufferToReceive[8]);
+
             if (crc16_check(bufferToReceive)) {
                 System.out.println("CRC Checking == true");
             } else {
@@ -140,7 +143,7 @@ public class Server {
                         bufferToSend = basicSetting(bufferToSend, bufferlen, RESULT_CODE);
 
 
-                        DatagramPacket dpSend = new DatagramPacket(bufferToSend, bufferToSend.length, ia, dpReceive.getPort());
+                        DatagramPacket dpSend = new DatagramPacket(bufferToSend, bufferlen + 10, ia, dpReceive.getPort());
                         ds.send(dpSend);
                         System.out.println("Send Firmware Version [" + firmVer + "]");
                     }
@@ -153,7 +156,7 @@ public class Server {
                         System.arraycopy(language.getBytes(), 0, bufferToSend, 8, bufferlen - 2);
                         bufferToSend = basicSetting(bufferToSend, bufferlen, RESULT_CODE);
 
-                        DatagramPacket dpSend = new DatagramPacket(bufferToSend, bufferToSend.length, ia, dpReceive.getPort());
+                        DatagramPacket dpSend = new DatagramPacket(bufferToSend, bufferlen + 10, ia, dpReceive.getPort());
                         ds.send(dpSend);
                         System.out.println("Send Language Info [" + language + "]");
                     } else if (opcode == 0x1) {     //Language SET
@@ -177,6 +180,8 @@ public class Server {
                         short crc = crc16_compute(Arrays.copyOfRange(bufferToSend, 6, bufferlen + 6));
                         bufferToSend[offset++] = (byte) (crc & 0xFF);
                         bufferToSend[offset++] = (byte) ((crc >> 8) & 0xFF);
+                        bufferToSend[offset++] = 0x0d;
+                        bufferToSend[offset++] = 0x0a;
 
                         DatagramPacket dpSend = new DatagramPacket(bufferToSend, bufferToSend.length, ia, dpReceive.getPort());
                         ds.send(dpSend);
@@ -278,6 +283,8 @@ public class Server {
                     }
                     break;
 
+
+                    /*
                 case "UM":
                     if (opcode == 0x0) {          //File receive start
                         File fileToReceive = null;
@@ -308,68 +315,9 @@ public class Server {
                             }
                         }
 
-                    }
+                    }*/
 
             }
-
-
-        /*
-        if(bufferToReceive[6] == 0x0){              //설정값 조회 == GET
-            System.out.println("GET MODE start");
-
-            byte[] bufferToSend = new byte[1000];
-            short bufferlen = (short) (rivoInfo.length() + 1);
-
-            bufferToSend[0] = 'a';
-            bufferToSend[1] = 't';
-            bufferToSend[2] = 'L';
-            bufferToSend[3] = 'N';
-            bufferToSend[4] = (byte) (bufferlen & 0xFF);    //4, 5 index에 length 정보 세팅
-            bufferToSend[5] = (byte) ((bufferlen >> 8 )& 0xFF);
-            bufferToSend[6] = 0x0;
-
-
-
-            //bufferToSend[7] 부터 rivoInfo 값 저장 -> arraycopy 함수 이용 (string to byte array)
-            System.arraycopy(rivoInfo.getBytes(), 0, bufferToSend, 7, bufferlen - 1);
-
-            DatagramPacket dpSend = new DatagramPacket(bufferToSend, bufferToSend.length, ia, 7000);
-            ds.send(dpSend);
-            System.out.println("Send rivoInfo [" + rivoInfo + "]");
-        }
-        else if(bufferToReceive[6] == 0x1){         //설정값 변경 == SET
-            System.out.println("SET MODE start");
-
-            byte[] bufferToSend = new byte[1000];
-            bufferToSend[0] = 'a';
-            bufferToSend[1] = 't';
-            bufferToSend[2] = 'L';
-            bufferToSend[3] = 'N';
-
-            short bufferlen;
-
-            bufferlen = (short) byteToShort(new byte[]{bufferToReceive[5], bufferToReceive[4]});
-
-            //Client에서 전달받은 newRivoInfo 정보를 버퍼에서 뽑아옴 (byte array to string)
-            String newRivoInfo = new String(bufferToReceive, 7, bufferlen - 1);
-
-            rivoInfo = newRivoInfo;             //원래의 설정값을 뽑아온 새 설정값으로 변경
-            System.out.println("newRivoInfo: " + newRivoInfo);
-            System.out.println("rivoInfo: " + rivoInfo);
-
-            bufferToSend[4] = (byte) (bufferlen & 0xFF);    //4, 5 index에 length 정보 세팅
-            bufferToSend[5] = (byte) ((bufferlen >> 8 )& 0xFF);
-
-            System.arraycopy(rivoInfo.getBytes(), 0, bufferToSend, 7, bufferlen - 1);
-
-            int offset = bufferlen + 6;
-            short crc = crc16_compute(Arrays.copyOfRange(bufferToSend, 6, bufferlen + 6));
-            bufferToSend[offset++] = (byte) (crc & 0xFF);
-            bufferToSend[offset++] = (byte) ((crc >> 8)& 0xFF);
-
-            DatagramPacket dpSend = new DatagramPacket(bufferToSend, bufferToSend.length, ia, 7000);
-            ds.send(dpSend);
-        }*/
 
 
         }

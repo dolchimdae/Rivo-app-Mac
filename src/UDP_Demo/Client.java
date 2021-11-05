@@ -1,6 +1,7 @@
 package UDP_Demo;
 
 
+import com.sun.jdi.event.ExceptionEvent;
 import jdk.jfr.Unsigned;
 
 import java.beans.beancontext.BeanContext;
@@ -335,22 +336,58 @@ public class Client {
             System.out.println("Device Info:  " + MTU_Size);
         }
         else if(mode == 500){           //File Send
-            byte[] bufferToSend;
-            bufferToSend = getRequest('U', 'M');
-            DatagramPacket dpSend = new DatagramPacket(bufferToSend, bufferToSend.length, ia, 6999);
-            ds.send(dpSend);
+            byte[] bufferToSend = new byte[1000];
+            short data_info_size;           //filename, firmware version . . .
+            int data_total_size;
+            String data_info;
+            int bufferlen;
 
-            String fileName;
+            bufferToSend[0] = 'A';
+            bufferToSend[1] = 'T';
+            bufferToSend[2] = 'U';
+            bufferToSend[3] = 'M';
+            bufferToSend[6] = 0x00;         //opcode = START
+            bufferToSend[7] = 0x00;         //data_type = locale
+                                            //8~11 : data_total_size
+                                            //12~15 : total_crc
+
             System.out.print("Enter File Name: ");
-            fileName = sc.nextLine();
-            File fileToSend = new File("./" + fileName);
+            data_info = sc.nextLine();
+            File fileToSend = new File("./" + data_info);
             if(!fileToSend.exists()){           //File Not exist
                 System.out.println("File Not Exist");
             }
+            data_info_size = (short) data_info.length();
+            data_total_size = (int) fileToSend.length();
+            bufferToSend[16] = (byte) (data_info_size & 0xff);          //data_info_size
+            bufferToSend[17] = (byte) ((data_info_size >> 8) & 0xff);
+
+            System.arraycopy(data_info.getBytes(), 0, bufferToSend, 18, data_info_size);
+            bufferlen = data_info_size + 12;
+            bufferToSend[4] = (byte) (bufferlen & 0xff);            //length
+            bufferToSend[5] = (byte) ((bufferlen >> 8) & 0xff);
+
+            int offset = bufferlen + 6;
+            short crc = crc16_compute(Arrays.copyOfRange(bufferToSend, 6, bufferlen + 6));
+            bufferToSend[offset++] = (byte) (crc & 0xff);
+            bufferToSend[offset++] = (byte) ((crc >> 8) & 0xff);
+
+
+
+
+
             int fileSize = (int) fileToSend.length();
             int totalReadBytes = 0;
 
-            
+            try{
+
+
+
+
+
+            } catch (Exception e){
+                System.out.println(e.getMessage());
+            }
 
             /*
 

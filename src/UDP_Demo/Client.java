@@ -1,6 +1,9 @@
 package UDP_Demo;
 
 
+import jdk.jfr.Unsigned;
+
+import java.beans.beancontext.BeanContext;
 import java.io.*;
 import java.lang.reflect.Array;
 import java.net.*;
@@ -8,6 +11,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class Client {
+    static int MAX_BUFFER_SIZE = 512;
+
     public static int byteToShort(byte[] bytes) {
 
         int newValue = 0;
@@ -18,15 +23,13 @@ public class Client {
     }
 
     public static short crc16_compute(byte[] data){
-        short crc = (short) 0xFFFF;
-
-        for (int i = 0; i<data.length; i++)
-        {
-            crc  = (short) ((byte)(crc >> 8) | (crc << 8));
-            crc ^= data[i];
-            crc ^= (short) ((byte)(crc & 0xFF) >> 4);
-            crc ^= (short) ((crc << 8) << 4);
-            crc ^= (short) (((crc & 0xFF) << 4) << 1);
+        short crc = (short) 0xffff;
+        for(int i=0; i<data.length; i++) {
+            crc = (short)((crc >>> 8) & 0xff | (crc << 8));
+            crc ^= data[i] & 0xff;
+            crc ^= (crc & 0xff) >>> 4;
+            crc ^= (crc << 8) << 4;
+            crc ^= ((crc & 0xff) << 4) << 1;
         }
         return crc;
     }
@@ -44,6 +47,11 @@ public class Client {
         short realCrc = 0;
         realCrc |= (short) (data[bufferlen++]) & 0xFF;          //패킷으로 담겨 넘어온 crc 추출
         realCrc |= (short) (data[bufferlen++] << 8) & 0xFF00;
+
+        System.out.println("received crc: " + realCrc);
+        System.out.println("computed crc: " + crc);
+
+        
 
         if(crc == realCrc){
             System.out.println("CRC Checking == TRUE");
@@ -69,9 +77,12 @@ public class Client {
         bufferToSend[5] = (byte) ((bufferlen >> 8 )& 0xFF);
 
         int offset = bufferlen + 6;
-        short crc = crc16_compute(Arrays.copyOfRange(bufferToSend, 6, bufferlen + 7));
+        short crc = crc16_compute(Arrays.copyOfRange(bufferToSend, 6, bufferlen + 6));
         bufferToSend[offset++] = (byte) (crc & 0xFF);
         bufferToSend[offset++] = (byte) ((crc >> 8)& 0xFF);
+
+        bufferToSend[offset++] = 0x0D;
+        bufferToSend[offset++] = 0x0A;
 
         return bufferToSend;
 
@@ -92,6 +103,9 @@ public class Client {
         bufferToSend[offset++] = (byte) (crc & 0xFF);
         bufferToSend[offset++] = (byte) ((crc >> 8)& 0xFF);
 
+        bufferToSend[offset++] = 0x0D;
+        bufferToSend[offset++] = 0x0A;
+
         return bufferToSend;
     }
 
@@ -99,8 +113,7 @@ public class Client {
 
     public static void main(String[] args) throws IOException{
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-        DatagramSocket dsSend = new DatagramSocket();
-        DatagramSocket dsReceive = new DatagramSocket(7000);
+        DatagramSocket ds = new DatagramSocket();
 
         InetAddress ia = InetAddress.getByName("127.0.0.1");
 
@@ -114,7 +127,7 @@ public class Client {
 
 
 
-
+/*
 
 
         if(mode == 1){              //설정값 조회 - 요청 보내고, 답변 받고, 출력
@@ -136,11 +149,11 @@ public class Client {
 
 
             DatagramPacket dpSend = new DatagramPacket(bufferToSend, bufferToSend.length, ia, 6999);
-            dsSend.send(dpSend);
+            ds.send(dpSend);
 
 
             DatagramPacket dpReceive = new DatagramPacket(bufferToReceive, bufferToReceive.length);
-            dsReceive.receive(dpReceive);
+            ds.receive(dpReceive);
 
             String rivoInfo = new String(bufferToReceive, 7, byteToShort(new byte[]{bufferToReceive[5], bufferToReceive[4]}));
             System.out.println("rivoInfo : " + rivoInfo);
@@ -176,10 +189,10 @@ public class Client {
             bufferToSend[offset++] = (byte) ((crc >> 8)& 0xFF);
 
             DatagramPacket dpSend = new DatagramPacket(bufferToSend, bufferToSend.length, ia, 6999);
-            dsSend.send(dpSend);            //요청 패킷 전송
+            ds.send(dpSend);            //요청 패킷 전송
 
             DatagramPacket dpReceive = new DatagramPacket(bufferToReceive, bufferToReceive.length);
-            dsReceive.receive(dpReceive);
+            ds.receive(dpReceive);
 
             crc16_check(bufferToReceive);
 
@@ -188,22 +201,25 @@ public class Client {
             String rivoInfo = new String(bufferToReceive, 7, byteToShort(new byte[]{bufferToReceive[5], bufferToReceive[4]}));
             System.out.println("rivoInfo has been successfully changed to [" + rivoInfo + "]");
 
-        }
-        else if(mode == 210){            //Version GET
+        }*/
+
+
+        if(mode == 210){            //Version GET
             byte[] bufferToSend;
             byte[] bufferToReceive = new byte[1000];
             bufferToSend = getRequest('F', 'V');
             DatagramPacket dpSend = new DatagramPacket(bufferToSend, bufferToSend.length, ia, 6999);
-            dsSend.send(dpSend);
+            ds.send(dpSend);
 
             DatagramPacket dpReceive = new DatagramPacket(bufferToReceive, bufferToReceive.length);
-            dsReceive.receive(dpReceive);
+            ds.receive(dpReceive);
             crc16_check(bufferToReceive);
 
             int recvBufferlen = byteToShort(new byte[]{bufferToReceive[5], bufferToReceive[4]});
             String firmVer = new String(bufferToReceive, 8, recvBufferlen - 2);
             System.out.println("Firmware Version " + firmVer);
         }
+        
         else if(mode == 221){           //Date/Time SET
 
         }
@@ -212,10 +228,10 @@ public class Client {
             byte[] bufferToReceive = new byte[1000];
             bufferToSend = getRequest('L', 'N');
             DatagramPacket dpSend = new DatagramPacket(bufferToSend, bufferToSend.length, ia, 6999);
-            dsSend.send(dpSend);
+            ds.send(dpSend);
 
             DatagramPacket dpReceive = new DatagramPacket(bufferToReceive, bufferToReceive.length);
-            dsReceive.receive(dpReceive);
+            ds.receive(dpReceive);
             crc16_check(bufferToReceive);
 
             int recvBufferlen = byteToShort(new byte[]{bufferToReceive[5], bufferToReceive[4]});
@@ -238,9 +254,9 @@ public class Client {
             System.out.println(new String(bufferToSend, 7, bufferlen - 1));
 
             DatagramPacket dpSend = new DatagramPacket(bufferToSend, bufferToSend.length, ia, 6999);
-            dsSend.send(dpSend);
+            ds.send(dpSend);
             DatagramPacket dpReceive = new DatagramPacket(bufferToReceive, bufferToReceive.length);
-            dsReceive.receive(dpReceive);
+            ds.receive(dpReceive);
 
             crc16_check(bufferToReceive);
             if(bufferToReceive[7] == 0x00){
@@ -252,10 +268,10 @@ public class Client {
             byte[] bufferToReceive = new byte[1000];
             bufferToSend = getRequest('S', 'R');
             DatagramPacket dpSend = new DatagramPacket(bufferToSend, bufferToSend.length, ia, 6999);
-            dsSend.send(dpSend);
+            ds.send(dpSend);
 
             DatagramPacket dpReceive = new DatagramPacket(bufferToReceive, bufferToReceive.length);
-            dsReceive.receive(dpReceive);
+            ds.receive(dpReceive);
             crc16_check(bufferToReceive);
 
             int recvBufferlen = byteToShort(new byte[]{bufferToReceive[5], bufferToReceive[4]});
@@ -267,10 +283,10 @@ public class Client {
             byte[] bufferToReceive = new byte[1000];
             bufferToSend = getRequest('V', 'G');
             DatagramPacket dpSend = new DatagramPacket(bufferToSend, bufferToSend.length, ia, 6999);
-            dsSend.send(dpSend);
+            ds.send(dpSend);
 
             DatagramPacket dpReceive = new DatagramPacket(bufferToReceive, bufferToReceive.length);
-            dsReceive.receive(dpReceive);
+            ds.receive(dpReceive);
             crc16_check(bufferToReceive);
 
             int recvBufferlen = byteToShort(new byte[]{bufferToReceive[5], bufferToReceive[4]});
@@ -282,10 +298,10 @@ public class Client {
             byte[] bufferToReceive = new byte[1000];
             bufferToSend = getRequest('I', 'F');
             DatagramPacket dpSend = new DatagramPacket(bufferToSend, bufferToSend.length, ia, 6999);
-            dsSend.send(dpSend);
+            ds.send(dpSend);
 
             DatagramPacket dpReceive = new DatagramPacket(bufferToReceive, bufferToReceive.length);
-            dsReceive.receive(dpReceive);
+            ds.receive(dpReceive);
             crc16_check(bufferToReceive);
 
             int recvBufferlen = byteToShort(new byte[]{bufferToReceive[5], bufferToReceive[4]});
@@ -297,10 +313,10 @@ public class Client {
             byte[] bufferToReceive = new byte[1000];
             bufferToSend = getRequest('R', 'V');
             DatagramPacket dpSend = new DatagramPacket(bufferToSend, bufferToSend.length, ia, 6999);
-            dsSend.send(dpSend);
+            ds.send(dpSend);
 
             DatagramPacket dpReceive = new DatagramPacket(bufferToReceive, bufferToReceive.length);
-            dsReceive.receive(dpReceive);
+            ds.receive(dpReceive);
             crc16_check(bufferToReceive);
         }
         else if(mode == 2110){          //MTU Size GET
@@ -308,18 +324,75 @@ public class Client {
             byte[] bufferToReceive = new byte[1000];
             bufferToSend = getRequest('M', 'T');
             DatagramPacket dpSend = new DatagramPacket(bufferToSend, bufferToSend.length, ia, 6999);
-            dsSend.send(dpSend);
+            ds.send(dpSend);
 
             DatagramPacket dpReceive = new DatagramPacket(bufferToReceive, bufferToReceive.length);
-            dsReceive.receive(dpReceive);
+            ds.receive(dpReceive);
             crc16_check(bufferToReceive);
 
             int recvBufferlen = byteToShort(new byte[]{bufferToReceive[5], bufferToReceive[4]});
             short MTU_Size = (short) byteToShort(new byte[]{bufferToReceive[9], bufferToReceive[8]});
             System.out.println("Device Info:  " + MTU_Size);
         }
+        else if(mode == 500){           //File Send
+            byte[] bufferToSend;
+            bufferToSend = getRequest('U', 'M');
+            DatagramPacket dpSend = new DatagramPacket(bufferToSend, bufferToSend.length, ia, 6999);
+            ds.send(dpSend);
+
+            String fileName;
+            System.out.print("Enter File Name: ");
+            fileName = sc.nextLine();
+            File fileToSend = new File("./" + fileName);
+            if(!fileToSend.exists()){           //File Not exist
+                System.out.println("File Not Exist");
+            }
+            int fileSize = (int) fileToSend.length();
+            int totalReadBytes = 0;
+
+            
+
+            /*
+
+            try{
+                String str = "start";
+
+                dpSend = new DatagramPacket(str.getBytes(), str.getBytes().length, ia, 6999);
+                ds.send(dpSend);
+                dpSend = new DatagramPacket(fileName.getBytes(), fileName.getBytes().length, ia, 6999);
+                ds.send(dpSend);
+
+                FileInputStream fis = new FileInputStream(fileName);
+                byte[] buffer = new byte[MAX_BUFFER_SIZE];              //파일 담을 버퍼
+                while(true){            //512 bytes 씩 쪼개서 전송
+                    int readBytes = fis.read(buffer, 0, buffer.length);
+                    if(readBytes == -1) break;
+
+                    dpSend = new DatagramPacket(buffer, readBytes, ia, 6999);
+                    ds.send(dpSend);
+                    totalReadBytes += readBytes;
+
+                }
+
+                str = "end";
+                dpSend = new DatagramPacket(str.getBytes(), str.getBytes().length, ia, 6999);
+                ds.send(dpSend);
+                System.out.println("Complete!");
+                fis.close();
+
+
+            } catch (Exception e){
+                System.out.println(e.getMessage());
+            }
+            */
+
+
+
+        }
 
 
     }
 }
+
+
 

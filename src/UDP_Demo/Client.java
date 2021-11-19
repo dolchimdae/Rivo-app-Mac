@@ -4,6 +4,9 @@ package UDP_Demo;
 import com.sun.jdi.event.ExceptionEvent;
 import jdk.jfr.Unsigned;
 
+import javax.swing.*;
+import javax.swing.plaf.basic.BasicSeparatorUI;
+import javax.swing.text.AbstractDocument;
 import java.beans.beancontext.BeanContext;
 import java.io.*;
 import java.lang.reflect.Array;
@@ -12,7 +15,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class Client {
-    static int MAX_BUFFER_SIZE = 512;
+    static short MAX_BUFFER_SIZE = 128;
+
 
     public static int byteToShort(byte[] bytes) {
 
@@ -112,7 +116,7 @@ public class Client {
 
 
 
-    public static void main(String[] args) throws IOException{
+    public static void main(String[] args) throws IOException, InterruptedException {
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
         DatagramSocket ds = new DatagramSocket();
 
@@ -337,6 +341,7 @@ public class Client {
         }
         else if(mode == 500){           //File Send
             byte[] bufferToSend = new byte[1000];
+            byte[] bufferToReceive = new byte[100];
             short data_info_size;           //filename, firmware version . . .
             int data_total_size;
             String data_info;
@@ -352,13 +357,25 @@ public class Client {
                                             //12~15 : total_crc
 
             System.out.print("Enter File Name: ");
-            data_info = sc.nextLine();
+            data_info = sc.nextLine();              //data_info: file name
             File fileToSend = new File("./" + data_info);
             if(!fileToSend.exists()){           //File Not exist
                 System.out.println("File Not Exist");
             }
+
             data_info_size = (short) data_info.length();
             data_total_size = (int) fileToSend.length();
+
+            bufferToSend[8] = (byte) (data_total_size & 0xff);          //data_total_size (little endian)
+            bufferToSend[9] = (byte) ((data_total_size >> 8) & 0xff);
+            bufferToSend[10] = (byte) ((data_total_size >> 16) & 0xff);
+            bufferToSend[11] = (byte) ((data_total_size >> 24) & 0xff);
+
+            bufferToSend[12] = 0x1;         //total crc (little endian)
+            bufferToSend[13] = 0x1;
+            bufferToSend[14] = 0x1;
+            bufferToSend[15] = 0x1;
+
             bufferToSend[16] = (byte) (data_info_size & 0xff);          //data_info_size
             bufferToSend[17] = (byte) ((data_info_size >> 8) & 0xff);
 
@@ -371,57 +388,157 @@ public class Client {
             short crc = crc16_compute(Arrays.copyOfRange(bufferToSend, 6, bufferlen + 6));
             bufferToSend[offset++] = (byte) (crc & 0xff);
             bufferToSend[offset++] = (byte) ((crc >> 8) & 0xff);
+            bufferToSend[offset++] = (byte) 0x0D;
+            bufferToSend[offset++] = (byte) 0x0A;
 
+            DatagramPacket dpSend = new DatagramPacket(bufferToSend, offset, ia, 6999);
+            ds.send(dpSend);        //START Request
+            DatagramPacket dpReceive = new DatagramPacket(bufferToReceive, bufferToReceive.length);
+            ds.receive(dpReceive);
+            System.out.println("File Transfer Start!");
 
+            Arrays.fill(bufferToSend, (byte) 0x0);
+            Arrays.fill(bufferToReceive, (byte) 0x0);
 
-
-
-            int fileSize = (int) fileToSend.length();
-            int totalReadBytes = 0;
-
-            try{
-
-
-
-
-
-            } catch (Exception e){
-                System.out.println(e.getMessage());
-            }
+            short seq_num = 1;
 
             /*
 
-            try{
-                String str = "start";
+            byte[] buffer = new byte[data_total_size];
+            FileInputStream fis = new FileInputStream(data_info);
+            fis.read(buffer, 0, data_total_size);
 
-                dpSend = new DatagramPacket(str.getBytes(), str.getBytes().length, ia, 6999);
+            bufferToSend[0] = 'A';
+            bufferToSend[1] = 'T';
+            bufferToSend[2] = 'U';
+            bufferToSend[3] = 'M';
+            bufferToSend[6] = (byte) 0x1;
+
+            bufferToSend[7] = (byte) (seq_num & 0xff);
+            bufferToSend[8] = (byte) ((seq_num >> 8) & 0xff);
+            bufferToSend[11] = (byte) (data_total_size & 0xff);
+            bufferToSend[12] = (byte) ((data_total_size >> 8) & 0xff);
+            bufferlen = data_total_size + 7;
+            bufferToSend[4] = (byte) (bufferlen & 0xff);
+            bufferToSend[5] = (byte) ((bufferlen >> 8) & 0xff);
+
+            offset = 13 + data_total_size;
+            short data_crc = crc16_compute(Arrays.copyOfRange(bufferToSend, 6, offset));
+            bufferToSend[offset++] = (byte) (data_crc & 0xff);
+            bufferToSend[offset++] = (byte) ((data_crc >> 8) & 0xff);
+            bufferToSend[offset++] = 0x0D;
+            bufferToSend[offset++] = 0x0A;
+
+            dpSend = new DatagramPacket(bufferToSend, offset, ia, 6999);
+            ds.send(dpSend);
+            dpReceive = new DatagramPacket(bufferToReceive, bufferToReceive.length);
+            ds.receive(dpReceive);
+
+             */
+            FileInputStream fis = new FileInputStream(data_info);
+
+            int totalRead = 0;
+            while(true){
+                if(totalRead >= data_total_size) break;
+                bufferToSend[0] = 'A';
+                bufferToSend[1] = 'T';
+                bufferToSend[2] = 'U';
+                bufferToSend[3] = 'M';
+                bufferToSend[6] = (byte) 0x1;
+
+                bufferToSend[7] = (byte) (seq_num & 0xff);
+                bufferToSend[8] = (byte) ((seq_num >> 8) & 0xff);
+                //9~10: crc
+
+                byte[] buffer = new byte[MAX_BUFFER_SIZE];
+                int readBytes;
+                readBytes = fis.read(buffer, 0, MAX_BUFFER_SIZE);
+                totalRead += readBytes;
+
+                short data_size = (short) readBytes;
+                bufferToSend[11] = (byte) (data_size & 0xff);
+                bufferToSend[12] = (byte) ((data_size >> 8) & 0xff);
+
+                bufferlen = readBytes + 7;
+                System.out.println("bufferlen: " + bufferlen);
+                bufferToSend[4] = (byte) (bufferlen & 0xff);
+                bufferToSend[5] = (byte) ((bufferlen >> 8) & 0xff);
+
+                System.arraycopy(buffer, 0, bufferToSend, 13, data_size);
+
+                offset = 13 + data_size;
+
+                short data_crc = crc16_compute(Arrays.copyOfRange(bufferToSend, 6, offset));
+                bufferToSend[offset++] = (byte) (data_crc & 0xff);
+                bufferToSend[offset++] = (byte) ((data_crc >> 8) & 0xff);
+                bufferToSend[offset++] = 0x0D;
+                bufferToSend[offset++] = 0x0A;
+
+                dpSend = new DatagramPacket(bufferToSend, offset, ia, 6999);
                 ds.send(dpSend);
-                dpSend = new DatagramPacket(fileName.getBytes(), fileName.getBytes().length, ia, 6999);
-                ds.send(dpSend);
+                System.out.println(seq_num);
+                seq_num++;
 
-                FileInputStream fis = new FileInputStream(fileName);
-                byte[] buffer = new byte[MAX_BUFFER_SIZE];              //파일 담을 버퍼
-                while(true){            //512 bytes 씩 쪼개서 전송
-                    int readBytes = fis.read(buffer, 0, buffer.length);
-                    if(readBytes == -1) break;
-
-                    dpSend = new DatagramPacket(buffer, readBytes, ia, 6999);
-                    ds.send(dpSend);
-                    totalReadBytes += readBytes;
-
-                }
-
-                str = "end";
-                dpSend = new DatagramPacket(str.getBytes(), str.getBytes().length, ia, 6999);
-                ds.send(dpSend);
-                System.out.println("Complete!");
-                fis.close();
-
-
-            } catch (Exception e){
-                System.out.println(e.getMessage());
+                dpReceive = new DatagramPacket(bufferToReceive, bufferToReceive.length);
+                ds.receive(dpReceive);
             }
-            */
+
+            Arrays.fill(bufferToSend, (byte) 0x0);
+            Arrays.fill(bufferToReceive, (byte) 0x0);
+
+            bufferToSend[0] = 'A';
+            bufferToSend[1] = 'T';
+            bufferToSend[2] = 'U';
+            bufferToSend[3] = 'M';
+            bufferlen = 5;
+            bufferToSend[4] = (byte) (bufferlen & 0xff);
+            bufferToSend[5] = (byte) ((bufferlen >> 8) & 0xff);
+            bufferToSend[6] = (byte) 0x2;       //VERIFY
+            bufferToSend[7] = (byte) (data_total_size & 0xff);          //data_total_size (little endian)
+            bufferToSend[8] = (byte) ((data_total_size >> 8) & 0xff);
+            bufferToSend[9] = (byte) ((data_total_size >> 16) & 0xff);
+            bufferToSend[10] = (byte) ((data_total_size >> 24) & 0xff);
+
+            crc = crc16_compute(Arrays.copyOfRange(bufferToSend, 6, 11));
+            bufferToSend[11] = (byte) (crc & 0xff);
+            bufferToSend[12] = (byte) ((crc >> 8) & 0xff);
+            bufferToSend[13] = 0x0D;
+            bufferToSend[14]= 0x0A;
+
+            dpSend = new DatagramPacket(bufferToSend, bufferlen + 10, ia, 6999);
+            ds.send(dpSend);
+            dpReceive = new DatagramPacket(bufferToReceive, bufferToReceive.length);
+            ds.receive(dpReceive);
+            System.out.println("Verifying. . .");
+
+            Arrays.fill(bufferToSend, (byte) 0x0);
+            Arrays.fill(bufferToReceive, (byte) 0x0);
+
+
+
+            bufferToSend[0] = 'A';
+            bufferToSend[1] = 'T';
+            bufferToSend[2] = 'U';
+            bufferToSend[3] = 'M';
+            bufferlen = 2;
+            bufferToSend[4] = (byte) (bufferlen & 0xff);
+            bufferToSend[5] = (byte) ((bufferlen >> 8) & 0xff);
+            bufferToSend[6] = 0x3;          //END
+            bufferToSend[7] = 0x1;           //Action ??
+
+            crc = crc16_compute(Arrays.copyOfRange(bufferToSend, 6, bufferlen + 6));
+            bufferToSend[8] = (byte) (crc & 0xff);
+            bufferToSend[9] = (byte) ((crc >> 8) & 0xff);
+            bufferToSend[10] = 0x0D;
+            bufferToSend[11] = 0x0A;
+
+            dpSend = new DatagramPacket(bufferToSend, bufferlen + 10, ia, 6999);
+            ds.send(dpSend);
+
+            dpReceive = new DatagramPacket(bufferToReceive, bufferToReceive.length);
+            ds.receive(dpReceive);
+            System.out.println("File Transfer Complete!");
+
 
 
 

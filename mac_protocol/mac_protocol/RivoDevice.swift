@@ -14,7 +14,6 @@ class RivoDevice {
     {
         var crc: UInt16 = 0xffff;
         for i in 0...data.count-1 {
-            //crc = UInt16(((crc>>8) | (crc<<8))&0xff)
             crc = UInt16((crc>>8)&0xff | (crc<<8))
             crc ^= UInt16(data[i])
             crc ^= UInt16(UInt8(crc & 0xff) >> 4)
@@ -25,31 +24,28 @@ class RivoDevice {
         return crc
     }
     
-    /*
+    
      func CRC32(data: [UInt8]) -> UInt32
      {
          var crc: UInt32 = 0xffffffff
          for i in 0...data.count-1 {
              crc ^= UInt32(data[i])
              for j in stride(from: 8, to: 0, by: -1) {
-                 crc = (crc>>1)^(0xedb88320u & ((crc&1) ? 0xffffffff : 0))
+                 crc = (crc>>1)^(0xedb88320 & (((crc&1) != 0) ? 0xffffffff : 0))
              }
-             
          }
          return ~crc
-         
-         // let crc = crc32(uLong(0), UnsafePointer<Bytef>(data!.bytes), uInt(data!.length))
      }
-     */
-    
+     
     func write(cmd: String, data: [UInt8]) {
         // do nothing
-        print("something")
+        
     }
     func read(sentCmd: String, onResponse: @escaping (String?) -> ()){
         // do nothing
     }
     
+    /* Version */
     func getFirmwareVersion() async -> String? {
         write(cmd: "FV", data: [0])
         return await withCheckedContinuation { continuation in
@@ -60,6 +56,7 @@ class RivoDevice {
         }
     }
     
+    /* Date and time */
     func setDateAndTime(type: Int) async -> String? {
         // setting Data/Time
         let formatter = DateFormatter()
@@ -78,16 +75,26 @@ class RivoDevice {
         formatter.dateFormat = "SSSS"
         let millisec = formatter.string(from: Date())
         
+        let yearInt = Int(year)!
+        let monInt = Int(mon)!
+        let dayInt = Int(day)!
+        let hourInt = Int(hour)!
+        let minInt = Int(min)!
+        let secInt = Int(sec)!
+        let millisecInt = Int(millisec)!
+        
         var DTdata = [UInt8]()
         DTdata.append(UInt8(1))
         DTdata.append(UInt8(type))
-        DTdata.append(UInt8(year)!)
-        DTdata.append(UInt8(mon)!)
-        DTdata.append(UInt8(day)!)
-        DTdata.append(UInt8(hour)!)
-        DTdata.append(UInt8(min)!)
-        DTdata.append(UInt8(sec)!)
-        DTdata.append(UInt8(millisec)!)
+        DTdata.append(UInt8(yearInt/100))
+        DTdata.append(UInt8(yearInt%100))
+        DTdata.append(UInt8(monInt))
+        DTdata.append(UInt8(dayInt))
+        DTdata.append(UInt8(hourInt))
+        DTdata.append(UInt8(minInt))
+        DTdata.append(UInt8(secInt))
+        DTdata.append(UInt8(millisecInt/100))
+        DTdata.append(UInt8(millisecInt%100))
         
         write(cmd: "DT", data: DTdata)
         return await withCheckedContinuation { continuation in
@@ -97,7 +104,8 @@ class RivoDevice {
             })
         }
     }
-        
+    
+    /* L3/L4 Language */
     func getLanguage() async -> String? {
         write(cmd: "LN", data: [0])
         return await withCheckedContinuation { continuation in
@@ -108,7 +116,6 @@ class RivoDevice {
         }
     }
     
-    // input == Int
     func setLanguage(language1: Int, input_method1: Int, language2: Int, input_method2: Int) async -> String? {
         var lgcode : String = String(language1)
         lgcode.append(",")
@@ -131,6 +138,7 @@ class RivoDevice {
         }
     }
     
+    /* OS/Screen reader */
     func getScreenReader() async -> String? {
         write(cmd: "SR", data: [0])
         return await withCheckedContinuation { continuation in
@@ -164,6 +172,7 @@ class RivoDevice {
         }
     }
     
+    /* Voice Guidance */
     func getVoiceGuidance() async -> String? {
         write(cmd: "VG", data: [0])
         return await withCheckedContinuation { continuation in
@@ -193,6 +202,7 @@ class RivoDevice {
         }
     }
     
+    /* Locale */
     func getLocaleList() async -> String? {
         write(cmd: "LC", data: [0])
         return await withCheckedContinuation { continuation in
@@ -212,6 +222,7 @@ class RivoDevice {
     }
     */
     
+    /* Dictionary */
     func getDictionaryList() async -> String? {
         write(cmd: "DC", data: [0])
         return await withCheckedContinuation { continuation in
@@ -231,6 +242,7 @@ class RivoDevice {
     }
     */
     
+    /* Name */
     func getRivoName() async -> String? {
         write(cmd: "RN", data: [0])
         return await withCheckedContinuation { continuation in
@@ -264,6 +276,7 @@ class RivoDevice {
         }
     }
     
+    /* Device Info */
     func getDeviceInfo() async -> String? {
         write(cmd: "IF", data: [0])
         return await withCheckedContinuation { continuation in
@@ -287,9 +300,14 @@ class RivoDevice {
         }
     }
     
-    // reserved?
-    func findMyRivo() async -> String? {
-        write(cmd: "RV", data: [0])
+    /* Find my Rivo */
+    func findMyRivo(action: Int) async -> String? {
+        // reserve == 0 setting
+        var FMRdata = [UInt8]()
+        FMRdata.append(UInt8(0))
+        FMRdata.append(UInt8(exactly: action)!)
+        FMRdata.append(UInt8(0))
+        write(cmd: "RV", data: FMRdata)
         return await withCheckedContinuation { continuation in
             read(sentCmd: "RV", onResponse: {(str) -> () in
                 print("data received: ", str!.description)
@@ -297,8 +315,8 @@ class RivoDevice {
             })
         }
     }
-    // result?
-    func findMyPhone() async -> String? {
+    /* result?
+    func findMyPhoneAck() async -> String? {
         var FMPdata = [UInt8]()
         FMPdata.append(UInt8(2))
         write(cmd: "RV", data: [0])
@@ -309,7 +327,9 @@ class RivoDevice {
             })
         }
     }
+     */
     
+    /* MTU size */
     func getMTUSize() async -> String? {
         write(cmd: "MT", data: [0])
         return await withCheckedContinuation { continuation in
@@ -333,6 +353,7 @@ class RivoDevice {
         }
     }
     
+    /* Rivo Status */
     func getRivoStatus() async -> String? {
         write(cmd: "RS", data: [0])
         return await withCheckedContinuation { continuation in
@@ -353,6 +374,7 @@ class RivoDevice {
         }
     }
     
+    /* Update Control */
     func updateCheck() async -> String? {
         write(cmd: "UM", data: [7])
         return await withCheckedContinuation { continuation in
@@ -362,53 +384,19 @@ class RivoDevice {
             })
         }
     }
+    
     /*
-    func updateStart(onResponse: @escaping ([UInt8]?) -> ()) async {
-        send(cmd: "UM", data: [])
-        receive(sentCmd: "UM", onResponse: onResponse)
+    func updateStart() async -> String? {
+        var USdata = [UInt8]()
+        USdata.append(UInt8(0))
+        write(cmd: "UM", data: [])
+        return await withCheckedContinuation { continuation in
+            read(sentCmd: "UM", onResponse: {(str) -> () in
+                print("data received: ", str!.description)
+                continuation.resume(returning: str)
+            })
+        }
     }
      */
+     
 }
-/*
-class UDPDevice: RivoDevice {
-    override init() {
-        super.init()
-        // initialize socket
-    }
-    override func write(cmd: String, data: [UInt8]) async {
-        socket.write ...
-    }
-    
-    func read() {
-        
-    }
-}
-
-class BLEDevice:RivoDevice {
-    init() {
-        // initialize BLE
-        
-    }
-    func write() {
-        
-    }
-    func read() {
-        
-    }
-}
-main() {
- 
- //device 는 UDP/BLE 둘다 가능
- var device: RivoDevice
- init(_device: RivoDevice) {
-     device = _device
- }
-
-        device = BLEDevice()
-        
-    //
-    device.getFirmwareVersion();
-    
-    
-}
- */

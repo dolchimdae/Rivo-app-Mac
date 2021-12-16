@@ -1,0 +1,2 @@
+MainPackage=C:\Users\공부 ㅅㄱ~~\source\repos\RivoApplication\RivoApplication\bin\x86\Debug\RivoApplication_1.0.1.0_x86_Debug.msix
+SymbolPackage=C:\Users\공부 ㅅㄱ~~\source\repos\RivoApplication\RivoApplication\obj\x86\Debug\Symbols\RivoApplication_1.0.1.0_x86_Debug.appxsym

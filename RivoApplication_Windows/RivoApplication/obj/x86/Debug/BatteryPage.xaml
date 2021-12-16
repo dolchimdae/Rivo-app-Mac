@@ -1,0 +1,38 @@
+﻿<Page
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:RivoApplication"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:Custom="using:Microsoft.UI.Xaml.Controls"
+    x:Class="RivoApplication.BatteryPage"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="85*"/>
+            <RowDefinition Height="59*"/>
+        </Grid.RowDefinitions>
+        <!--StackPanel의 경우 단일 행에 요소들을 넣기때문에 한 행에 하나의 element만 들어감-->
+        <TextBlock x:ConnectionId='2' x:Name="battery" HorizontalAlignment="Left"  Text="Battery :" FontSize="24" Margin="23,46,0,343" FontWeight="Bold"/>
+        <TextBlock HorizontalAlignment="Left" Margin="23,114,0,0" Text="이름 변경" TextWrapping="Wrap" VerticalAlignment="Top" FontWeight="Bold" FontSize="22"/>
+        <TextBox x:ConnectionId='3' HorizontalAlignment="Left" Margin="60,162,0,0" Text="My Rivo" TextWrapping="Wrap" VerticalAlignment="Top" BorderBrush="Black" Background="{x:Null}" FontWeight="Normal" FontSize="20" Width="153"                                  />
+        <Button Content="저장" Margin="248,165,0,0" VerticalAlignment="Top" FontSize="18" FontWeight="Bold" Height="34"/>
+        <TextBlock HorizontalAlignment="Left" Margin="32,244,0,0" Text="장치 정보" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="22" FontWeight="Bold"/>
+        <TextBlock HorizontalAlignment="Left" Margin="69,284,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="42" Height="23" FontWeight="Bold" FontSize="14"><Run Text="버전 : "/><LineBreak/><Run/></TextBlock>
+        <TextBlock HorizontalAlignment="Left" Margin="64,313,0,0" Text="시리얼 :" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="14" FontWeight="Bold"/>
+        <TextBlock HorizontalAlignment="Left" Margin="31,362,0,0" Text="내 리보 찾기" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="22" FontWeight="Bold"/>
+        <ToggleSwitch Header="" Margin="134,400,0,0" OffContent="" VerticalAlignment="Top" Width="49" Grid.RowSpan="2"/>
+        <TextBlock HorizontalAlignment="Left" Margin="70,410,0,0" Text="소리" TextWrapping="Wrap" VerticalAlignment="Top" FontWeight="Bold" FontSize="14" Grid.RowSpan="2"/>
+        <TextBlock HorizontalAlignment="Left" Margin="70,20,0,0" Text="진동" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="14" FontWeight="Bold" Grid.Row="1"/>
+        <ToggleSwitch Header="" OffContent="" Margin="134,9,0,0" VerticalAlignment="Top" Width="49" Grid.Row="1"/>
+        <!--ProgressBar의 IsIndeterminate이 false이면 value에 따라 bar를 채운다.-->
+        <!--<ProgressBar x:Name="Battery" Height="30" 
+                     Margin="141,36,863,0" VerticalAlignment="Top" Foreground="#FF61E623" ValueChanged="Battery_ValueChanged"/>-->
+        <TextBlock HorizontalAlignment="Left" Margin="120,284,0,0" Text="3.1.0" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="14" Width="52"/>
+        <TextBlock x:ConnectionId='4' HorizontalAlignment="Left" Margin="126,314,0,0" Text="86F9" TextWrapping="Wrap" VerticalAlignment="Top"                                              />
+
+    </Grid>
+</Page>
+

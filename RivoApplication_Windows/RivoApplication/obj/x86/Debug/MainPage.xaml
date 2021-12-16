@@ -1,0 +1,30 @@
+﻿<Page
+    x:Class="RivoApplication.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:RivoApplication"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid>
+        <NavigationView x:ConnectionId='2' x:Name="NavView" IsBackButtonVisible="Collapsed" IsSettingsVisible="false" PaneTitle="RIVO APPLICATION"
+                                                         >
+            <NavigationView.MenuItems>
+                <NavigationViewItem Tag="Myrivo" Content="리보 찾기" />
+                <NavigationViewItem Tag="setting" Content="설정" />
+                <NavigationViewItem Tag="update"  Content="업데이트" />
+                <NavigationViewItem Tag="battery" Content="My리보"/>
+                <NavigationViewItem Tag="help" Content="도움말" />
+            </NavigationView.MenuItems>
+            <ScrollViewer>
+                <Frame x:ConnectionId='3' Name="ContentFrame"
+                       Padding="12,0,12,24"
+                       IsTabStop="True"/>
+            </ScrollViewer>
+
+        </NavigationView>
+    </Grid>
+</Page>
+

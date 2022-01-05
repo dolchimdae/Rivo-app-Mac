@@ -382,9 +382,13 @@ public class Client {
             bufferToSend[offset++] = (byte) ((crc >> 8) & 0xff);
             bufferToSend[offset++] = (byte) 0x0D;
             bufferToSend[offset++] = (byte) 0x0A;
-
-            DatagramPacket dpSend = new DatagramPacket(bufferToSend, offset, ia, 6999);
-            ds.send(dpSend);        //START Request
+            int requestbytessent=0;
+            DatagramPacket dpSend;
+            while(requestbytessent<offset) { // 보낸 byte의 갯수가 총 프레임의 크기를 넘지 않을떄 까지 mtu 만큼의 byte를 전송한다. 
+                dpSend = new DatagramPacket(bufferToSend, requestbytessent,MTU, ia, 6999);
+                ds.send(dpSend);
+                requestbytessent+=MTU;	//보낸 byte에 mtu를 더해준다.
+                }
             DatagramPacket dpReceive = new DatagramPacket(bufferToReceive, bufferToReceive.length);
             ds.receive(dpReceive);
             System.out.println("File Transfer Start!");
@@ -500,7 +504,7 @@ public class Client {
                 		break;
                 		
                 	}
-                	else	//패큿을 받았고, crc가 틀린경우 (구현 미완성)
+                	else	//패킷을 받았고, crc가 틀린경우 (구현 미완성)
                 		System.out.println("CRC Miss");
                 	
                 	
@@ -536,8 +540,9 @@ public class Client {
             ds.send(dpSend);
             dpReceive = new DatagramPacket(bufferToReceive, bufferToReceive.length);
             ds.receive(dpReceive);
+            
             System.out.println("Verifying. . .");
-
+           
             Arrays.fill(bufferToSend, (byte) 0x0);
             Arrays.fill(bufferToReceive, (byte) 0x0);
 

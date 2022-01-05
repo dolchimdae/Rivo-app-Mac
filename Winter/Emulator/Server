@@ -167,11 +167,14 @@ public class Server {
             	System.out.println("New Packet Arrival!");
              dpReceive= new DatagramPacket(bufferToReceive,index, MTU_Size);        //Client가 보낸 요청 수신 mtu 사이트만큼 receive 한다.
             ds.receive(dpReceive);
-        		if(bufferToReceive[index]=='a' && bufferToReceive[index+1]=='t'){			//프레임 패킷중 일부가 소실된채 클라이언트에서 프레임을 다시보내기 시작하면 프레임을 초기화후 받기 시작한다
+        		if(bufferToReceive[index]=='A' && bufferToReceive[index+1]=='T'){			//프레임 패킷중 일부가 소실된채 클라이언트에서 프레임을 다시보내기 시작하면 프레임을 초기화후 받기 시작한다
+        		System.out.println("New Frame Start");
         		byte[] temp=new byte[1000];
+        		Arrays.fill(temp, (byte)0x0);
         		temp=Arrays.copyOfRange(bufferToReceive, index, dpReceive.getLength());
-        		Arrays.fill(bufferToReceive, (byte) 0x0);
-        		bufferToReceive=Arrays.copyOfRange(temp, 0, dpReceive.getLength());
+        		
+        		bufferToReceive=Arrays.copyOfRange(temp, 0, 1000);
+        		
         		index=0;
         		
         		}
@@ -446,8 +449,10 @@ public class Server {
                         int bufferlen = 2;
                         long filecrc=checksumInputStream(file);
                         int filecrcInt=(int) filecrc;
-                        if(filecrcInt != total_crc)
+                        if(filecrcInt != total_crc) {
+                        	System.out.println("FILE CRC Miss");
                         	RESULT_CODE=(byte)0x87;
+                        }
                         else
                         	System.out.println("Total CRC Match");
                         

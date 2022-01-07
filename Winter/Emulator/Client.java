@@ -474,44 +474,60 @@ public class Client {
                 int framebytessent=0;
                 while(framebytessent<offset) { // 보낸 byte의 갯수가 총 프레임의 크기를 넘지 않을떄 까지 mtu 만큼의 byte를 전송한다. 
                 dpSend = new DatagramPacket(bufferToSend, framebytessent,MTU, ia, 6999);
+                Random rand=new Random();
+                int random=rand.nextInt(100);
+                if(random<98)
                 ds.send(dpSend);
+                else
+                System.out.println("\n\nNot sent\n\n");
+                
+                
+                
                 framebytessent+=MTU;	//보낸 byte에 mtu를 더해준다.
                 }
                 System.out.println(seq_num);
                 seq_num++;
 
-                dpReceive = new DatagramPacket(bufferToReceive, bufferToReceive.length);
-                //from here on program will check whether the data received is good or bad.
-                ds.setSoTimeout(5000);	//timeout을 5초로 설정한다.
+                
                 while(true)
                 {
+                	short recseq=-1;
                 	try {
+                		dpReceive = new DatagramPacket(bufferToReceive, bufferToReceive.length);
+                        //from here on program will check whether the data received is good or bad.
+                        ds.setSoTimeout(5000);	//timeout을 5초로 설정한다.
                 		 ds.receive(dpReceive);
+                		 	System.out.println("ACK packet received");
+                		 	 recseq = (short) byteToShort(Arrays.copyOfRange(bufferToReceive, 8, 10));
+                		 	System.out.println("seqnum : " +recseq);
                 		
                 	}
                 	catch(SocketTimeoutException e){ //예외 발생시 전체프레임을 다시 발송한다. 
+                		
+                		System.out.println("exception occured; sending frame again");
                 	     framebytessent=0;
                         while(framebytessent<offset) {
                         dpSend = new DatagramPacket(bufferToSend, framebytessent,MTU, ia, 6999);
                         ds.send(dpSend);
                         framebytessent+=MTU;
                         }
-                		
-                	}
-                	if(bufferToReceive[7]==0) //패킷을 받았고, crc 가 맞는경우
+                        System.out.println("exception occured; sent frame again");
+                	}finally {
+               
+                	if(bufferToReceive[7]==0 && recseq==seq_num-1) //패킷을 받았고, crc 가 맞는경우
                 	{
-                		System.out.println("CRC Match");
+                		System.out.println("CRC,SEQ Match");
                 		break;
                 		
                 	}
                 	else	//패킷을 받았고, crc가 틀린경우 (구현 미완성)
                 		System.out.println("CRC Miss");
-                	
+                	}
                 	
                 	
                 	
                 }
-                
+                System.out.println("=======================");
             }
 
             Arrays.fill(bufferToSend, (byte) 0x0);

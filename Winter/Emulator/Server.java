@@ -21,6 +21,8 @@ public class Server {
     static String rivoInfo = "ver:Rivo 3.0.5,sn:2233,etc:xxxx";             //콤마로 분리된 string
     static short MTU_Size = 30;
     static File file;
+    static short totaldatasize=0;
+    static int datapackets=0;
     public static long checksumInputStream(File fileToSend) throws IOException
     {
        InputStream in = new FileInputStream(fileToSend);
@@ -157,32 +159,36 @@ public class Server {
         while (true) {
             System.out.println("========================================================");
 
-            byte[] bufferToReceive = new byte[1000];
+            byte[] bufferToReceive = new byte[10000];
             byte RESULT_CODE = 0x00;
             int index=0;
-            short packetlength=0;
+            short packetlength=1;
          
             DatagramPacket dpReceive;
             while(true) { // while 문 안에서 frame 하나가 올때까지 반복한다.
             	System.out.println("New Packet Arrival!");
              dpReceive= new DatagramPacket(bufferToReceive,index, MTU_Size);        //Client가 보낸 요청 수신 mtu 사이트만큼 receive 한다.
             ds.receive(dpReceive);
+            System.out.println(packetlength +" "+ index);
         		if(bufferToReceive[index]=='A' && bufferToReceive[index+1]=='T'){			//프레임 패킷중 일부가 소실된채 클라이언트에서 프레임을 다시보내기 시작하면 프레임을 초기화후 받기 시작한다
-        		System.out.println("New Frame Start");
+        		
+        			System.out.println("New Frame Start");
+        		
+        			packetlength = (short) byteToShort(Arrays.copyOfRange(bufferToReceive, index+4, index+6));
+                	packetlength= (short) (packetlength + (short)0x0A);
+        			
         		byte[] temp=new byte[1000];
         		Arrays.fill(temp, (byte)0x0);
-        		temp=Arrays.copyOfRange(bufferToReceive, index, dpReceive.getLength());
+        		temp=Arrays.copyOfRange(bufferToReceive, index, index+ dpReceive.getLength());
         		
         		bufferToReceive=Arrays.copyOfRange(temp, 0, 1000);
         		
         		index=0;
         		
         		}
+        		
           
-            	if(index==0) { //frame 의 첫번째 패킷이라면 length를 추출한다.
-            	packetlength = (short) byteToShort(Arrays.copyOfRange(bufferToReceive, 4, 6));
-            	packetlength= (short) (packetlength + (short)0x0A);
-            	}
+            	
             	index=index+dpReceive.getLength(); //받은 byte 수만큼 index 에 더한다.
             	System.out.println(packetlength +" "+ index);
             
@@ -416,11 +422,16 @@ public class Server {
                         short seq_num = byteToShort(Arrays.copyOfRange(bufferToReceive, 7, 9));
                      
                         short data_size = byteToShort(Arrays.copyOfRange(bufferToReceive, 11, 13));
-                 
+                        totaldatasize+=data_size;
                         int bufferlen = 4;
                         //this is where crc data and crc packet must be checked
                         if(data_crc16_check(bufferToReceive)) {
                         	System.out.println("Data CRC Match");
+                        	FileOutputStream fos = new FileOutputStream(file, true);
+                            System.out.println("data_size: " + data_size);
+                            byte[] buffer = Arrays.copyOfRange(bufferToReceive, 13, 13 + data_size);
+                            fos.write(buffer);
+                            fos.close();
                         	RESULT_CODE=(byte) 0x0;
                        }
                         else {
@@ -429,22 +440,22 @@ public class Server {
                         }
                         System.out.println("Received [" + seq_num + "] DATA packets");
 
-                        bufferToSend[8] = (byte) (seq_num & 0xff);
-                        bufferToSend[9] = (byte) ((seq_num >> 8) & 0xff);
+                        bufferToSend[9] = (byte) (seq_num & 0xff);
+                        bufferToSend[8] = (byte) ((seq_num >> 8) & 0xff);
                         bufferToSend = basicSetting(bufferToSend, bufferlen, RESULT_CODE);
-                        
+                        bufferToSend[6]=(byte)0x01;
                        
-                        FileOutputStream fos = new FileOutputStream(file, true);
-                        System.out.println("data_size: " + data_size);
-                        byte[] buffer = Arrays.copyOfRange(bufferToReceive, 13, 13 + data_size);
-                        fos.write(buffer);
-
+                        
+                        System.out.println("Sending Back");
                         DatagramPacket dpSend = new DatagramPacket(bufferToSend, bufferlen + 10, ia, dpReceive.getPort());
                         ds.send(dpSend);
-                        fos.close();
+                        datapackets++;
+                        System.out.println("DataPackets:"+datapackets);
+                        
                         break;
                     }
                     else if(opcode == 0x2){       //VERIFY
+                    	
                     	System.out.println("start verification");
                         int bufferlen = 2;
                         long filecrc=checksumInputStream(file);
@@ -467,7 +478,7 @@ public class Server {
                         bufferToSend = basicSetting(bufferToSend, bufferlen, RESULT_CODE);
                         DatagramPacket dpSend = new DatagramPacket(bufferToSend, bufferlen + 10, ia, dpReceive.getPort());
                         ds.send(dpSend);
-                        System.out.println("File Transfer FINISH!!!");
+                        System.out.println("File Transfer FINISH!!! " + totaldatasize);
                         break;
                     }
 

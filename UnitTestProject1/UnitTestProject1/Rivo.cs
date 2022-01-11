@@ -10,9 +10,9 @@ namespace Rivo
         {
         }
         
-        public abstract Task<byte[]> SendAndReceive(byte[] sendData); 
+        public abstract Task<byte[]> readAndWritePacket(byte[] sendData); 
         
-        async Task<byte[]> readAndWritePacket(string id, byte[] data)
+        async Task<byte[]> SendAndReceive(string id, byte[] data)
         {
             int totalLength = data.Length + 10;
             byte[] frame = new byte[totalLength];
@@ -36,7 +36,7 @@ namespace Rivo
             {
                 try
                 {
-                    byte[] recvFrame = await SendAndReceive(frame);     
+                    byte[] recvFrame = await readAndWritePacket(frame);     
                     
                     // parse recvFrame 
                     int recvSize = recvFrame.Length;

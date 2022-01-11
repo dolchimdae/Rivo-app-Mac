@@ -12,7 +12,7 @@ namespace Rivo
         
         public abstract Task<byte[]> SendAndReceive(byte[] sendData); 
         
-        async Task<byte[]> SendAsync(string id, byte[] data)
+        async Task<byte[]> readAndWritePacket(string id, byte[] data)
         {
             int totalLength = data.Length + 10;
             byte[] frame = new byte[totalLength];

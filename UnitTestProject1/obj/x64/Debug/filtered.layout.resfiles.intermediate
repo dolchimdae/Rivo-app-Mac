@@ -1,0 +1,15 @@
+WinMetadata\Windows.winmd
+ko\Microsoft.TestPlatform.AdapterUtilities.resources.dll
+ko\Microsoft.VisualStudio.TestPlatform.MSTest.TestAdapter.resources.dll
+ko\Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.resources.dll
+ko\Microsoft.VisualStudio.TestPlatform.TestFramework.resources.dll
+Assets\LockScreenLogo.scale-200.png
+Assets\SplashScreen.scale-200.png
+Assets\Square150x150Logo.scale-200.png
+Assets\Square44x44Logo.scale-200.png
+Assets\Square44x44Logo.targetsize-24_altform-unplated.png
+Assets\StoreLogo.png
+Assets\Wide310x150Logo.scale-200.png
+UnitTestApp.xbf
+UnitTestProject1.xr.xml
+Properties\Default.rd.xml

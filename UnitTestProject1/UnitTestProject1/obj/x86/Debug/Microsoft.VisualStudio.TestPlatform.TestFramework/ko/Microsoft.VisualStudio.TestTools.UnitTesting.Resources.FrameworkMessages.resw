@@ -1,0 +1,292 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="ElementNumbersDontMatch" xml:space="preserve">
+    <value>컬렉션의 요소 수가 일치하지 않습니다. 예상 값: &lt;{1}&gt;. 실제 값: &lt;{2}&gt;.{0}</value>
+  </data>
+  <data name="IsMatchFail" xml:space="preserve">
+    <value>'{0}' 문자열이 '{1}' 패턴과 일치하지 않습니다. {2}</value>
+  </data>
+  <data name="IsInstanceOfFailMsg" xml:space="preserve">
+    <value>{0} 예상 형식: &lt;{1}&gt;, 실제 형식: &lt;{2}&gt;.</value>
+  </data>
+  <data name="ContainsFail" xml:space="preserve">
+    <value>'{0}' 문자열이 '{1}' 문자열을 포함하지 않습니다. {2}</value>
+  </data>
+  <data name="InternalObjectNotValid" xml:space="preserve">
+    <value>참조된 내부 개체가 더 이상 유효하지 않습니다.</value>
+  </data>
+  <data name="StartsWithFail" xml:space="preserve">
+    <value>'{0}' 문자열이 '{1}' 문자열로 시작되지 않습니다. {2}</value>
+  </data>
+  <data name="AreEqualDifferentTypesFailMsg" xml:space="preserve">
+    <value>예상 값: &lt;{1} ({2})&gt;. 실제 값: &lt;{3} ({4})&gt;. {0}</value>
+  </data>
+  <data name="BothSameElements" xml:space="preserve">
+    <value>두 컬렉션에 같은 요소가 포함되어 있습니다. {0}</value>
+  </data>
+  <data name="DynamicDataValueNull" xml:space="preserve">
+    <value>속성 또는 메서드 {0}에 의해 반환된 값은 null일 수 없습니다.</value>
+  </data>
+  <data name="InvalidParameterToAssert" xml:space="preserve">
+    <value>'{0}' 매개 변수가 잘못되었습니다. {1}</value>
+  </data>
+  <data name="AreNotEqualDeltaFailMsg" xml:space="preserve">
+    <value>예상 값 &lt;{1}&gt;과(와) 실제 값 &lt;{2}&gt;의 차이가 &lt;{3}&gt;보다 커야 합니다. {0}</value>
+  </data>
+  <data name="ElementsAtIndexDontMatch" xml:space="preserve">
+    <value>인덱스 {0}에 있는 요소가 일치하지 않습니다.</value>
+  </data>
+  <data name="BothCollectionsSameReference" xml:space="preserve">
+    <value>두 컬렉션 참조가 동일한 컬렉션 개체를 가리킵니다. {0}</value>
+  </data>
+  <data name="AsyncUITestMethodNotSupported" xml:space="preserve">
+    <value>async TestMethod with UITestMethodAttribute는 지원되지 않습니다. async를 제거하거나 TestMethodAttribute를 사용하세요.</value>
+  </data>
+  <data name="PrivateAccessorConstructorNotFound" xml:space="preserve">
+    <value>
+      지정한 서명을 가진 생성자를 찾을 수 없습니다. 프라이빗 접근자를 다시 생성해야 할 수 있습니다.
+      또는 멤버가 기본 클래스에 정의된 프라이빗 멤버일 수 있습니다. 기본 클래스에 정의된 전용 멤버인 경우에는 이 멤버를 정의하는 형식을
+      PrivateObject의 생성자에 전달해야 합니다.
+    </value>
+  </data>
+  <data name="AssertionFailed" xml:space="preserve">
+    <value>{0}이(가) 실패했습니다. {1}</value>
+  </data>
+  <data name="DoNotUseAssertEquals" xml:space="preserve">
+    <value>어설션에 Assert.Equals를 사용할 수 없습니다. 대신 Assert.AreEqual 및 오버로드를 사용하세요.</value>
+  </data>
+  <data name="UTF_TestMethodNoExceptionDefault" xml:space="preserve">
+    <value>테스트 메서드에서 예외를 throw하지 않았습니다. 예외는 테스트 메서드에 정의된 {0} 특성에 의해 예상되었습니다.</value>
+  </data>
+  <data name="Common_NullInMessages" xml:space="preserve">
+    <value>(null)</value>
+  </data>
+  <data name="UTF_TestMethodWrongExceptionDerivedAllowed" xml:space="preserve">
+    <value>테스트 메서드에서 {0} 예외를 throw했지만 {1} 예외 또는 해당 예외에서 파생된 형식을 예상했습니다. 예외 메시지: {2}</value>
+  </data>
+  <data name="ElementTypesAtIndexDontMatch2" xml:space="preserve">
+    <value>인덱스 {1}에 있는 요소가 (null)입니다. 필요한 형식: &lt;{2}&gt;.{0}</value>
+  </data>
+  <data name="NoExceptionThrown" xml:space="preserve">
+    <value>{1} 예외를 예상했지만 예외가 throw되지 않았습니다. {0}</value>
+  </data>
+  <data name="DataDrivenResultDisplayName" xml:space="preserve">
+    <value>{0}({1})</value>
+  </data>
+  <data name="NoDataRow" xml:space="preserve">
+    <value>테스트 데이터 소스가 지정되지 않았습니다. DataTestMethodAttribute에는 하나 이상의 TestDataSource가 필요합니다.</value>
+  </data>
+  <data name="CollectionEqualReason" xml:space="preserve">
+    <value>{0}({1})</value>
+  </data>
+  <data name="EqualsTesterInvalidArgs" xml:space="preserve">
+    <value>잘못된 인수 - EqualsTester에는 null을 사용할 수 없습니다.</value>
+  </data>
+  <data name="AccessStringInvalidSyntax" xml:space="preserve">
+    <value>액세스 문자열의 구문이 잘못되었습니다.</value>
+  </data>
+  <data name="ElementTypesAtIndexDontMatch" xml:space="preserve">
+    <value>인덱스 {1}에 있는 요소가 필요한 형식이 아닙니다. 필요한 형식: &lt;{2}&gt;, 실제 형식: &lt;{3}&gt;.{0}</value>
+  </data>
+  <data name="ErrorInvalidCast" xml:space="preserve">
+    <value>{0} 형식의 개체를 {1}(으)로 변환할 수 없습니다.</value>
+  </data>
+  <data name="AreNotEqualFailMsg" xml:space="preserve">
+    <value>예상 값: &lt;{1}&gt;을(를) 제외한 모든 값. 실제 값: &lt;{2}&gt;. {0}</value>
+  </data>
+  <data name="UTF_TestMethodNoException" xml:space="preserve">
+    <value>테스트 메서드에서 예상 예외 {0}을(를) throw하지 않았습니다. {1}</value>
+  </data>
+  <data name="IsNotMatchFail" xml:space="preserve">
+    <value>'{0}' 문자열이 '{1}' 패턴과 일치합니다. {2}</value>
+  </data>
+  <data name="UTF_TestMethodWrongException" xml:space="preserve">
+    <value>테스트 메서드에서 {0} 예외를 throw했지만 {1} 예외를 예상했습니다. 예외 메시지: {2}</value>
+  </data>
+  <data name="WrongExceptionThrown" xml:space="preserve">
+    <value>{1} 예외를 예상했지만 {2} 예외를 throw했습니다. {0}
+예외 메시지: {3}
+스택 추적: {4}</value>
+  </data>
+  <data name="IsNotInstanceOfFailMsg" xml:space="preserve">
+    <value>잘못된 형식: &lt;{1}&gt;, 실제 형식: &lt;{2}&gt;. {0}</value>
+  </data>
+  <data name="AreEqualDeltaFailMsg" xml:space="preserve">
+    <value>예상 값 &lt;{1}&gt;과(와) 실제 값 &lt;{2}&gt;의 차이가 &lt;{3}&gt;보다 크지 않아야 합니다. {0}</value>
+  </data>
+  <data name="UTF_FailedToGetExceptionMessage" xml:space="preserve">
+    <value>(예외로 인해 {0} 형식의 예외에 대한 메시지를 가져오지 못했습니다.)</value>
+  </data>
+  <data name="AllItemsAreUniqueFailMsg" xml:space="preserve">
+    <value>중복된 항목이 있습니다. &lt;{1}&gt;. {0}</value>
+  </data>
+  <data name="Common_ObjectString" xml:space="preserve">
+    <value>(개체)</value>
+  </data>
+  <data name="EndsWithFail" xml:space="preserve">
+    <value>'{0}' 문자열이 '{1}' 문자열로 끝나지 않습니다. {2}</value>
+  </data>
+  <data name="DynamicDataIEnumerableEmpty" xml:space="preserve">
+    <value>{1}의 속성 또는 메서드 {0}이(가) 빈 IEnumerable&lt;object[]&gt;를 반환합니다.</value>
+  </data>
+  <data name="NumberOfElementsDiff" xml:space="preserve">
+    <value>요소 수가 다릅니다.</value>
+  </data>
+  <data name="NullParameterToAssert" xml:space="preserve">
+    <value>'{0}' 매개 변수가 잘못되었습니다. 이 값은 null일 수 없습니다. {1}.</value>
+  </data>
+  <data name="BothCollectionsSameElements" xml:space="preserve">
+    <value>두 컬렉션에 같은 요소가 포함되어 있습니다.</value>
+  </data>
+  <data name="BothCollectionsEmpty" xml:space="preserve">
+    <value>두 컬렉션이 모두 비어 있습니다. {0}</value>
+  </data>
+  <data name="AreEqualCaseFailMsg" xml:space="preserve">
+    <value>예상 값: &lt;{1}&gt;. 대/소문자가 다른 실제 값: &lt;{2}&gt;. {0}</value>
+  </data>
+  <data name="InvalidPropertyType" xml:space="preserve">
+    <value>{0} 속성의 형식은 {2}이어야 하는데 실제로는 {1}입니다.</value>
+  </data>
+  <data name="AreSameGivenValues" xml:space="preserve">
+    <value>AreSame()에 값 형식을 전달하면 안 됩니다. Object로 변환된 값은 동일한 값으로 간주되지 않습니다. AreEqual()을 사용해 보세요. {0}</value>
+  </data>
+  <data name="DynamicDataIEnumerableNull" xml:space="preserve">
+    <value>{1}의 속성 또는 메서드 {0}이(가) IEnumerable&lt;object[]&gt;를 반환하지 않습니다.</value>
+  </data>
+  <data name="UTF_ExpectedExceptionTypeMustDeriveFromException" xml:space="preserve">
+    <value>예상 예외 형식은 System.Exception이거나 System.Exception에서 파생된 형식이어야 합니다.</value>
+  </data>
+  <data name="DynamicDataDisplayName" xml:space="preserve">
+    <value>메서드 {0}은(는) 다음 예상 시그니처와 일치해야 합니다. 공용 정적 {1} {0}({2}).</value>
+  </data>
+  <data name="AreEqualFailMsg" xml:space="preserve">
+    <value>예상 값: &lt;{1}&gt;. 실제 값: &lt;{2}&gt;. {0}</value>
+  </data>
+  <data name="ActualHasMismatchedElements" xml:space="preserve">
+    <value>필요한 컬렉션에 &lt;{2}&gt;은(는) {1}개가 포함되어야 하는데 실제 컬렉션에는 {3}개가 포함되어 있습니다. {0}</value>
+  </data>
+  <data name="PrivateAccessorMemberNotFound" xml:space="preserve">
+    <value>
+      지정한 멤버({0})를 찾을 수 없습니다. 프라이빗 접근자를 다시 생성해야 할 수 있습니다.
+      또는 멤버가 기본 클래스에 정의된 프라이빗 멤버일 수 있습니다. 기본 클래스에 정의된 전용 멤버인 경우에는 이 멤버를 정의하는 형식을
+      PrivateObject의 생성자에 전달해야 합니다.
+    </value>
+  </data>
+</root>

@@ -21,11 +21,10 @@ Task{
     //await device.setLanguage(language1: 10, input_method1: 21, language2: 30, input_method2: 32)
     //await device.getScreenReader()
     //await device.getVoiceGuidance()
-    //let name = await device.getRivoName()
+    let name = await device.getRivoName()
     //await device.getDeviceInfo()
     //-await device.findMyRivo(action: 1)
-    
-    print("firmware version \(data) ")
+    print("firmware version \(data!) rivoname \(name!)")
 }
 dispatchMain()
 

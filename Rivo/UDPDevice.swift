@@ -34,26 +34,54 @@ class UDPDevice : RivoDevice {
     }
    
     
-    override func writePacket(data : [UInt8]) async {
+    override func writePacket(data : [UInt8]) {
         self.connection?.send(content: data, completion: NWConnection.SendCompletion.contentProcessed(({ (NWError) in
             print(NWError?.debugDescription ?? "sent OK")
-            print(data)
+            print("data \(data)")
             print(String(bytes: data, encoding: String.Encoding.utf8))
         })))
     }
     
+    override func readPacket(onResponse: @escaping ([UInt8]) -> ())  {
+        print("to receive")
+        
+        var result : [UInt8] = [0]
+        
+        self.connection?.receiveMessage { (data, context, isComplete, error) in
+            if (isComplete){
+                let backToString = String(decoding: data!, as: UTF8.self)
+                print("뭘 받았냐면.. \(backToString)")
+                if (data != nil){
+                    // command error checking
+                    result = [UInt8](data!)
+                    print("result is 1 \(result)")
+                    onResponse(result)
+                } else {
+                    print("Data == nil")
+                }
+            } else {
+                print("is not complete")
+            }
+            if error != nil{
+                print("error in receiving: \(error!)")
+            }
+        }
+    }
+    
+    /*
     override func readPacket() async throws -> [UInt8] {
-        //do nothing. onResponse([UInt8])로 구현 in subclass
         print("to receive")
         var readFail : Bool = false
         var result : [UInt8] = [0]
         
         self.connection?.receiveMessage { (data, context, isComplete, error) in
             if (isComplete){
-                print("Received \(data!)")
+                let backToString = String(decoding: data!, as: UTF8.self)
+                print("뭘 받았냐면.. \(backToString)")
                 if (data != nil){
                     // command error checking
                     result = [UInt8](data!)
+                    print("result is 1 \(result)")
                 } else {
                     print("Data == nil")
                     readFail = true
@@ -72,8 +100,9 @@ class UDPDevice : RivoDevice {
         print("result is \(result)")
         return result
     }
+     */
     
-    
+    /*
     // return type string ?
     override func write(cmd: String, data: [UInt8]) {
         /* Big endian
@@ -145,4 +174,6 @@ class UDPDevice : RivoDevice {
             }
         }
     }
+     */
 }
+

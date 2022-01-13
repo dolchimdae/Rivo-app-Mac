@@ -78,10 +78,9 @@ class RivoDevice {
     //익셉션 처리... ui 에 나타나게
     //재전송 타임아웃
     
-    func writePacket(data : [UInt8]) async {}
-    func readPacket() async throws -> [UInt8] {
+    func writePacket(data : [UInt8]) {}
+    func readPacket(onResponse: @escaping ([UInt8]) -> ()) {
         //do nothing. onResponse([UInt8])로 구현 in subclass
-        return [0]
     }
     
     func sendAndReceive(id : String, payload:[UInt8]) async throws -> [UInt8] {
@@ -136,39 +135,40 @@ class RivoDevice {
             
             //send frame
             while pos < frameSize {
-                sendSize = max(mtu,frameSize-pos )
-                await writePacket(data: Array(sendFrame[pos...pos+sendSize]))
+                sendSize = min(mtu,frameSize-pos )
+                writePacket(data: Array(sendFrame[pos...pos+sendSize-1]))
                 pos += sendSize
             }
             
             //receive frame
             var receiveFrame : [UInt8]
-            
-            do {
-                receiveFrame = try await readPacket()
-            } catch defineError.readPacketFail {
-                print("read Packet fail\n")
-                continue
+            receiveFrame = await withCheckedContinuation { continuation in
+                readPacket(onResponse: {(bytes) -> () in
+                    print("data received: \(bytes)")
+                    continuation.resume(returning: bytes)
+                })
             }
+            
             if (receiveFrame[0] == UInt8(ascii:"a") &&
                 receiveFrame[1] == UInt8(ascii:"t")){
                 
-                let len = Int(receiveFrame[4])<<8 + Int(receiveFrame[5])
+                let len = Int(receiveFrame[4]) + Int(receiveFrame[5]<<8)+10
                 //receive frame 나머지
+                print("rcc \(receiveFrame.count) len \(len)")
                 while receiveFrame.count < len {
                     //오류-> while문 아웃-> write 다시
-                    do{
-                        receiveFrame += try await readPacket() //append?
-                    }
-                    catch defineError.readPacketFail {
-                        print("read Packet Fail\n")
-                        break
+                    receiveFrame += await withCheckedContinuation { continuation in
+                        readPacket(onResponse: {(bytes) -> () in
+                            print("data received: \(bytes)")
+                            continuation.resume(returning: bytes)
+                        })
                     }
                 }
                 if rcframeCheck(id: id, frame: receiveFrame) {
                     if (receiveFrame[7] != UInt8(0)) {
                         throw defineError.resultNotZero(result: Int(receiveFrame[7]))
                     }
+                    print("return 은 됐어")
                     return Array(receiveFrame[6...(len-5)])
                 }else{
                     continue
@@ -608,39 +608,37 @@ class RivoDevice {
     func getMTUSize2() async throws -> Int {
         
         var sendFrame = ("AT"+"MT").utf8.map{ UInt8($0) } // convert string into byte array
-        sendFrame.append(UInt8(([0].count>>8)&0xff))
         sendFrame.append(UInt8([0].count&0xff))
+        sendFrame.append(UInt8(([0].count>>8)&0xff))
         sendFrame.append(contentsOf: [0])
         let crc = self.CRC16(data: [0])
-        sendFrame.append(UInt8((crc>>8)&0xff))
         sendFrame.append(UInt8(crc&0xff))
+        sendFrame.append(UInt8((crc>>8)&0xff))
         sendFrame.append(0x0d)
         sendFrame.append(0x0a)
         
         for _ in 0...2 {
-            await writePacket(data: sendFrame)
-            do {
-                let receiveFrame = try await readPacket()
-                
-                if (receiveFrame[0] == UInt8(ascii:"a") &&
-                    receiveFrame[1] == UInt8(ascii:"t") &&
-                    rcframeCheck(id: "MT", frame: receiveFrame)) == true {
-                    if (receiveFrame[7] != UInt8(0)) {
-                        throw defineError.resultNotZero(result: Int(receiveFrame[7]))
-                    }
-                    return Int(receiveFrame[8])<<8 + Int(receiveFrame[9])
-                    
-                }else{
-                    continue
-                }
+            writePacket(data: sendFrame)
+            var receiveFrame : [UInt8]
+            receiveFrame = await withCheckedContinuation { continuation in
+                readPacket(onResponse: {(bytes) -> () in
+                    print("data received: \(bytes)")
+                    continuation.resume(returning: bytes)
+                })
             }
-            catch{
-                //retry += 1
+            print("receiveFrame ~:! \(receiveFrame)")
+            if (receiveFrame[0] == UInt8(ascii:"a") && receiveFrame[1] == UInt8(ascii:"t")
+                && rcframeCheck(id: "MT", frame: receiveFrame)) == true {
+                if (receiveFrame[7] != UInt8(0)) {
+                    throw defineError.resultNotZero(result: Int(receiveFrame[7]))
+                }
+                print("뀨")
+                return Int(receiveFrame[8]) + Int(receiveFrame[9]<<8)
+            }else{
                 continue
             }
         }
         throw defineError.retryFail
-        
     }
     
     func setMTUSize(MTUSize: Int) async -> String? {

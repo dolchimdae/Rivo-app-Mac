@@ -3,7 +3,8 @@
 //  mac_protocol
 //
 //  Created by sunwoo Kim on 2021/11/07.
-//
+// chaewon kee 's 220113 ver
+
 import Network
 import Foundation
 import IOKit
@@ -201,58 +202,9 @@ class RivoDevice {
         catch {
             print("Unexpected error: \(error).")
         }
-        return "Sibal"
+        return "get firmware version fail.."
     }
     
-    /* Date and time  Date -> 인수로 한개 받아 그걸로 다 세팅
-     func setDateAndTime(type: Int) async -> String? {
-     // setting Data/Time
-     let formatter = DateFormatter()
-     formatter.dateFormat = "yyyy"
-     let year = formatter.string(from: Date())
-     formatter.dateFormat = "MM"
-     let mon = formatter.string(from: Date())
-     formatter.dateFormat = "dd"
-     let day = formatter.string(from: Date())
-     formatter.dateFormat = "HH"
-     let hour = formatter.string(from: Date())
-     formatter.dateFormat = "mm"
-     let min = formatter.string(from: Date())
-     formatter.dateFormat = "ss"
-     let sec = formatter.string(from: Date())
-     formatter.dateFormat = "SSSS"
-     let millisec = formatter.string(from: Date())
-     
-     let yearInt = Int(year)!
-     let monInt = Int(mon)!
-     let dayInt = Int(day)!
-     let hourInt = Int(hour)!
-     let minInt = Int(min)!
-     let secInt = Int(sec)!
-     let millisecInt = Int(millisec)!
-     
-     var DTdata = [UInt8]()
-     DTdata.append(UInt8(1))
-     DTdata.append(UInt8(type))
-     DTdata.append(UInt8(yearInt/100))
-     DTdata.append(UInt8(yearInt%100))
-     DTdata.append(UInt8(monInt))
-     DTdata.append(UInt8(dayInt))
-     DTdata.append(UInt8(hourInt))
-     DTdata.append(UInt8(minInt))
-     DTdata.append(UInt8(secInt))
-     DTdata.append(UInt8(millisecInt/100))
-     DTdata.append(UInt8(millisecInt%100))
-     
-     write(cmd: "DT", data: DTdata)
-     return await withCheckedContinuation { continuation in
-     read(sentCmd: "DT", onResponse: {(str) -> () in
-     print("data received: ", str!.description)
-     continuation.resume(returning: str)
-     })
-     }
-     }
-     */
     
     func setDateAndTime(type: Int, nowDate : Date) async -> String? {
         // setting Data/Time

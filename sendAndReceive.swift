@@ -1,5 +1,4 @@
-func sendAndReceive(id : String, payload:[UInt8]) async -> String? {
-    func sendAndReceive(id : String, payload:[UInt8]) async throws -> [UInt8] {
+func sendAndReceive(id : String, payload:[UInt8]) async throws -> [UInt8] {
         
         /* Big endian
          var sendFrame = ("AT"+id).utf8.map{ UInt8($0) } // convert string into byte array
@@ -10,9 +9,12 @@ func sendAndReceive(id : String, payload:[UInt8]) async -> String? {
          sendFrame.append(UInt8(crc>>8))
          sendFrame.append(UInt8(crc&0xff))
          sendFrame.append(0x0d)
-         sendFrame.append(0x0a)   */
+         sendFrame.append(0x0a)
+         */
         
-        if mtuConfirmed == false {
+        var retry = 0
+        
+        while (!mtuConfirmed && retry<3) { 
             do{
                 mtu = try await getMTUSize2() }
             catch {
@@ -21,6 +23,7 @@ func sendAndReceive(id : String, payload:[UInt8]) async -> String? {
             }
             mtuConfirmed = true
         }
+ 
         
         //Little endian
         var sendFrame = ("AT"+id).utf8.map{ UInt8($0)}
@@ -33,11 +36,9 @@ func sendAndReceive(id : String, payload:[UInt8]) async -> String? {
         sendFrame.append(0x0d)
         sendFrame.append(0x0a)
         
-        var retry = 0
         var sendSize : Int
-        var rcpayload : [UInt8]
         
-        while retry < 3 {
+        for _ in 0...2 {
             
             var pos = 0
             let frameSize = payload.count + 10
@@ -57,14 +58,13 @@ func sendAndReceive(id : String, payload:[UInt8]) async -> String? {
             do {
                 receiveFrame = try await readPacket()
             }catch {
-                retry += 1
                 continue
             }
             if (receiveFrame[0] == UInt8(ascii:"a") &&
                 receiveFrame[1] == UInt8(ascii:"t")){
                 
                 let len = Int(receiveFrame[4])<<8 + Int(receiveFrame[5])
-                //receive frame 전체
+                //receive frame 나머지
                 while receiveFrame.count < len{
                     //오류-> while문 아웃-> write 다시
                     do{
@@ -74,21 +74,15 @@ func sendAndReceive(id : String, payload:[UInt8]) async -> String? {
                         break
                     }
                 }
-                if rcframeCheck(id: id, frame: receiveFrame) == false {
-                    retry += 1
-                    continue
+                if rcframeCheck(id: id, frame: receiveFrame) == true {
+                    return Array(receiveFrame[6...(len-5)])
                 }else{
-                    rcpayload = Array(receiveFrame[6...(len-5)])
-                    break
+                    continue
                 }
             } else { //at 부터 잘못되었을 경우(다시 send Frame)
-                retry += 1
                 continue
             }
         }
-        if retry >= 3 { //if retry >= 3 이면 ui 에서 frame 단위 읽쓰 실패 뜨게하기 - 익셉션사용
-            throw defineError.retryFail
-        } else{
-            return rcpayload  // < 여기서 Variable 'rcpayload' used before being initialized 에러 뜸
-        }
+        //for 문을 빠져나오면 무조건 retryFail을 throw
+        throw defineError.retryFail
     }

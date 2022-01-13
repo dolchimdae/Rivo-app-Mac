@@ -132,17 +132,20 @@ public class Client {
 
     public static void main(String[] args) throws IOException, InterruptedException {
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-        DatagramSocket ds = new DatagramSocket();
-
+        DatagramSocket ds = new DatagramSocket(7000);
+        
         InetAddress ia = InetAddress.getByName("127.0.0.1");
 
         System.out.println("Select Mode(1. Check    2. Modify)");
         int mode;
         Scanner sc = new Scanner(System.in);
         mode = sc.nextInt();
-        sc.nextLine();              //앞에서 생긴 개행문자 버려서 뒤의 nextline 스킵되는거 방지.
-
-
+        sc.nextLine(); //앞에서 생긴 개행문자 버려서 뒤의 nextline 스킵되는거 방지.
+        System.out.println("Select Error Percentage");
+        int errorpercentage;
+        errorpercentage=sc.nextInt();
+        sc.nextLine();
+       
 
 
      
@@ -475,8 +478,8 @@ public class Client {
                 while(framebytessent<offset) { // 보낸 byte의 갯수가 총 프레임의 크기를 넘지 않을떄 까지 mtu 만큼의 byte를 전송한다. 
                 dpSend = new DatagramPacket(bufferToSend, framebytessent,MTU, ia, 6999);
                 Random rand=new Random();
-                int random=rand.nextInt(100);
-                if(random<98)
+                int random=rand.nextInt(100)+1;
+                if(random>errorpercentage)
                 ds.send(dpSend);
                 else
                 System.out.println("\n\nNot sent\n\n");
@@ -508,6 +511,9 @@ public class Client {
                 	     framebytessent=0;
                         while(framebytessent<offset) {
                         dpSend = new DatagramPacket(bufferToSend, framebytessent,MTU, ia, 6999);
+                        Random rand=new Random();
+                        int random=rand.nextInt(100)+1;
+                        if(random>errorpercentage)
                         ds.send(dpSend);
                         framebytessent+=MTU;
                         }
@@ -520,14 +526,19 @@ public class Client {
                 		break;
                 		
                 	}
-                	else	//패킷을 받았고, crc가 틀린경우 (구현 미완성)
+                	else if(bufferToReceive[7]==(byte)0x87) {	//패킷을 받았고, crc가 틀린경우 (구현 미완성)
                 		System.out.println("CRC Miss");
+                	}
+                	else {
+                		System.out.println("SEQ NUM Miss");
+                		
                 	}
                 	
                 	
-                	
+                	 System.out.println("======================="); 	
                 }
-                System.out.println("=======================");
+               
+             }
             }
 
             Arrays.fill(bufferToSend, (byte) 0x0);

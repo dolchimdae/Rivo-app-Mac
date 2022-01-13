@@ -86,3 +86,37 @@ func sendAndReceive(id : String, payload:[UInt8]) async throws -> [UInt8] {
         //for 문을 빠져나오면 무조건 retryFail을 throw
         throw defineError.retryFail
     }
+
+func getMTUSize2() async throws -> Int {
+        
+        var sendframe = ("AT"+"MT").utf8.map{ UInt8($0) } // convert string into byte array
+        sendframe.append(UInt8([0].count&0xff))
+        sendframe.append(UInt8(([0].count>>8)&0xff))
+        sendframe.append(contentsOf: [0])
+        let crc = self.CRC16(data: [0])
+        sendframe.append(UInt8(crc&0xff))
+        sendframe.append(UInt8((crc>>8)&0xff))
+        sendframe.append(0x0d)
+        sendframe.append(0x0a)
+        
+        for _ in 0...2 {
+            await writePacket(data: sendframe)
+            do {
+                let receiveframe = try await readPacket()
+                
+                if (receiveframe[0] == UInt8(ascii:"a") &&
+                    receiveframe[1] == UInt8(ascii:"t") && rcframeCheck(id: "MT", frame: receiveframe)) == true {
+                    return Int(receiveframe[8])<<8 + Int(receiveframe[9])
+                    
+                }else{
+                    continue
+                }
+            }
+            catch{
+                //retry += 1
+                continue
+            }
+        }
+        throw defineError.retryFail
+        
+    }

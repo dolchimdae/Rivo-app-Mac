@@ -1,4 +1,6 @@
 func sendAndReceive(id : String, payload:[UInt8]) async -> String? {
+    func sendAndReceive(id : String, payload:[UInt8]) async throws -> [UInt8] {
+        
         /* Big endian
          var sendFrame = ("AT"+id).utf8.map{ UInt8($0) } // convert string into byte array
          sendFrame.append(UInt8(payload.count>>8))
@@ -9,9 +11,6 @@ func sendAndReceive(id : String, payload:[UInt8]) async -> String? {
          sendFrame.append(UInt8(crc&0xff))
          sendFrame.append(0x0d)
          sendFrame.append(0x0a)   */
-    
-        //Little endian
-        //sendFrame index 총 n+10
         
         if mtuConfirmed == false {
             do{
@@ -23,6 +22,7 @@ func sendAndReceive(id : String, payload:[UInt8]) async -> String? {
             mtuConfirmed = true
         }
         
+        //Little endian
         var sendFrame = ("AT"+id).utf8.map{ UInt8($0)}
         sendFrame.append(UInt8(payload.count&0xff))
         sendFrame.append(UInt8((payload.count>>8)&0xff))
@@ -35,7 +35,7 @@ func sendAndReceive(id : String, payload:[UInt8]) async -> String? {
         
         var retry = 0
         var sendSize : Int
-        
+        var rcpayload : [UInt8]
         
         while retry < 3 {
             
@@ -46,51 +46,49 @@ func sendAndReceive(id : String, payload:[UInt8]) async -> String? {
             while pos < frameSize {
                 
                 sendSize = max(mtu,frameSize-pos )
-                // getMTU 를 mtu 로 생성자 async 하게 하거나(1) sendandreceive함수안에서 mtu confirmed bool 변수 안됐을 때 (2)
-                // 다만 getMTU 함수는 sendAndReceive 부르지않도록...(무한)
+                
                 await writePacket(data: Array(sendFrame[pos...pos+sendSize]))
                 pos += sendSize
             }
             
             //receive frame
             var receiveFrame : [UInt8]
-            //var len : Int
+            
             do {
-                receiveFrame = await
-                withCheckedContinuation {
-                    continuation in
-                readPacket(onResponse: {(bytes)-> ()
-                    in
-                    print("data received: ", bytes.description)
-                    continuation.resume(returning: bytes)
-                })
-                } //append?
+                receiveFrame = try await readPacket()
             }catch {
                 retry += 1
                 continue
             }
-            //at 맞는지 확인하는 방향
-            let len = Int(receiveFrame[4])<<8 + Int(receiveFrame[5])
-            
-            if receiveFrame.count < len {
-                repeat {
+            if (receiveFrame[0] == UInt8(ascii:"a") &&
+                receiveFrame[1] == UInt8(ascii:"t")){
+                
+                let len = Int(receiveFrame[4])<<8 + Int(receiveFrame[5])
+                //receive frame 전체
+                while receiveFrame.count < len{
                     //오류-> while문 아웃-> write 다시
                     do{
-                        receiveFrame += try await readPacket(onResponse: {(bytes)-> ()
-                            in
-                            print("data received: ", bytes.description)
-                            continuation.resume(returning: bytes)
-                        }) //append?
+                        receiveFrame += try await readPacket() //append?
                     }
                     catch{
                         break
                     }
-                } while receiveFrame.count < len
+                }
+                if rcframeCheck(id: id, frame: receiveFrame) == false {
+                    retry += 1
+                    continue
+                }else{
+                    rcpayload = Array(receiveFrame[6...(len-5)])
+                    break
+                }
+            } else { //at 부터 잘못되었을 경우(다시 send Frame)
+                retry += 1
+                continue
             }
-            
-            //receive frame crc 검사
-            //제대로 rceive frame 받았으면 해당 payload 형태로 반환하기
-            retry += 1
         }
-        //if retry >= 3 이면 ui 에서 frame 단위 읽쓰 실패 뜨게하기 - 익셉션사용
+        if retry >= 3 { //if retry >= 3 이면 ui 에서 frame 단위 읽쓰 실패 뜨게하기 - 익셉션사용
+            throw defineError.retryFail
+        } else{
+            return rcpayload  // < 여기서 Variable 'rcpayload' used before being initialized 에러 뜸
+        }
     }

@@ -162,7 +162,6 @@ class CBController: NSObject, ObservableObject, CBCentralManagerDelegate{
         peripheralName = selectedPeripheral.name!
         print("max write value length: \(peripheral.maximumWriteValueLength(for: .withResponse))")
     }
-
 }
 
 extension CBController: CBPeripheralDelegate {

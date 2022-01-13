@@ -28,12 +28,52 @@ class UDPDevice : RivoDevice {
                 print("Preparing")
             default:
                 print("waiting or failed")
-
             }
         }
         self.connection?.start(queue: .global())
     }
    
+    
+    override func writePacket(data : [UInt8]) async {
+        self.connection?.send(content: data, completion: NWConnection.SendCompletion.contentProcessed(({ (NWError) in
+            print(NWError?.debugDescription ?? "sent OK")
+            print(data)
+            print(String(bytes: data, encoding: String.Encoding.utf8))
+        })))
+    }
+    
+    override func readPacket() async throws -> [UInt8] {
+        //do nothing. onResponse([UInt8])로 구현 in subclass
+        print("to receive")
+        var readFail : Bool = false
+        var result : [UInt8] = [0]
+        
+        self.connection?.receiveMessage { (data, context, isComplete, error) in
+            if (isComplete){
+                print("Received \(data!)")
+                if (data != nil){
+                    // command error checking
+                    result = [UInt8](data!)
+                } else {
+                    print("Data == nil")
+                    readFail = true
+                }
+            } else {
+                print("is not complete")
+            }
+            if error != nil{
+                print("error in receiving: \(error!)")
+                readFail = true
+            }
+        }
+        if(readFail){
+            throw defineError.readPacketFail
+        }
+        print("result is \(result)")
+        return result
+    }
+    
+    
     // return type string ?
     override func write(cmd: String, data: [UInt8]) {
         /* Big endian
@@ -65,6 +105,7 @@ class UDPDevice : RivoDevice {
             print(sendframe);
         })))
     }
+   
 
     override func read(sentCmd: String, onResponse: @escaping (String?) -> ())
     {
@@ -74,11 +115,9 @@ class UDPDevice : RivoDevice {
                 print("Received it") //
                 if (data != nil){
                     print("sent cmd was " + sentCmd) // should be compared to received data
-                    
                     // command error checking
                     let len = data!.count
                     let bytes = [UInt8](data!);
-                    
                     if (!(bytes[0] == UInt8(ascii:"a") &&
                           bytes[1] == UInt8(ascii:"t") &&
                           data![2...3] == sentCmd.data(using: String.Encoding.utf8) &&
@@ -88,7 +127,6 @@ class UDPDevice : RivoDevice {
                         print("Invalid frame")
                         return
                     }
-                    
                     //crc error checking
                     let payload = [UInt8](data![6...(len-5)])
                     let readCRC = UInt16(bytes[len-4]) + UInt16(bytes[len-3])<<8
@@ -96,11 +134,9 @@ class UDPDevice : RivoDevice {
                         print("Data corrupted")
                         return
                     }
-                    
                     //convert data -> String
                     let str = String(bytes: [UInt8](payload), encoding: String.Encoding.utf8)
                     onResponse(str)
-                    
                 } else {
                     print("Data == nil")
                     return

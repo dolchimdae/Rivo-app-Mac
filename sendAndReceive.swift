@@ -11,10 +11,8 @@ func sendAndReceive(id : String, payload:[UInt8]) async throws -> [UInt8] {
          sendFrame.append(0x0d)
          sendFrame.append(0x0a)
          */
-        
-        var retry = 0
-        
-        while (!mtuConfirmed && retry<3) { 
+  
+        if (!mtuConfirmed) {
             do{
                 mtu = try await getMTUSize2() }
             catch {

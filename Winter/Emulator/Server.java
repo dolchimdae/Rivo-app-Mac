@@ -9,6 +9,24 @@ import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.zip.CRC32;
+import com.sun.jdi.event.ExceptionEvent;
+import jdk.jfr.Unsigned;
+
+import javax.swing.*;
+import javax.swing.plaf.basic.BasicSeparatorUI;
+import javax.swing.text.AbstractDocument;
+import java.beans.beancontext.BeanContext;
+import java.io.*;
+import java.lang.reflect.Array;
+import java.net.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
+import java.util.zip.CRC32;
+
+
+
 
 public class Server {
 
@@ -155,6 +173,23 @@ public class Server {
         short data_info_size;
         int total_crc = 0;
         String data_info = "";
+        float errorp=0;
+        Scanner sc=new Scanner(System.in);
+      
+        byte[] NetworkInfo=new byte[100];
+        
+	
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
 
         while (true) {
             System.out.println("========================================================");
@@ -167,36 +202,36 @@ public class Server {
             DatagramPacket dpReceive;
             while(true) { // while 문 안에서 frame 하나가 올때까지 반복한다.
             	System.out.println("New Packet Arrival!");
-             dpReceive= new DatagramPacket(bufferToReceive,index, MTU_Size);        //Client가 보낸 요청 수신 mtu 사이트만큼 receive 한다.
-            ds.receive(dpReceive);
-            System.out.println(packetlength +" "+ index);
-        		if(bufferToReceive[index]=='A' && bufferToReceive[index+1]=='T'){			//프레임 패킷중 일부가 소실된채 클라이언트에서 프레임을 다시보내기 시작하면 프레임을 초기화후 받기 시작한다
-        		
-        			System.out.println("New Frame Start");
-        		
-        			packetlength = (short) byteToShort(Arrays.copyOfRange(bufferToReceive, index+4, index+6));
-                	packetlength= (short) (packetlength + (short)0x0A);
-        			
-        		byte[] temp=new byte[1000];
-        		Arrays.fill(temp, (byte)0x0);
-        		temp=Arrays.copyOfRange(bufferToReceive, index, index+ dpReceive.getLength());
-        		
-        		bufferToReceive=Arrays.copyOfRange(temp, 0, 1000);
-        		
-        		index=0;
-        		
-        		}
-        		
-          
-            	
+            	dpReceive= new DatagramPacket(bufferToReceive,index, MTU_Size);        //Client가 보낸 요청 수신 mtu 사이트만큼 receive 한다.
+            	ds.receive(dpReceive);
+            	System.out.println(packetlength +" "+ index);
+            	if(bufferToReceive[index]=='A' && bufferToReceive[index+1]=='T'){			//프레임 패킷중 일부가 소실된채 클라이언트에서 프레임을 다시보내기 시작하면 프레임을 초기화후 받기 시작한다
+
+            		System.out.println("New Frame Start");
+
+            		packetlength = (short) byteToShort(Arrays.copyOfRange(bufferToReceive, index+4, index+6));
+            		packetlength= (short) (packetlength + (short)0x0A);
+
+            		byte[] temp=new byte[1000];
+            		Arrays.fill(temp, (byte)0x0);
+            		temp=Arrays.copyOfRange(bufferToReceive, index, index+ dpReceive.getLength());
+
+            		bufferToReceive=Arrays.copyOfRange(temp, 0, 1000);
+
+            		index=0;
+
+            	}
+
+
+
             	index=index+dpReceive.getLength(); //받은 byte 수만큼 index 에 더한다.
             	System.out.println(packetlength +" "+ index);
-            
+
             	if(bufferToReceive[packetlength-1]==0x0A && bufferToReceive[packetlength-2]==0x0D) //만약 frame 길이의 index 가 0xA 0xD 로 끝나면 프레임의 끝을 의미하기 때문에 반복문을 깬다.
             	{
             		System.out.println("End Of Packet");
             		break;
-            	
+
             	}
             
             

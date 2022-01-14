@@ -102,8 +102,6 @@ namespace Rivo
 
             
         
-        public abstract Task<byte[]> ReadAndWrite(byte[] sendData); //베이스로직은여기에
-
         public abstract Task<byte[]> writePacket(byte[] sendData); //베이스로직은여기에
         public abstract Task<byte[]> readPacket(byte[] sendData); //베이스로직은여기에
 

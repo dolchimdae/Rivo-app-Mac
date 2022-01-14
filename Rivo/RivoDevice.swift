@@ -586,7 +586,6 @@ class RivoDevice {
      */
     func getMTUSize2() async throws -> Int {
         
-        //아예 함수로 만들든가 byte array 로 바로 구성 : 코드 반복 x
         let sendFrame = composeSendframe(id: "MT", payload: [0])
         
         for _ in 0...2 {
@@ -600,10 +599,7 @@ class RivoDevice {
                 if (receiveFrame[7] != UInt8(0)) {
                     throw defineError.resultNotZero(result: Int(receiveFrame[7]))
                 }
-                //print("뀨")
                 return Int(receiveFrame[8]) + Int(receiveFrame[9]<<8)
-            }else{ // 지우기
-                continue
             }
         }
         throw defineError.retryFail

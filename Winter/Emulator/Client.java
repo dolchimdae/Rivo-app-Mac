@@ -29,6 +29,26 @@ public class Client {
 
         return newValue;
     }
+    public static int byteToInt(byte[] bytes) {
+    	
+    	 int newValue = 0;
+         newValue |= (((int) bytes[0]) << 24) & 0xFF000000;
+         newValue |= (((int) bytes[1]) << 16) & 0xFF0000;
+         newValue |= (((int) bytes[2]) << 8) & 0xFF00;
+         newValue |= (((int) bytes[3])) & 0xFF;
+         return newValue;
+    	
+    	
+    	
+    }
+ 
+    public static float byteArrayToFloat(byte[] bytes) {
+        int intBits = bytes[0] << 24
+                        | (bytes[1] & 0xFF) << 16
+                        | (bytes[2] & 0xFF) << 8
+                        | (bytes[3] & 0xFF);
+        return Float.intBitsToFloat(intBits);
+    }
     public static long checksumInputStream(File fileToSend) throws IOException
     {
        InputStream in = new FileInputStream(fileToSend);
@@ -141,11 +161,22 @@ public class Client {
         Scanner sc = new Scanner(System.in);
         mode = sc.nextInt();
         sc.nextLine(); //앞에서 생긴 개행문자 버려서 뒤의 nextline 스킵되는거 방지.
-        System.out.println("Select Error Percentage");
-        int errorpercentage;
-        errorpercentage=sc.nextInt();
-        sc.nextLine();
-       
+      
+        byte[] Info=new byte[100];
+        DatagramPacket dpReceives=new DatagramPacket(Info,Info.length,ia,6999);
+        ds.receive(dpReceives);
+        
+        
+        
+        
+        float errorpercentagereceive=(float) 0.01;
+        errorpercentagereceive=byteArrayToFloat(Arrays.copyOfRange(Info, 4, 8));
+        MTU=byteToInt(Arrays.copyOfRange(Info, 0, 4));
+        System.out.println(errorpercentagereceive + "   "+ MTU);
+        
+        int errorpercentage=(int) (errorpercentagereceive*(100));
+        System.out.println(errorpercentage);
+      
 
 
      
@@ -476,17 +507,17 @@ public class Client {
                 bufferToSend[offset++] = 0x0A;
                 int framebytessent=0;
                 while(framebytessent<offset) { // 보낸 byte의 갯수가 총 프레임의 크기를 넘지 않을떄 까지 mtu 만큼의 byte를 전송한다. 
-                dpSend = new DatagramPacket(bufferToSend, framebytessent,MTU, ia, 6999);
-                Random rand=new Random();
-                int random=rand.nextInt(100)+1;
-                if(random>errorpercentage)
-                ds.send(dpSend);
-                else
-                System.out.println("\n\nNot sent\n\n");
-                
-                
-                
-                framebytessent+=MTU;	//보낸 byte에 mtu를 더해준다.
+                	dpSend = new DatagramPacket(bufferToSend, framebytessent,MTU, ia, 6999);
+                	Random rand=new Random();
+                	int random=rand.nextInt(100)+1;
+                	if(random>errorpercentage)
+                		ds.send(dpSend);
+                	else
+                		System.out.println("\n\nNot sent\n\n");
+
+
+
+                	framebytessent+=MTU;	//보낸 byte에 mtu를 더해준다.
                 }
                 System.out.println(seq_num);
                 seq_num++;

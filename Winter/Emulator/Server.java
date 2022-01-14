@@ -37,7 +37,7 @@ public class Server {
     static boolean voiceGuidance = true;
     static String rivoName = "Rivo 3.0.5";
     static String rivoInfo = "ver:Rivo 3.0.5,sn:2233,etc:xxxx";             //콤마로 분리된 string
-    static short MTU_Size = 30;
+    static int MTU_Size = 30;
     static File file;
     static short totaldatasize=0;
     static int datapackets=0;
@@ -166,7 +166,9 @@ public class Server {
 
 
     public static void main(String[] args) throws IOException, InterruptedException {
-
+    	
+    	int errorps=Integer.valueOf(args[0]);
+    	System.out.println("Command Line Argument" + errorps);
         DatagramSocket ds = new DatagramSocket(6999);
         InetAddress ia = InetAddress.getByName("127.0.0.1");
         int data_total_size;
@@ -175,10 +177,28 @@ public class Server {
         String data_info = "";
         float errorp=0;
         Scanner sc=new Scanner(System.in);
-      
+        System.out.println("Enter MTU Size: ");
+        MTU_Size=sc.nextShort();
+        sc.nextLine();
+        System.out.println("Enter Error Percentage: ");
+        errorp=sc.nextFloat();
+        sc.nextLine();
         byte[] NetworkInfo=new byte[100];
+        int errorper=Float.floatToIntBits(errorp);
+        NetworkInfo[0]=(byte)(MTU_Size>>24&0xFF);
+        NetworkInfo[1]=(byte) ((MTU_Size >>16) &0xFF);
+        NetworkInfo[2]=(byte)((MTU_Size >>8)&0xFF);
+        NetworkInfo[3]=(byte)((MTU_Size )&0xFF);
+        NetworkInfo[7]=(byte)(errorper&0xFF);
+        NetworkInfo[6]=(byte) ((errorper >>8) &0xFF);
+        NetworkInfo[5]=(byte)((errorper >>16)&0xFF);
+        NetworkInfo[4]=(byte)((errorper >>24)&0xFF);
         
-	
+        
+            
+        
+		DatagramPacket dpSends = new DatagramPacket(NetworkInfo, 100, ia,7000);
+        ds.send(dpSends);
         
         
         
@@ -205,7 +225,7 @@ public class Server {
             	dpReceive= new DatagramPacket(bufferToReceive,index, MTU_Size);        //Client가 보낸 요청 수신 mtu 사이트만큼 receive 한다.
             	ds.receive(dpReceive);
             	System.out.println(packetlength +" "+ index);
-            	if(bufferToReceive[index]=='A' && bufferToReceive[index+1]=='T'){			//프레임 패킷중 일부가 소실된채 클라이언트에서 프레임을 다시보내기 시작하면 프레임을 초기화후 받기 시작한다
+            	if(bufferToReceive[index]=='A' && bufferToReceive[index+1]=='T'){			//프레임 패킷중 일부가 소실된채 클라이언트에서 프레임을 다시보내기 시작하면 프레임을 초기화후 받기 시작한다 length 만큼 읽는다 처음시작할때만 AT를 기다리는 로직
 
             		System.out.println("New Frame Start");
 
@@ -527,4 +547,5 @@ public class Server {
             System.out.println("Done");
         }
     }
+
 }

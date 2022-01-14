@@ -13,7 +13,7 @@ import Cocoa
 var device = UDPDevice()
 // test
 print("HELLO@@")
-
+//유닛 테스트
 Task{
     //print("HEllO WORLD")
     let data = await device.getFirmwareVersion()

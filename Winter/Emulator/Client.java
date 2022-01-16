@@ -41,6 +41,24 @@ public class Client {
     	
     	
     }
+    public static byte[] basicSetting(byte[] bufferToSend, int bufferlen, byte OP_CODE){
+    	bufferToSend[0]='A';
+    	bufferToSend[1]='T';
+    	bufferToSend[2]='U';
+    	bufferToSend[3]='M';
+        bufferToSend[4] = (byte) (bufferlen & 0xFF);
+        bufferToSend[5] = (byte) ((bufferlen >> 8 )& 0xFF);
+        bufferToSend[7] = OP_CODE;
+        short crc = crc16_compute(Arrays.copyOfRange(bufferToSend, 6, bufferlen + 6));
+        int offset = bufferlen + 6;
+        bufferToSend[offset++] = (byte) (crc & 0xFF);
+        bufferToSend[offset++] = (byte) ((crc >> 8)& 0xFF);
+        bufferToSend[offset++] = 0x0D;
+        bufferToSend[offset++] = 0x0A;
+
+        return bufferToSend;
+    }
+
  
     public static float byteArrayToFloat(byte[] bytes) {
         int intBits = bytes[0] << 24
@@ -362,11 +380,8 @@ public class Client {
             String data_info;
             int bufferlen;
 
-            bufferToSend[0] = 'A';
-            bufferToSend[1] = 'T';
-            bufferToSend[2] = 'U';
-            bufferToSend[3] = 'M';
-            bufferToSend[6] = 0x00;         //opcode = START
+     
+           
             bufferToSend[7] = 0x00;         //data_type = locale
                                             //8~11 : data_total_size
                                             //12~15 : total_crc
@@ -374,11 +389,6 @@ public class Client {
             System.out.print("Enter File Name: ");
             data_info = sc.nextLine();              //data_info: file name
             String dir = System.getProperty("user.dir");
-
-      
-            
-            
-            
             File fileToSend = new File(dir+"/src/UDP_Demo/"+data_info);
             long filecrc=checksumInputStream(fileToSend);
             int filecrcInt=(int) filecrc;
@@ -407,21 +417,20 @@ public class Client {
 
             System.arraycopy(data_info.getBytes(), 0, bufferToSend, 18, data_info_size);
             bufferlen = data_info_size + 12;
-            bufferToSend[4] = (byte) (bufferlen & 0xff);            //length
-            bufferToSend[5] = (byte) ((bufferlen >> 8) & 0xff);
+            bufferToSend=basicSetting(bufferToSend, bufferlen,(byte) 0x00);         //opcode = START
+         
 
-            int offset = bufferlen + 6;
+            int offset = bufferlen + 10;
             short crc = crc16_compute(Arrays.copyOfRange(bufferToSend, 6, bufferlen + 6));
-            bufferToSend[offset++] = (byte) (crc & 0xff);
-            bufferToSend[offset++] = (byte) ((crc >> 8) & 0xff);
-            bufferToSend[offset++] = (byte) 0x0D;
-            bufferToSend[offset++] = (byte) 0x0A;
+           
             int requestbytessent=0;
             DatagramPacket dpSend;
             while(requestbytessent<offset) { // 보낸 byte의 갯수가 총 프레임의 크기를 넘지 않을떄 까지 mtu 만큼의 byte를 전송한다. 
                 dpSend = new DatagramPacket(bufferToSend, requestbytessent,MTU, ia, 6999);
                 ds.send(dpSend);
+                System.out.println("SENT");
                 requestbytessent+=MTU;	//보낸 byte에 mtu를 더해준다.
+                System.out.println(requestbytessent + " "+offset);
                 }
             DatagramPacket dpReceive = new DatagramPacket(bufferToReceive, bufferToReceive.length);
             ds.receive(dpReceive);
@@ -508,13 +517,9 @@ public class Client {
                 int framebytessent=0;
                 while(framebytessent<offset) { // 보낸 byte의 갯수가 총 프레임의 크기를 넘지 않을떄 까지 mtu 만큼의 byte를 전송한다. 
                 	dpSend = new DatagramPacket(bufferToSend, framebytessent,MTU, ia, 6999);
-                	Random rand=new Random();
-                	int random=rand.nextInt(100)+1;
-                	if(random>errorpercentage)
+                	
                 		ds.send(dpSend);
-                	else
-                		System.out.println("\n\nNot sent\n\n");
-
+                
 
 
                 	framebytessent+=MTU;	//보낸 byte에 mtu를 더해준다.

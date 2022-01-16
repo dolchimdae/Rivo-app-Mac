@@ -7,7 +7,6 @@ import java.lang.invoke.MutableCallSite;
 import java.lang.reflect.Array;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.zip.CRC32;
 import com.sun.jdi.event.ExceptionEvent;
 import jdk.jfr.Unsigned;
@@ -25,11 +24,11 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.zip.CRC32;
 
-
+												//2022/1/16	171 번째줄에 command line interface 에 관한 설명, 그리고 199 번쨰줄에 처음 MTU 발송 패킷에관한 설명이 나와있다.
 
 
 public class Server {
-
+	static int errorpercentage=1;
     static short MAX_BUFFER_SIZE = 512;
     static String firmVer = "Rivo 3.0.5,BL 3.0.5,BT 3.0.5";
     static String language = "20,21,30,31";
@@ -167,8 +166,10 @@ public class Server {
 
     public static void main(String[] args) throws IOException, InterruptedException {
     	
-    	int errorps=Integer.valueOf(args[0]);
+    	float errorps=Float.valueOf(args[0]);
     	System.out.println("Command Line Argument" + errorps);
+    	int mtureal=Integer.valueOf(args[1]);	// command line arguement 첫번째는 에러 확률 두번쨰는 MTU 이다.
+    	System.out.println("Command Line Argument" + mtureal);	
         DatagramSocket ds = new DatagramSocket(6999);
         InetAddress ia = InetAddress.getByName("127.0.0.1");
         int data_total_size;
@@ -177,12 +178,10 @@ public class Server {
         String data_info = "";
         float errorp=0;
         Scanner sc=new Scanner(System.in);
-        System.out.println("Enter MTU Size: ");
-        MTU_Size=sc.nextShort();
-        sc.nextLine();
-        System.out.println("Enter Error Percentage: ");
-        errorp=sc.nextFloat();
-        sc.nextLine();
+        errorp=errorps;
+        MTU_Size=mtureal;
+        errorpercentage=(int) (errorp*(100));
+        System.out.println(" Error Percentage: " + errorpercentage);
         byte[] NetworkInfo=new byte[100];
         int errorper=Float.floatToIntBits(errorp);
         NetworkInfo[0]=(byte)(MTU_Size>>24&0xFF);
@@ -197,7 +196,7 @@ public class Server {
         
             
         
-		DatagramPacket dpSends = new DatagramPacket(NetworkInfo, 100, ia,7000);
+		DatagramPacket dpSends = new DatagramPacket(NetworkInfo, 100, ia,7000);	// 이부분은 client 에게 MTU 및 에러확률을 전달하는 패킷이며, 불필요할경우 주석처리 해도무방하다.
         ds.send(dpSends);
         
         
@@ -220,13 +219,21 @@ public class Server {
             short packetlength=1;
          
             DatagramPacket dpReceive;
+            boolean FirstPacket=true;
             while(true) { // while 문 안에서 frame 하나가 올때까지 반복한다.
-            	System.out.println("New Packet Arrival!");
+            
+            	
             	dpReceive= new DatagramPacket(bufferToReceive,index, MTU_Size);        //Client가 보낸 요청 수신 mtu 사이트만큼 receive 한다.
+            	Random rand=new Random();
+            	int random=rand.nextInt(100)+1;
+            	if(random>errorpercentage)
             	ds.receive(dpReceive);
+            	else
+            		System.out.println("Lost Packet");
+            	System.out.println("New Packet Arrival!");
             	System.out.println(packetlength +" "+ index);
-            	if(bufferToReceive[index]=='A' && bufferToReceive[index+1]=='T'){			//프레임 패킷중 일부가 소실된채 클라이언트에서 프레임을 다시보내기 시작하면 프레임을 초기화후 받기 시작한다 length 만큼 읽는다 처음시작할때만 AT를 기다리는 로직
-
+            	if(bufferToReceive[index]=='A' && bufferToReceive[index+1]=='T' && FirstPacket==true){			//프레임 패킷중 일부가 소실된채 클라이언트에서 프레임을 다시보내기 시작하면 프레임을 초기화후 받기 시작한다 length 만큼 읽는다 처음시작할때만 AT를 기다리는 로직
+            		FirstPacket=false;
             		System.out.println("New Frame Start");
 
             		packetlength = (short) byteToShort(Arrays.copyOfRange(bufferToReceive, index+4, index+6));
@@ -247,11 +254,19 @@ public class Server {
             	index=index+dpReceive.getLength(); //받은 byte 수만큼 index 에 더한다.
             	System.out.println(packetlength +" "+ index);
 
-            	if(bufferToReceive[packetlength-1]==0x0A && bufferToReceive[packetlength-2]==0x0D) //만약 frame 길이의 index 가 0xA 0xD 로 끝나면 프레임의 끝을 의미하기 때문에 반복문을 깬다.
+            	if(bufferToReceive[packetlength-1]==0x0A && bufferToReceive[packetlength-2]==0x0D || index > packetlength) //만약 frame 길이의 index 가 0xA 0xD 로 끝나면 프레임의 끝을 의미하기 때문에 반복문을 깬다.
             	{
+            		FirstPacket=true;
             		System.out.println("End Of Packet");
-            		break;
-
+            		if(crc16_check(bufferToReceive)) 
+            			break;           	
+            		else
+            		{
+            			Arrays.fill(bufferToReceive,(byte) 0x00);
+            			index=0;
+            		}
+            			
+            		
             	}
             
             
@@ -547,5 +562,4 @@ public class Server {
             System.out.println("Done");
         }
     }
-
 }

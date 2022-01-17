@@ -1,18 +1,39 @@
 using System;
 using System.Text;
 using System.Threading.Tasks;
-
-#define min(a, b)(((a) < (b)) ? (a) : (b))
+//getmtusize 함수 에뮬레이터로 작동하는지까지 확인하기
 
 namespace Rivo
 {
 
+
+    
+
     public abstract class RivoDevice
     {
+
+        int mtu = 20;
+        bool mtuconfirmed = false;
+
+
+
         public RivoDevice()
         {
 
         }
+
+        public static long byteToInt(byte[] bytes)
+        {
+
+            long newValue = 0;
+            newValue |= (((long)bytes[0]) << 24) & 0xFF000000;
+            newValue |= (((long)bytes[1]) << 16) & 0xFF0000;
+            newValue |= (((long)bytes[2]) << 8) & 0xFF00;
+            newValue |= (((long)bytes[3])) & 0xFF;
+            return newValue;
+
+        }
+
 
         static ushort CRC16(byte[] data)
         {
@@ -61,25 +82,145 @@ namespace Rivo
             }
         }
 
-        public int recvFrameCheck(byte[] recvFrame, int recvSize, byte[] id)
+        public bool recvFrameCheck(byte[] recvFrame, int recvSize, string id)
         {
+            byte[] utf8bytes = System.Text.Encoding.UTF8.GetBytes(id);
+
             if (!(recvFrame[0] == (byte)'a' &&
                           recvFrame[1] == (byte)'t' &&
-                          recvFrame[2] == ((byte)(id[0])) &&
-                          recvFrame[3] == ((byte)(id[1])) &&
+                          recvFrame[2] == (byte)id[0] &&
+                          recvFrame[3] == (byte)id[1] &&
                           recvFrame[recvSize - 2] == 0x0d &&
                           recvFrame[recvSize - 1] == 0x0a))
             {
-                return 0;
+                return false;
             }
             else
             {
-                if (CRC16_CHECK(recvFrame) == true) return 1;
-                else return 0;
+                if (CRC16_CHECK(recvFrame) == true) return true;
+                else return false;
             }
         }
 
-        public void sendframe(byte[] data, byte[] id)
+        public byte[] composeSendframe(string id, byte[] data)
+        {
+            byte[] utf8bytes = System.Text.Encoding.UTF8.GetBytes(id);
+
+            int totalLength = data.Length + 10;
+            byte[] frame = new byte[totalLength];
+            int i = 0;
+            frame[i++] = (byte)'A';
+            frame[i++] = (byte)'T';
+            frame[i++] = (utf8bytes[0]);
+            frame[i++] = (utf8bytes[1]);
+            frame[i++] = (byte)(data.Length); // assume little endian
+            frame[i++] = (byte)(data.Length >> 8);
+            data.CopyTo(frame, i);
+            i += data.Length;
+            ushort crc = CRC16(data);
+            frame[i++] = (byte)(crc);
+            frame[i++] = (byte)(crc >> 8);
+            frame[i++] = 0x0d;
+            frame[i++] = 0x0a;
+            //totalLength = i;
+
+            return frame;
+        }
+
+
+
+        public abstract Task<byte[]> ReadAndWrite(byte[] sendData); //베이스로직은여기에
+
+        public virtual async Task WritePacket(byte[] sendData)
+        {
+
+        }
+        
+        
+         //베이스로직은여기에
+        public virtual async Task<byte[]> readPacket()
+        {
+            // byte[] array = null;
+            return null;
+        }//베이스로직은여기에
+
+
+
+        
+        async Task<byte[]> SendAndReceive(string id, byte[] data)
+        {
+
+            if (!mtuconfirmed)
+            {
+                mtu = await GetMTUSize();//try 
+                mtuconfirmed = true;
+
+            }
+            
+            byte[] sendframe = composeSendframe(id, data);
+
+            //int length = recvFrame[4] + recvFrame[5] * 256 - 2;
+
+            int position;
+            int framesize;
+            int sendSize;
+            for (int count = 0; count < 3; count++)
+            {
+                position = 0;
+                framesize = data.Length + 10;
+
+
+                //todo write 
+                while (position < framesize)
+                {
+
+                    sendSize = Math.Min(mtu, framesize - position);
+                    
+                    byte[] senddata = { };
+                    Array.Copy(sendframe, position, senddata, 0, position + sendSize - 1);
+                    await WritePacket(senddata);//Array.copy()
+
+
+                    position += sendSize;
+                }
+                byte[] recvframe = await readPacket();
+                int len;
+                if (recvframe[0] == (byte)'a' && recvframe[1] == (byte)'t')
+                {
+
+                    len = recvframe[4] + recvframe[5] << 8 + 10;
+                    while (recvframe.Length < len)
+                    {
+                        byte[] temp = await readPacket();
+                        Array.Copy(temp, 0, recvframe, recvframe.Length, temp.Length - 1);
+
+                    }
+                }
+
+                int recvSize = recvframe.Length;
+
+
+                if (recvFrameCheck(recvframe, recvSize, id))
+                {
+                    //  byte opcode = recvframe[6];
+                    byte result = recvframe[7];
+
+                    if (result != 0)
+                    {
+                        throw new Exception("Result code =" + result);
+                    }
+
+                    byte[] temp2 = await readPacket();
+                    Array.Copy(temp2, 0, recvframe, recvframe.Length, temp2.Length - 1);
+                    return temp2;
+                }
+
+            }
+
+            throw new Exception("Retry failed");
+        }
+        
+        async Task<byte[]> SendAndReceive2(string id, byte[] data)
         {
             int totalLength = data.Length + 10;
             byte[] frame = new byte[totalLength];
@@ -98,60 +239,38 @@ namespace Rivo
             frame[i++] = 0x0d;
             frame[i++] = 0x0a;
             totalLength = i;
-        }
-
-            
-        
-        public abstract Task<byte[]> writePacket(byte[] sendData); //베이스로직은여기에
-        public abstract Task<byte[]> readPacket(byte[] sendData); //베이스로직은여기에
-
-
-
-
-        async Task<byte[]> SendAndReceive(string id, byte[] data, byte[] recvFrame)
-        {   
-            
-
-            int position = 0;
 
             for (int count = 0; count < 3; count++)
             {
                 try
                 {
-                
-                //todo write 
-                while (position < data.Length+10)
-                {
-                        int sendSize = int.MinValue(mtu, frameSize - pos);
-                        writePacket(data: Array(sendFrame[pos...pos + sendSize - 1]));
-                        position += sendSize;
-                }
+                    byte[] recvFrame = await ReadAndWrite(frame);
 
-                int recvSize = recvFrame.Length;
-                id = id.ToCharArray;
-                if(recvFrameCheck(recvFrame,recvSize,id) == 1)
-                {
-                        byte opcode = recvFrame[6];
-                        byte result = recvFrame[7];
+                    // parse recvFrame 
+                    int recvSize = recvFrame.Length;
+                    if (!(recvFrame[0] == (byte)'a' &&
+                          recvFrame[1] == (byte)'t' &&
+                          recvFrame[2] == ((byte)(id[0])) &&
+                          recvFrame[3] == ((byte)(id[1])) &&
+                          recvFrame[recvSize - 2] == 0x0d &&
+                          recvFrame[recvSize - 1] == 0x0a))
+                    {
+                        throw new Exception("Invalid frame");
+                    }
+                    byte opcode = recvFrame[6];
+                    byte result = recvFrame[7];
 
-                        if (result != 0)
-                        {
-                            throw new Exception("Result code =" + result);
-                        }
+                    if (result != 0)
+                    {
+                        throw new Exception("Result code =" + result);
+                    }
 
-                        int length = recvFrame[4] + recvFrame[5] * 256 - 2; //little endian, exclude opcode & result
+                    int length = recvFrame[4] + recvFrame[5] * 256 - 2; //little endian, exclude opcode & result
 
-                        byte[] recvData = new byte[length];
-
-                        while (recvFrame.count < len)
-                        {
-                            readPacket(recvFrame);
-                        }
-
-                }
+                    byte[] recvData = new byte[length];
 
 
-                    // CRC16_CHECK(recvFrame);// shoud check CRC!!!
+                    CRC16_CHECK(recvFrame);// shoud check CRC!!!
 
 
                     Array.Copy(recvFrame, 8, recvData, 0, length);
@@ -169,16 +288,13 @@ namespace Rivo
 
 
 
-
-
-        
         //FV,LN,SR,VG,RN,IF,RV,MT
 
         public async Task<string> GetFirmwareVersion()
         {
             var result = await SendAndReceive("FV", new byte[] { 0x0 });
             return System.Text.Encoding.Default.GetString(result);
-        }
+        }   
         public async Task<string> SetDateandTime()
         {
             var result = await SendAndReceive("DT", new byte[] { 0x0 });
@@ -208,9 +324,39 @@ namespace Rivo
 
         public async Task<UInt16> GetMTUSize()
         {
-            var result = await SendAndReceive("MT", new byte[] { 0x0 });
-            return (UInt16)(result[0] + result[1] * 256);
+            int framesize;
+            for (int count = 0; count < 3; count++)
+            {
+                //framesize = data.Length + 10;
+
+                byte[] sendframe = composeSendframe("MT", new byte[] { 0x0 });
+
+                await WritePacket(sendframe);
+
+                byte[] recvframe = await readPacket();
+                int len;
+
+                int recvSize = recvframe.Length;
+                if (recvframe[0] == (byte)'a' && recvframe[1] == (byte)'t')
+                {
+                    recvFrameCheck(recvframe, recvSize, "MT");
+                    len = recvframe[4] + recvframe[5] << 8 + 10;
+                    byte[] temp = { };
+                    while (recvframe.Length < len)
+                    {
+                        temp = await readPacket();
+                        Array.Copy(temp, 0, recvframe, recvframe.Length, temp.Length - 1);
+
+                    }
+                    return (UInt16)(temp[8] + temp[9] << 8);
+                }
+                
+            }throw new Exception("exception");
         }
+
+
+
+
 
         public async Task<string> GetRIvoStatus()
         {
@@ -249,4 +395,5 @@ namespace Rivo
 
 
     }
+
 }

@@ -32,6 +32,14 @@ class BLEDevice : RivoDevice {
     }
 
    
+    override func writePacket(data: [UInt8]) async {
+        connection!.writeValue(data as Data, for: UUID_GATT_NUS_COMMAND_ENDPOINT!, type: CBCharacteristicWriteType.withResponse)
+    }
+    
+    override func readPacket() async throws -> [UInt8] {
+        return [0]
+    }
+    
     // return type string ?
     override func write(cmd: String, data: [UInt8]) {
         /* Big endian
@@ -161,7 +169,6 @@ class BLEDevice : RivoDevice {
             print("Data == nil")
             return
         }
-    
     
 //        print("to receive")
 //        self.connection?.receiveMessage { (data, context, isComplete, error) in

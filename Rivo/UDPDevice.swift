@@ -1,7 +1,7 @@
 //
 //  protocol.swift
 //  mac_protocol
-//
+// hi
 //  Created by chaewon Kee on 2022/1/14.
 //
 
@@ -48,13 +48,12 @@ class UDPDevice : RivoDevice {
         }
     }
     
-    override func readPacket() async -> [UInt8]  {
-        
+    override func readPacket() async throws -> [UInt8]  {
         print("to receive")
-        
         var result : [UInt8] = [0]
-        
-        return await withCheckedContinuation { continuation in
+
+        return try await withCheckedThrowingContinuation { continuation in
+            //real Task
             self.connection?.receiveMessage { (data, context, isComplete, error) in
                 if (isComplete){
                     let backToString = String(decoding: data!, as: UTF8.self)
@@ -68,10 +67,43 @@ class UDPDevice : RivoDevice {
                 }
                 if error != nil{
                     print("error in receiving: \(error!)")
+                    continuation.resume(throwing: defineError.readPacketNWError)
                 }
+            }
+            // set timeout. 1초 지났으면 timeout error throw
+            Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { _ in
+                print("timeout!")
+                continuation.resume(throwing: defineError.readPacketTimeout)
             }
         }
     }
+    /*
+    override func readPacket() async  -> [UInt8]  {
+        
+        print("to receive")
+        
+        var result : [UInt8] = [0]
+        
+        return await withCheckedContinuation { continuation in
+            self.connection?.receiveMessage { (data, context, isComplete, error) in
+                if (isComplete){
+                    let backToString = String(decoding: data!, as: UTF8.self)
+                    print("뭘 받았냐면.. \(backToString)")
+                    
+                    if (data != nil){
+                        // command error checking
+                        result = [UInt8](data!)
+                        print("result is 1 \(result)")
+                        continuation.resume(returning:result)
+                    }
+                }
+                if error != nil{
+                    print("error in receiving: \(error!)")
+                }
+            }
+        }
+        
+    }*/
  
 }
 

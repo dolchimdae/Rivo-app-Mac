@@ -6,11 +6,14 @@
 //  Reborn by chaewon kee on 2022/01/14
 
 //  개선 사항 : 불필요한 else continue 삭제, compose send frame() 추가, write/reaedPAcket 내부로 continuation 삽입 - 둘다 async 로 수정
+//   에러 처리 다 propagate 되도록 수정 (각종 함수들)
 
 /*
+ 서버
  추가 작업 (예정)
- 에러 처리 다 propagate 되도록 수정 (각종 함수들)
+
  타임 아웃 추가 : udp/ble 소켓에서 set 하는 경우 Or 혹시 없으면 함수 내부에서 처리하거나 (타임아웃(숫자 상수처리. 뜬금없이 숫자 있으면 안좋음) 처리 찾아보기
+ 
  ble device read/write packet 구현 , 연결 및 동작 확인
  update control 파트 구현
  익셉션 처리 ->  ui 에 나타나게, unit test 구성
@@ -23,14 +26,21 @@ import IOKit
 enum defineError : Error {
     
     case retryFail
-    //case readPacketFail
+    case readPacketNWError
+    case readPacketTimeout
     case resultNotZero(result : Int)
 }
 
 class RivoDevice {
     
+    
     var mtuConfirmed = false
     var mtu = 20
+    /*
+    func RivoDevice(){
+        mtu = try await getMTUSize2()
+    }
+    */
     
     func CRC16(data: [UInt8]) -> UInt16
     {
@@ -80,7 +90,7 @@ class RivoDevice {
     
     //abstract
     func writePacket(data : [UInt8]) async {}
-    func readPacket() async -> [UInt8] {
+    func readPacket() async throws -> [UInt8] {
         return [0]
     }
     
@@ -130,6 +140,9 @@ class RivoDevice {
             
             var pos = 0
             let frameSize = payload.count + 10
+           
+            // DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) { // Change `2.0` to the desired number of seconds.
+            // Code you want to be delayed}
             
             //send frame
             while pos < frameSize {
@@ -140,17 +153,17 @@ class RivoDevice {
             
             //receive frame
             var receiveFrame : [UInt8]
-            
-            receiveFrame = await readPacket()
+            //receiveFrame = DispatchQueue.main.asyncAfter(deadline: <#T##DispatchTime#>, execute: <#T##DispatchWorkItem#>)
+            receiveFrame = try await readPacket()
             
             if (receiveFrame[0] == UInt8(ascii:"a") &&
                 receiveFrame[1] == UInt8(ascii:"t")){
                 
                 let len = Int(receiveFrame[4]) + Int(receiveFrame[5]<<8) + 10
                 // 나머지 receive frame
-                print("rcc \(receiveFrame.count) len \(len)")
+                //print("rcc \(receiveFrame.count) len \(len)")
                 while receiveFrame.count < len {
-                    receiveFrame += await readPacket()
+                    receiveFrame += try await readPacket()
                 }
                 
                 if rcframeCheck(id: id, frame: receiveFrame) {
@@ -166,26 +179,14 @@ class RivoDevice {
     }
     
     /* Version */
-    func getFirmwareVersion() async -> String? {
-        do{
-            let payload = try await sendAndReceive(id: "FV", payload: [0])
-            return String(bytes: payload, encoding: .utf8)
-            
-        } //에러 처리 다 propagate 되도록 수정
-        catch defineError.retryFail {
-            print("sendAndReceive retry fail")
-        }
-        catch defineError.resultNotZero(let result) {
-            print("result code : \(result)")
-        }
-        catch {
-            print("Unexpected error: \(error).")
-        }
-        return "get firmware version fail.."
+    func getFirmwareVersion() async throws -> String? {
+        let payload = try await sendAndReceive(id: "FV", payload: [0])
+        return String(bytes: payload, encoding: .utf8)
+        //return "get firmware version fail.."
     }
     
     
-    func setDateAndTime(type: Int, nowDate : Date) async -> String? {
+    func setDateAndTime(type: Int, nowDate : Date) async throws -> String? {
         // setting Data/Time
         let formatter = DateFormatter() //더 간단한 방법?
         formatter.dateFormat = "yyyy"
@@ -206,43 +207,22 @@ class RivoDevice {
         var DTdata = [UInt8]()
         DTdata += [UInt8(1),UInt8(type),UInt8(year/100),UInt8(year%100),UInt8(mon),UInt8(day)]
         DTdata += [UInt8(hour),UInt8(min),UInt8(sec),UInt8(millisec/100), UInt8(millisec%100)]
+ 
+        let payload = try await sendAndReceive(id: "DT", payload: DTdata)
+        return String(bytes: payload, encoding: .utf8)
         
-        do{
-            let payload = try await sendAndReceive(id: "DT", payload: DTdata)
-            return String(bytes: payload, encoding: .utf8)
-        }
-        catch defineError.retryFail {
-            print("sendAndReceive retry fail")
-        }
-        catch defineError.resultNotZero(let result) {
-            print("result code : \(result)")
-        }
-        catch {
-            print("Unexpected error: \(error).")
-        }
-        return "Default"
     }
     
     
     /* L3/L4 Language */
-    func getLanguage() async -> String? {
-        do{
-            let payload = try await sendAndReceive(id: "LN", payload: [0])
-            return String(bytes: payload, encoding: .utf8)
-        }
-        catch defineError.retryFail {
-            print("sendAndReceive retry fail")
-        }
-        catch defineError.resultNotZero(let result) {
-            print("result code : \(result)")
-        }
-        catch {
-            print("Unexpected error: \(error).")
-        }
-        return "Default"
+    func getLanguage() async throws -> String? {
+        
+        let payload = try await sendAndReceive(id: "LN", payload: [0])
+        return String(bytes: payload, encoding: .utf8)
+        
     }
     
-    func setLanguage(language1: Int, input_method1: Int, language2: Int, input_method2: Int) async -> String? {
+    func setLanguage(language1: Int, input_method1: Int, language2: Int, input_method2: Int) async throws -> String? {
         var lgcode : String = String(language1)
         lgcode.append(",")
         lgcode.append(String(input_method1))
@@ -255,41 +235,19 @@ class RivoDevice {
         SLdata.append(UInt8(1))
         SLdata += lgcode.utf8.map{UInt8($0)}; //char->byte(UInt8)
         
-        do{
-            let payload = try await sendAndReceive(id: "LN", payload: SLdata)
-            return String(bytes: payload, encoding: .utf8)
-        }
-        catch defineError.retryFail {
-            print("sendAndReceive retry fail")
-        }
-        catch defineError.resultNotZero(let result) {
-            print("result code : \(result)")
-        }
-        catch {
-            print("Unexpected error: \(error).")
-        }
-        return "Default"
+        let payload = try await sendAndReceive(id: "LN", payload: SLdata)
+        return String(bytes: payload, encoding: .utf8)
+        
     }
     
     /* OS/Screen reader */
-    func getScreenReader() async -> String? {
-        do{
-            let payload = try await sendAndReceive(id: "SR", payload: [0])
-            return String(bytes: payload, encoding: .utf8)
-        }
-        catch defineError.retryFail {
-            print("sendAndReceive retry fail")
-        }
-        catch defineError.resultNotZero(let result) {
-            print("result code : \(result)")
-        }
-        catch {
-            print("Unexpected error: \(error).")
-        }
-        return "Default"
+    func getScreenReader() async throws -> String? {
+        
+        let payload = try await sendAndReceive(id: "SR", payload: [0])
+        return String(bytes: payload, encoding: .utf8)
     }
     
-    func setScreenReader(OS: String) async -> String? {
+    func setScreenReader(OS: String) async throws -> String? {
         var SSdata = [UInt8]()
         SSdata.append(UInt8(1))
         switch OS {
@@ -303,42 +261,20 @@ class RivoDevice {
             break;
         }
         
-        do{
-            let payload = try await sendAndReceive(id: "SR", payload: SSdata)
-            return String(bytes: payload, encoding: .utf8)
-        }
-        catch defineError.retryFail {
-            print("sendAndReceive retry fail")
-        }
-        catch defineError.resultNotZero(let result) {
-            print("result code : \(result)")
-        }
-        catch {
-            print("Unexpected error: \(error).")
-        }
-        return "Default"
+        let payload = try await sendAndReceive(id: "SR", payload: SSdata)
+        return String(bytes: payload, encoding: .utf8)
+        
     }
     
     /* Voice Guidance */
-    func getVoiceGuidance() async -> String? {
+    func getVoiceGuidance() async throws -> String? {
         
-        do{
-            let payload = try await sendAndReceive(id: "VG", payload: [0])
-            return String(bytes: payload, encoding: .utf8)
-        }
-        catch defineError.retryFail {
-            print("sendAndReceive retry fail")
-        }
-        catch defineError.resultNotZero(let result) {
-            print("result code : \(result)")
-        }
-        catch {
-            print("Unexpected error: \(error).")
-        }
-        return "Default"
+        let payload = try await sendAndReceive(id: "VG", payload: [0])
+        return String(bytes: payload, encoding: .utf8)
+        
     }
     
-    func setVoiceGuidance(status: Bool) async -> String? {
+    func setVoiceGuidance(status: Bool) async throws -> String? {
         var SVGdata = [UInt8]()
         SVGdata.append(UInt8(1))
         if(status){
@@ -349,39 +285,16 @@ class RivoDevice {
             SVGdata.append(UInt8(0))
         }
         
-        do{
-            let payload = try await sendAndReceive(id: "VG", payload: SVGdata)
-            return String(bytes: payload, encoding: .utf8)
-        }
-        catch defineError.retryFail {
-            print("sendAndReceive retry fail")
-        }
-        catch defineError.resultNotZero(let result) {
-            print("result code : \(result)")
-        }
-        catch {
-            print("Unexpected error: \(error).")
-        }
-        return "Default"
+        let payload = try await sendAndReceive(id: "VG", payload: SVGdata)
+        return String(bytes: payload, encoding: .utf8)
+
     }
     
     /* Locale */
-    func getLocaleList() async -> String? {
+    func getLocaleList() async throws-> String? {
         
-        do{
-            let payload = try await sendAndReceive(id: "LC", payload: [0])
-            return String(bytes: payload, encoding: .utf8)
-        }
-        catch defineError.retryFail {
-            print("sendAndReceive retry fail")
-        }
-        catch defineError.resultNotZero(let result) {
-            print("result code : \(result)")
-        }
-        catch {
-            print("Unexpected error: \(error).")
-        }
-        return "Default"
+        let payload = try await sendAndReceive(id: "LC", payload: [0])
+        return String(bytes: payload, encoding: .utf8)
     }
     
     /* 코드 포맷 정의 필요
@@ -409,22 +322,10 @@ class RivoDevice {
      */
     
     /* Dictionary */
-    func getDictionaryList() async -> String? {
+    func getDictionaryList() async throws -> String? {
         
-        do{
-            let payload = try await sendAndReceive(id: "DC", payload: [0])
-            return String(bytes: payload, encoding: .utf8)
-        }
-        catch defineError.retryFail {
-            print("sendAndReceive retry fail")
-        }
-        catch defineError.resultNotZero(let result) {
-            print("result code : \(result)")
-        }
-        catch {
-            print("Unexpected error: \(error).")
-        }
-        return "Default"
+        let payload = try await sendAndReceive(id: "DC", payload: [0])
+        return String(bytes: payload, encoding: .utf8)
     }
     
     /* 코드 포맷 정의 필요
@@ -437,125 +338,59 @@ class RivoDevice {
      */
     
     /* Name */
-    func getRivoName() async -> String? {
+    func getRivoName() async throws -> String? {
         
-        do{
-            let payload = try await sendAndReceive(id: "RN", payload: [0])
-            return String(bytes: payload, encoding: .utf8)
-        }
-        catch defineError.retryFail {
-            print("sendAndReceive retry fail")
-        }
-        catch defineError.resultNotZero(let result) {
-            print("result code : \(result)")
-        }
-        catch {
-            print("Unexpected error: \(error).")
-        }
-        return "Default"
+        let payload = try await sendAndReceive(id: "RN", payload: [0])
+        return String(bytes: payload, encoding: .utf8)
     }
     
-    func setRivoName(name: String) async -> String? {
+    func setRivoName(name: String) async throws -> String? {
         var SRNdata = [UInt8]()
         SRNdata.append(UInt8(1))
         SRNdata.append(UInt8(name)!)
         
-        do{
-            let payload = try await sendAndReceive(id: "RN", payload: SRNdata)
-            return String(bytes: payload, encoding: .utf8)
-        }
-        catch defineError.retryFail {
-            print("sendAndReceive retry fail")
-        }
-        catch defineError.resultNotZero(let result) {
-            print("result code : \(result)")
-        }
-        catch {
-            print("Unexpected error: \(error).")
-        }
-        return "Default"
+        let payload = try await sendAndReceive(id: "RN", payload: SRNdata)
+        return String(bytes: payload, encoding: .utf8)
+        
     }
     
-    func deleteRivoName() async -> String? {
+    func deleteRivoName() async throws -> String? {
         
-        do{
-            let payload = try await sendAndReceive(id: "RN", payload: [3])
-            return String(bytes: payload, encoding: .utf8)
-        }
-        catch defineError.retryFail {
-            print("sendAndReceive retry fail")
-        }
-        catch defineError.resultNotZero(let result) {
-            print("result code : \(result)")
-        }
-        catch {
-            print("Unexpected error: \(error).")
-        }
-        return "Default"
+        
+        let payload = try await sendAndReceive(id: "RN", payload: [3])
+        return String(bytes: payload, encoding: .utf8)
+        
     }
     
     /* Device Info */
-    func getDeviceInfo() async -> String? {
+    func getDeviceInfo() async throws -> String? {
         
-        do{
-            let payload = try await sendAndReceive(id: "IF", payload: [0])
-            return String(bytes: payload, encoding: .utf8)
-        }
-        catch defineError.retryFail {
-            print("sendAndReceive retry fail")
-        }
-        catch defineError.resultNotZero(let result) {
-            print("result code : \(result)")
-        }
-        catch {
-            print("Unexpected error: \(error).")
-        }
-        return "Default"
+        let payload = try await sendAndReceive(id: "IF", payload: [0])
+        return String(bytes: payload, encoding: .utf8)
+
     }
     // 공장에서만 사용
-    func setDeviceInfo(info: String) async -> String? {
+    func setDeviceInfo(info: String) async throws -> String? {
         var SDIdata = [UInt8]()
         SDIdata.append(UInt8(1))
         SDIdata.append(UInt8(info)!)
         
-        do{
-            let payload = try await sendAndReceive(id: "IF", payload: SDIdata)
-            return String(bytes: payload, encoding: .utf8)
-        }
-        catch defineError.retryFail {
-            print("sendAndReceive retry fail")
-        }
-        catch defineError.resultNotZero(let result) {
-            print("result code : \(result)")
-        }
-        catch {
-            print("Unexpected error: \(error).")
-        }
-        return "Default"
+        let payload = try await sendAndReceive(id: "IF", payload: SDIdata)
+        return String(bytes: payload, encoding: .utf8)
+        
     }
     
     /* Find my Rivo */
-    func findMyRivo(action: Int) async -> String? {
+    func findMyRivo(action: Int) async throws -> String? {
         // reserve == 0 setting
         var FMRdata = [UInt8]()
         FMRdata.append(UInt8(0))
         FMRdata.append(UInt8(exactly: action)!)
         FMRdata.append(UInt8(0))
         
-        do{
-            let payload = try await sendAndReceive(id: "RV", payload: FMRdata)
-            return String(bytes: payload, encoding: .utf8)
-        }
-        catch defineError.retryFail {
-            print("sendAndReceive retry fail")
-        }
-        catch defineError.resultNotZero(let result) {
-            print("result code : \(result)")
-        }
-        catch {
-            print("Unexpected error: \(error).")
-        }
-        return "Default"
+        let payload = try await sendAndReceive(id: "RV", payload: FMRdata)
+        return String(bytes: payload, encoding: .utf8)
+        
     }
     /* result?
      func findMyPhoneAck() async -> String? {
@@ -591,7 +426,7 @@ class RivoDevice {
         for _ in 0...2 {
             await writePacket(data: sendFrame)
             var receiveFrame : [UInt8]
-            receiveFrame = await readPacket()
+            receiveFrame = try await readPacket()
             
             print("receiveFrame ~:! \(receiveFrame)")
             if (receiveFrame[0] == UInt8(ascii:"a") && receiveFrame[1] == UInt8(ascii:"t")
@@ -605,104 +440,47 @@ class RivoDevice {
         throw defineError.retryFail
     }
     
-    func setMTUSize(MTUSize: Int) async -> String? {
+    func setMTUSize(MTUSize: Int) async throws -> String? {
         var SMSdata = [UInt8]()
         SMSdata.append(UInt8(1))
         SMSdata.append(UInt8(MTUSize))
         
-        do{
-            let payload = try await sendAndReceive(id: "MT", payload: SMSdata)
-            return String(bytes: payload, encoding: .utf8)
-        }
-        catch defineError.retryFail {
-            print("sendAndReceive retry fail")
-        }
-        catch defineError.resultNotZero(let result) {
-            print("result code : \(result)")
-        }
-        catch {
-            print("Unexpected error: \(error).")
-        }
-        return "Default"
+        let payload = try await sendAndReceive(id: "MT", payload: SMSdata)
+        return String(bytes: payload, encoding: .utf8)
     }
     
     /* Rivo Status */
-    func getRivoStatus() async -> String? {
-        do{
-            let payload = try await sendAndReceive(id: "RS", payload: [0])
-            return String(bytes: payload, encoding: .utf8)
-        }
-        catch defineError.retryFail {
-            print("sendAndReceive retry fail")
-        }
-        catch defineError.resultNotZero(let result) {
-            print("result code : \(result)")
-        }
-        catch {
-            print("Unexpected error: \(error).")
-        }
-        return "Default"
+    func getRivoStatus() async throws -> String? {
+        
+        let payload = try await sendAndReceive(id: "RS", payload: [0])
+        return String(bytes: payload, encoding: .utf8)
     }
     
     /* Update Control */
-    func updateCheck() async -> String? {
-        do{
-            let payload = try await sendAndReceive(id: "UM", payload: [7])
-            return String(bytes: payload, encoding: .utf8)
-        }
-        catch defineError.retryFail {
-            print("sendAndReceive retry fail")
-        }
-        catch defineError.resultNotZero(let result) {
-            print("result code : \(result)")
-        }
-        catch {
-            print("Unexpected error: \(error).")
-        }
-        return "Default"
+    func updateCheck() async throws -> String? {
+        
+        let payload = try await sendAndReceive(id: "UM", payload: [7])
+        return String(bytes: payload, encoding: .utf8)
     }
     
     // 작 성 중
-    func updateStart() async -> String? {
+    func updateStart() async throws -> String? {
         var USdata = [UInt8]()
         USdata.append(UInt8(0))
         //data type(1) + data total size(4) + total crc(4) + data info size(2) + data info(n)
         
-        do{
-            let payload = try await sendAndReceive(id: "UM", payload: USdata)
-            return String(bytes: payload, encoding: .utf8)
-        }
-        catch defineError.retryFail {
-            print("sendAndReceive retry fail")
-        }
-        catch defineError.resultNotZero(let result) {
-            print("result code : \(result)")
-        }
-        catch {
-            print("Unexpected error: \(error).")
-        }
-        return "Default"
+        let payload = try await sendAndReceive(id: "UM", payload: USdata)
+        return String(bytes: payload, encoding: .utf8)
+        
     }
-    func updateStart2() async -> String? {
+    func updateStart2() async throws -> String? {
         var USdata = [UInt8]()
         USdata.append(UInt8(0))
         //data type(1) + data total size(4) + total crc(4) + data info size(2) + data info(n)
         var data_info_size : CShort
         
-        do{
-            let payload = try await sendAndReceive(id: "UM", payload: USdata)
-            return String(bytes: payload, encoding: .utf8)
-        }
-        catch defineError.retryFail {
-            print("sendAndReceive retry fail")
-        }
-        catch defineError.resultNotZero(let result) {
-            print("result code : \(result)")
-        }
-        catch {
-            print("Unexpected error: \(error).")
-        }
-        return "Default"
+        let payload = try await sendAndReceive(id: "UM", payload: USdata)
+        return String(bytes: payload, encoding: .utf8)
     }
     
     /*
@@ -722,106 +500,51 @@ class RivoDevice {
      }
      */
     
-    func verifyData(totalCRC : Int) async -> String? {
+    func verifyData(totalCRC : Int) async throws -> String? {
         var VDdata = [UInt8]()
         VDdata.append(UInt8(2))
         VDdata.append(UInt8(totalCRC))
         
-        do{
-            let payload = try await sendAndReceive(id: "UM", payload: VDdata)
-            return String(bytes: payload, encoding: .utf8)
-        }
-        catch defineError.retryFail {
-            print("sendAndReceive retry fail")
-        }
-        catch defineError.resultNotZero(let result) {
-            print("result code : \(result)")
-        }
-        catch {
-            print("Unexpected error: \(error).")
-        }
-        return "Default"
+        let payload = try await sendAndReceive(id: "UM", payload: VDdata)
+        return String(bytes: payload, encoding: .utf8)
+        
     }
     
     
-    func updateEnd() async -> String? {
+    func updateEnd() async throws -> String? {
         var UEdata = [UInt8]()
         UEdata.append(UInt8(3))
         
         //업그레이드 완료후 동작 action
         UEdata.append(UInt8(1))
         
-        do{
-            let payload = try await sendAndReceive(id: "UM", payload: UEdata)
-            return String(bytes: payload, encoding: .utf8)
-        }
-        catch defineError.retryFail {
-            print("sendAndReceive retry fail")
-        }
-        catch defineError.resultNotZero(let result) {
-            print("result code : \(result)")
-        }
-        catch {
-            print("Unexpected error: \(error).")
-        }
-        return "Default"
-    }
-    
-    func updateCancel() async -> String? {
+        let payload = try await sendAndReceive(id: "UM", payload: UEdata)
+        return String(bytes: payload, encoding: .utf8)
         
-        do{
-            let payload = try await sendAndReceive(id: "UM", payload: [4])
-            return String(bytes: payload, encoding: .utf8)
-        }
-        catch defineError.retryFail {
-            print("sendAndReceive retry fail")
-        }
-        catch defineError.resultNotZero(let result) {
-            print("result code : \(result)")
-        }
-        catch {
-            print("Unexpected error: \(error).")
-        }
-        return "Default"
     }
     
-    func updatePause() async -> String? {
+    func updateCancel() async throws -> String? {
         
-        do{
-            let payload = try await sendAndReceive(id: "UM", payload: [5])
-            return String(bytes: payload, encoding: .utf8)
-        }
-        catch defineError.retryFail {
-            print("sendAndReceive retry fail")
-        }
-        catch defineError.resultNotZero(let result) {
-            print("result code : \(result)")
-        }
-        catch {
-            print("Unexpected error: \(error).")
-        }
-        return "Default"
+        let payload = try await sendAndReceive(id: "UM", payload: [4])
+        return String(bytes: payload, encoding: .utf8)
+        
     }
     
-    func updateResume(seqNum : Int) async -> String? {
+    func updatePause() async throws -> String? {
+        
+        let payload = try await sendAndReceive(id: "UM", payload: [5])
+        return String(bytes: payload, encoding: .utf8)
+        
+    }
+    
+    func updateResume(seqNum : Int) async throws -> String? {
         var URdata = [UInt8]()
         URdata.append(UInt8(6))
         URdata.append(UInt8(seqNum))
         
-        do{
-            let payload = try await sendAndReceive(id: "UM", payload: URdata)
-            return String(bytes: payload, encoding: .utf8)
-        }
-        catch defineError.retryFail {
-            print("sendAndReceive retry fail")
-        }
-        catch defineError.resultNotZero(let result) {
-            print("result code : \(result)")
-        }
-        catch {
-            print("Unexpected error: \(error).")
-        }
-        return "Default"
+        
+        let payload = try await sendAndReceive(id: "UM", payload: URdata)
+        return String(bytes: payload, encoding: .utf8)
     }
     
 }

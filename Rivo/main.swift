@@ -16,15 +16,22 @@ print("HELLO@@")
 //유닛 테스트
 Task{
     //print("HEllO WORLD")
-    let data = await device.getFirmwareVersion()
+    do{
+        let data = try await device.getFirmwareVersion()
+        let name = try await device.getRivoName()
+        print("firmware version \(data!) rivoname \(name!)")
+    }
+    catch {
+        print("error~")
+    }
     //-await device.getLanguage()
     //await device.setLanguage(language1: 10, input_method1: 21, language2: 30, input_method2: 32)
     //await device.getScreenReader()
     //await device.getVoiceGuidance()
-    let name = await device.getRivoName()
+
     //await device.getDeviceInfo()
     //-await device.findMyRivo(action: 1)
-    print("firmware version \(data!) rivoname \(name!)")
+    
 }
 dispatchMain()
 

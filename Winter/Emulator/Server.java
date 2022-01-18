@@ -106,8 +106,7 @@ public class Server {
 
         int realCrc_i = getUInt16((int) realCrc);
 
-        System.out.println("computed crc: " + crc);
-        System.out.println("received crc: " + realCrc);
+        
 
         if(crc == realCrc){
             return true;
@@ -116,12 +115,12 @@ public class Server {
         }
     }
     public static boolean data_crc16_check(byte[] data){   //data == bufferToReceive
-    	System.out.println(data);
+    
         //length 뽑아서 6 + length 한 곳 부터 2byte 읽고 실제 값이랑 비교
         short bufferlen = byteToShort(Arrays.copyOfRange(data,11, 13));
-        System.out.println("bufferlength: "+bufferlen);
+
         byte[] realData = Arrays.copyOfRange(data, 13, bufferlen + 13);//crc 뺀 data로 계산해야 함
-        System.out.println(realData);
+  
         short crc = crc16_compute(realData);
 
         int crc_i = getUInt16((int) crc);
@@ -134,8 +133,7 @@ public class Server {
 
         int realCrc_i = getUInt16((int) realCrc);
 
-        System.out.println("computed crc: " + crc);
-        System.out.println("received crc: " + realCrc);
+   
 
         if(crc == realCrc){
             return true;
@@ -197,7 +195,7 @@ public class Server {
             
         
 		DatagramPacket dpSends = new DatagramPacket(NetworkInfo, 100, ia,7000);	// 이부분은 client 에게 MTU 및 에러확률을 전달하는 패킷이며, 불필요할경우 주석처리 해도무방하다.
-        ds.send(dpSends);
+       ds.send(dpSends);
         
         
         
@@ -231,7 +229,7 @@ public class Server {
             	else
             		System.out.println("Lost Packet");
             	System.out.println("New Packet Arrival!");
-            	System.out.println(packetlength +" "+ index);
+            	
             	if(bufferToReceive[index]=='A' && bufferToReceive[index+1]=='T' && FirstPacket==true){			//프레임 패킷중 일부가 소실된채 클라이언트에서 프레임을 다시보내기 시작하면 프레임을 초기화후 받기 시작한다 length 만큼 읽는다 처음시작할때만 AT를 기다리는 로직
             		FirstPacket=false;
             		System.out.println("New Frame Start");
@@ -252,14 +250,16 @@ public class Server {
 
 
             	index=index+dpReceive.getLength(); //받은 byte 수만큼 index 에 더한다.
-            	System.out.println(packetlength +" "+ index);
+            	
 
             	if(bufferToReceive[packetlength-1]==0x0A && bufferToReceive[packetlength-2]==0x0D || index > packetlength) //만약 frame 길이의 index 가 0xA 0xD 로 끝나면 프레임의 끝을 의미하기 때문에 반복문을 깬다.
             	{
             		FirstPacket=true;
-            		System.out.println("End Of Packet");
-            		if(crc16_check(bufferToReceive)) 
-            			break;           	
+            		
+            		if(crc16_check(bufferToReceive)) { 
+            			System.out.println("End Of Frame");
+            			break;
+            		}
             		else
             		{
             			Arrays.fill(bufferToReceive,(byte) 0x00);
@@ -476,9 +476,7 @@ public class Server {
                         data_info_size = byteToShort(Arrays.copyOfRange(bufferToReceive, 16, 18));
                         data_info = new String(bufferToReceive, 18, data_info_size);
                         
-                        System.out.println("data_info: " + data_info);
-                        System.out.println("data_info_size: " + data_info_size);
-                        System.out.println("data_total_size: " + data_total_size);
+                   
                         file = new File("C:\\Rivo_Storage\\" + data_info);
 
                         int bufferlen = 2;
@@ -498,7 +496,6 @@ public class Server {
                         if(data_crc16_check(bufferToReceive)) {
                         	System.out.println("Data CRC Match");
                         	FileOutputStream fos = new FileOutputStream(file, true);
-                            System.out.println("data_size: " + data_size);
                             byte[] buffer = Arrays.copyOfRange(bufferToReceive, 13, 13 + data_size);
                             fos.write(buffer);
                             fos.close();
@@ -516,12 +513,10 @@ public class Server {
                         bufferToSend[6]=(byte)0x01;
                        
                         
-                        System.out.println("Sending Back");
+                     
                         DatagramPacket dpSend = new DatagramPacket(bufferToSend, bufferlen + 10, ia, dpReceive.getPort());
                         ds.send(dpSend);
                         datapackets++;
-                        System.out.println("DataPackets:"+datapackets);
-                        
                         break;
                     }
                     else if(opcode == 0x2){       //VERIFY

@@ -2,7 +2,7 @@
 //  Mac_main.swift
 //  mac_protocol
 //
-//  Created by sunwoo Kim on 2021/11/11.
+//  Created by chaewon Kee on 2022/01/19.
 //
 import Network
 import Foundation

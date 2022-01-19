@@ -1,5 +1,5 @@
 //
-//  Mac_main.swift
+//  UDPDevice.swift
 //  mac_protocol
 //
 //  Created by chaewon Kee on 2022/1/14.

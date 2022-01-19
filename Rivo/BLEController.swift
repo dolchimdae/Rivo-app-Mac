@@ -14,33 +14,41 @@ var selectedPeripheral: CBPeripheral!
 
 class CBController: NSObject, ObservableObject, CBCentralManagerDelegate{
 
-
     @Published var isSwitchedOn = false
     @Published var peripherals = [Peripheral]()
     @Published var detectedPeripherals: [CBPeripheral] = []
     @Published var isConnected = false
     
     private var writetype: CBCharacteristicWriteType = .withoutResponse
-    var rivoServieUUID = CBUUID(string: "00001100-D102-11E1-9B23-00025B00A5A5")
-    var rivoCharacteristic = CBUUID(string: "00001101-D102-11E1-9B23-00025B00A5A5")
+    
+    var rivoServiceUUID = CBUUID(string: "00001100-D102-11E1-9B23-00025B00A5A5")
+    var rivoCharacteristicUUID = CBUUID(string: "00001101-D102-11E1-9B23-00025B00A5A5")
     let transferUUID = CBUUID(string: "00001102-D102-11E1-9B23-00025B00A5A5")
+    
     @Published var peripheralName: String = "Not Connected"
     @Published var peripheralversion: String = ""
     @Published var serialnumber: String = ""
     
     var writeCharacteristic: CBCharacteristic?
-    var rivoserviceuuid = CBUUID(string: "6E400001-B5A3-F393-E0A9-E50E24DCCA9E")
+    //var rivoserviceUUID = CBUUID(string: "6E400001-B5A3-F393-E0A9-E50E24DCCA9E")
     
+    var UUID_GATT_NUS_SERVICE : CBCharacteristic = CBUUID(string: "6E400001-B5A3-F393-E0A9-E50E24DCCA9E")
+    
+    /*
     var UUID_GATT_NUS_COMMAND_ENDPOINT: CBCharacteristic?
     var UUID_GATT_NUS_RESPONSE_ENDPOINT: CBCharacteristic?
     var UUID_GATT_NUS_DATA_ENDPOINT: CBCharacteristic?
     
-    var commandCharacteristicuuid = CBUUID(string: "6E400002-B5A3-F393-E0A9-E50E24DCCA9E")
-    var ResponseCharacteristicuuid = CBUUID(string: "6E400003-B5A3-F393-E0A9-E50E24DCCA9E")
-    var DataCharacteristicuuid = CBUUID(string: "6E400004-B5A3-F393-E0A9-E50E24DCCA9E")
+    var commandCharacteristicUUID = CBUUID(string: "6E400002-B5A3-F393-E0A9-E50E24DCCA9E")
+    var responseCharacteristicUUID = CBUUID(string: "6E400003-B5A3-F393-E0A9-E50E24DCCA9E")
+    var dataCharacteristicUUID = CBUUID(string: "6E400004-B5A3-F393-E0A9-E50E24DCCA9E")
+    */
+    
+    var UUID_GATT_NUS_COMMAND_ENDPOINT : CBCharacteristic = CBUUID(string: "6E400002-B5A3-F393-E0A9-E50E24DCCA9E")
+    var UUID_GATT_NUS_RESPONSE_ENDPOINT: CBCharacteristic = CBUUID(string: "6E400003-B5A3-F393-E0A9-E50E24DCCA9E")
+    var UUID_GATT_NUS_DATA_ENDPOINT : CBCharacteristic = CBUUID(string: "6E400004-B5A3-F393-E0A9-E50E24DCCA9E")
     
     var writeType: CBCharacteristicWriteType = .withoutResponse
-
 
     var peripheralManager: CBPeripheralManager!
     
@@ -58,7 +66,9 @@ class CBController: NSObject, ObservableObject, CBCentralManagerDelegate{
         myCentral = CBCentralManager(delegate: self, queue: nil)
         myCentral.delegate = self
     }
+    
     let options: [String: Any] = [CBCentralManagerScanOptionAllowDuplicatesKey:NSNumber(value: false)]
+    
     func startScanning () {
         print ("startScanning")
         myCentral.scanForPeripherals (withServices: nil, options: nil)
@@ -106,7 +116,6 @@ class CBController: NSObject, ObservableObject, CBCentralManagerDelegate{
         }
     }
 
-
     func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
 
         let rssi = RSSI.intValue
@@ -135,6 +144,7 @@ class CBController: NSObject, ObservableObject, CBCentralManagerDelegate{
         print(UUID_GATT_NUS_COMMAND_ENDPOINT!)
         selectedPeripheral!.writeValue(getfirmdata as Data, for: UUID_GATT_NUS_COMMAND_ENDPOINT!, type: CBCharacteristicWriteType.withResponse)
     }
+    
     func sendprotocolFV(){
         let getfirm: [UInt8] = [0x41, 0x54, 0x46, 0x56, 0x01, 0x00, 0x00, 0xF0, 0x1E, 0x0D, 0x0A]
         let getfirmdata = NSData(bytes: getfirm, length: getfirm.count)
@@ -143,6 +153,7 @@ class CBController: NSObject, ObservableObject, CBCentralManagerDelegate{
         print(UUID_GATT_NUS_COMMAND_ENDPOINT!)
         selectedPeripheral!.writeValue(getfirmdata as Data, for: UUID_GATT_NUS_COMMAND_ENDPOINT!, type: CBCharacteristicWriteType.withResponse)
     }
+    
     func sendprotocolIF(){
         let getfirm: [UInt8] = [0x41, 0x54, 0x49, 0x46, 0x01, 0x00, 0x00, 0xF0, 0x1E, 0x0D, 0x0A]
         let getfirmdata = NSData(bytes: getfirm, length: getfirm.count)
@@ -152,7 +163,7 @@ class CBController: NSObject, ObservableObject, CBCentralManagerDelegate{
         selectedPeripheral!.writeValue(getfirmdata as Data, for: UUID_GATT_NUS_COMMAND_ENDPOINT!, type: CBCharacteristicWriteType.withResponse)
     }
 
-
+    
     func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
         print("Connected with \(peripheral)")
         isConnected = true
@@ -252,7 +263,6 @@ extension CBController: CBPeripheralDelegate {
 
         if(temp.count == 10 + payloadlen){
 
-
             for i in 6...5+payloadlen{
 //                payloadvalue.append(contentsOf: temp[6...5+payloadlen])
                 payloadvalue.append(temp[i])
@@ -286,7 +296,6 @@ extension CBController: CBPeripheralDelegate {
             ID = ""
 
         }
-
         
 //        guard let characteristicData = characteristic.value,
 //        let stringFromData = String(data: characteristicData, encoding: .utf8) else {
@@ -294,8 +303,6 @@ extension CBController: CBPeripheralDelegate {
 //                return }
 //        print("\(characteristic.uuid): \(characteristicData.count) bytes: " + stringFromData)
     }
-
-
 
     
     func peripheral(_ peripheral: CBPeripheral, didUpdateNotificationStateFor characteristic: CBCharacteristic, error: Error?) {
@@ -310,8 +317,6 @@ extension CBController: CBPeripheralDelegate {
         } else {
             print("Notification stopped on %@. Disconnecting", characteristic)
         }
-        
-
     }
 
 

@@ -23,6 +23,7 @@ Task{
     }
     catch {
         print("error~")
+        return
     }
     //-await device.getLanguage()
     //await device.setLanguage(language1: 10, input_method1: 21, language2: 30, input_method2: 32)

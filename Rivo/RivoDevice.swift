@@ -141,9 +141,6 @@ class RivoDevice {
             var pos = 0
             let frameSize = payload.count + 10
            
-            // DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) { // Change `2.0` to the desired number of seconds.
-            // Code you want to be delayed}
-            
             //send frame
             while pos < frameSize {
                 sendSize = min(mtu,frameSize-pos )
@@ -153,7 +150,7 @@ class RivoDevice {
             
             //receive frame
             var receiveFrame : [UInt8]
-            //receiveFrame = DispatchQueue.main.asyncAfter(deadline: <#T##DispatchTime#>, execute: <#T##DispatchWorkItem#>)
+        
             receiveFrame = try await readPacket()
             
             if (receiveFrame[0] == UInt8(ascii:"a") &&
@@ -356,7 +353,6 @@ class RivoDevice {
     
     func deleteRivoName() async throws -> String? {
         
-        
         let payload = try await sendAndReceive(id: "RN", payload: [3])
         return String(bytes: payload, encoding: .utf8)
         
@@ -390,8 +386,8 @@ class RivoDevice {
         
         let payload = try await sendAndReceive(id: "RV", payload: FMRdata)
         return String(bytes: payload, encoding: .utf8)
-        
     }
+    
     /* result?
      func findMyPhoneAck() async -> String? {
      var FMPdata = [UInt8]()

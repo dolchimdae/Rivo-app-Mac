@@ -20,23 +20,28 @@ class BLEDevice : RivoDevice {
     var totallen = 0
     
     override init() {
-
     }
     
     init(_ peripheral : CBPeripheral, _ commandCharacteristic : CBCharacteristic) {
         self.connection = peripheral
         self.UUID_GATT_NUS_COMMAND_ENDPOINT = commandCharacteristic
     }
+    
     func setRead(datapath: CBCharacteristic){
         self.UUID_GATT_NUS_RESPONSE_ENDPOINT = datapath
     }
 
    
     override func writePacket(data: [UInt8]) async {
+        
+        let data = Data(data) // convert byte array to Data
         connection!.writeValue(data as Data, for: UUID_GATT_NUS_COMMAND_ENDPOINT!, type: CBCharacteristicWriteType.withResponse)
     }
     
     override func readPacket() async throws -> [UInt8] {
+        
+        
+        
         return [0]
     }
     
@@ -69,11 +74,6 @@ class BLEDevice : RivoDevice {
         
         connection!.writeValue(data as Data, for: UUID_GATT_NUS_COMMAND_ENDPOINT!, type: CBCharacteristicWriteType.withResponse)
         
-        // in emulation mode
-//        self.connection?.send(content: sendframe, completion: NWConnection.SendCompletion.contentProcessed(({ (NWError) in
-//            print(NWError?.debugDescription ?? "sent OK")
-//            print(sendframe);
-//        })))
     }
 
     override func read(sentCmd: String, onResponse: @escaping (String?) -> ())
@@ -135,33 +135,7 @@ class BLEDevice : RivoDevice {
 //
 //    }
         let data = UUID_GATT_NUS_RESPONSE_ENDPOINT!.value
-        if (data != nil){
-            print("sent cmd was " + sentCmd) // should be compared to received data
 
-            // command error checking
-            let len = data!.count
-            let bytes = [UInt8](data!);
-
-            if (!(bytes[0] == UInt8(ascii:"a") &&
-                  bytes[1] == UInt8(ascii:"t") &&
-                  
-                  bytes[len-2] == 0x0d &&
-                  bytes[len-1] == 0x0a)) {
-                // error
-                print("Invalid frame")
-                return
-            }
-            //data[2...3] == sentCmd.data(using: String.Encoding.utf8) &&
-
-            //crc error checking
-            let payload = [UInt8](data![6...(len-5)])
-            let readCRC = UInt16(bytes[len-4]) + UInt16(bytes[len-3])<<8
-            if( self.CRC16(data: payload) != readCRC) {
-                print("Data corrupted")
-                return
-            }
-
-            //convert data -> String
             let str = String(bytes: [UInt8](payload), encoding: String.Encoding.utf8)
             onResponse(str)
 
@@ -170,13 +144,6 @@ class BLEDevice : RivoDevice {
             return
         }
     
-//        print("to receive")
-//        self.connection?.receiveMessage { (data, context, isComplete, error) in
-//            if (isComplete){
-//                print("Received it")
-//
-//            }
-//        }
     }
 }
 

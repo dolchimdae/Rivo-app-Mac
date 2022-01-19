@@ -16,8 +16,8 @@
 		2B25DA0526EDD65A00501CCE /* MenuCommands.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B25DA0426EDD65A00501CCE /* MenuCommands.swift */; };
 		2B82A7FE2769E2DF007D5F6A /* BLEDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B82A7FD2769E2DF007D5F6A /* BLEDevice.swift */; };
 		2BDE915F26F46D6500089A62 /* BLEController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BDE915E26F46D6500089A62 /* BLEController.swift */; };
+		E4D68AFA2797CFEE002F3C77 /* Mac_main.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4D68AF92797CFEE002F3C77 /* Mac_main.swift */; };
 		E4D75A5A277AD8BA00709CF8 /* RivoDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4D75A27277AD03700709CF8 /* RivoDevice.swift */; };
-		E4D75A89277AE52900709CF8 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4D75A26277AD03700709CF8 /* main.swift */; };
 		E4D75A8A277AE52900709CF8 /* RivoDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4D75A27277AD03700709CF8 /* RivoDevice.swift */; };
 		E4D75A8B277AE52A00709CF8 /* UDPDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4D75A25277AD03700709CF8 /* UDPDevice.swift */; };
 /* End PBXBuildFile section */
@@ -35,8 +35,8 @@
 		2B25DA0426EDD65A00501CCE /* MenuCommands.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuCommands.swift; sourceTree = "<group>"; };
 		2B82A7FD2769E2DF007D5F6A /* BLEDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BLEDevice.swift; sourceTree = "<group>"; };
 		2BDE915E26F46D6500089A62 /* BLEController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BLEController.swift; sourceTree = "<group>"; };
+		E4D68AF92797CFEE002F3C77 /* Mac_main.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Mac_main.swift; sourceTree = "<group>"; };
 		E4D75A25277AD03700709CF8 /* UDPDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UDPDevice.swift; sourceTree = "<group>"; };
-		E4D75A26277AD03700709CF8 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		E4D75A27277AD03700709CF8 /* RivoDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RivoDevice.swift; sourceTree = "<group>"; };
 		E4D75A7A277AE4E100709CF8 /* mac_protocol.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = mac_protocol.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -86,7 +86,7 @@
 				2B25DA0226EDD22E00501CCE /* SettingContents.swift */,
 				2BDE915E26F46D6500089A62 /* BLEController.swift */,
 				2B82A7FD2769E2DF007D5F6A /* BLEDevice.swift */,
-				E4D75A26277AD03700709CF8 /* main.swift */,
+				E4D68AF92797CFEE002F3C77 /* Mac_main.swift */,
 				E4D75A27277AD03700709CF8 /* RivoDevice.swift */,
 				E4D75A25277AD03700709CF8 /* UDPDevice.swift */,
 				2B25D9F426EDCFB700501CCE /* Assets.xcassets */,
@@ -217,8 +217,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E4D75A89277AE52900709CF8 /* main.swift in Sources */,
 				E4D75A8A277AE52900709CF8 /* RivoDevice.swift in Sources */,
+				E4D68AFA2797CFEE002F3C77 /* Mac_main.swift in Sources */,
 				E4D75A8B277AE52A00709CF8 /* UDPDevice.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

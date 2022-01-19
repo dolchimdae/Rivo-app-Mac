@@ -38,18 +38,23 @@
         <Button x:Name="Pair" Content="페어링" Margin="330,14,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="20" Width="124" Click="{x:Bind Pair_Click}"
                 IsEnabled="{x:Bind Not(ResultsListView.SelectedItem.(local:BluetoothLEDeviceDisplay.IsPaired)), FallbackValue=False, Mode=OneWay}"/>
         <Button x:Name="ConnectButton" Content="연결" Margin="478,14,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="20" Width="124" Click="{x:Bind ConnectButton_Click}"/>
-        <ListView x:Name="ResultsListView" Margin="29,127,41,524" 
-                      ItemTemplate="{StaticResource ResultsListViewTemplate}"
-                      ItemsSource="{x:Bind KnownDevices, Mode=OneWay}">
+        <ListView x:Name="ResultsListView" Margin="35,85,35,566"
+                  ItemTemplate="{StaticResource ResultsListViewTemplate}"
+                  ItemsSource="{x:Bind KnownDevices,Mode=OneWay}"
+                  SelectionChanged="Listview_SelectionChanged" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <ListView.Background>
                 <SolidColorBrush Color="{ThemeResource SystemChromeHighColor}"/>
             </ListView.Background>
+            <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Center" FontWeight="Bold" Margin="0,0,0,0"><Run Text="Selected device : "/><Run x:Name="SelectedDeviceRun" FontWeight="Bold"/></TextBlock>
         </ListView>
 
+        <ComboBox x:Name="ServiceList" Margin="646,9,0,0" PlaceholderText="Choose a service" Visibility="Visible" HorizontalAlignment="Left" VerticalAlignment="Top" Height="58"
+                      />
+
+
+
+
         <ProgressRing Name="SearchStatus" HorizontalAlignment="Left" Margin="316,22,0,0" VerticalAlignment="Top" Height="27" Width="27"/>
-        <TextBlock HorizontalAlignment="Left" Margin="29,85,0,0" TextWrapping="Wrap" VerticalAlignment="Top" FontWeight="Bold">
-            Selected device : <Run x:Name="SelectedDeviceRun" FontWeight="Bold"/>
-        </TextBlock>
 
     </Grid>
 </Page>

@@ -1,0 +1,46 @@
+﻿<Page
+    x:Class="RivoApplication.SettingPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:RivoApplication"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid Margin="0,-2,0,2">
+        <TextBlock HorizontalAlignment="Left" Margin="20,18,0,0" Text="날짜/시간 동기화" TextWrapping="Wrap" VerticalAlignment="Top" FontWeight="Bold" FontSize="24"/>
+        <ToggleSwitch x:ConnectionId='2' Name="toggleSwitch" Header="" OnContent="동기화중" OffContent="" Margin="243,20,0,0" VerticalAlignment="Top" Width="56"/>
+
+        <TextBlock HorizontalAlignment="Left" Margin="22,70,0,0" Text="언어/입력" TextWrapping="Wrap" VerticalAlignment="Top" FontWeight="Bold" FontSize="24"/>
+        <TextBlock HorizontalAlignment="Left" Margin="112,121,0,0" Text="L3" TextWrapping="Wrap" VerticalAlignment="Top" FontWeight="Bold" FontSize="22"/>
+        <TextBlock HorizontalAlignment="Left" Margin="419,119,0,0" Text="입력방식" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="22" FontWeight="Bold"/>
+        <TextBlock HorizontalAlignment="Left" Margin="113,215,0,0" Text="L4" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="22" FontWeight="Bold"/>
+        <TextBlock HorizontalAlignment="Left" Margin="421,215,0,0" Text="입력방식" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="22" FontWeight="Bold"/>
+        <ComboBox Margin="192,119,0,0" PlaceholderText="언어 선택" Width="120">
+            <x:String>영어</x:String>
+        </ComboBox>
+        <ComboBox Margin="562,118,0,0" PlaceholderText="입력 선택" Width="120">
+            <x:String>EWQ</x:String>
+            <x:String>ABC</x:String>
+        </ComboBox>
+        <ComboBox Margin="192,215,0,0" PlaceholderText="언어 선택" Width="120">
+            <x:String>한글</x:String>
+            <x:String>숫자</x:String>
+        </ComboBox>
+        <ComboBox Margin="562,214,0,0" PlaceholderText="입력 선택" Width="120">
+            <x:String>리보</x:String>
+            <x:String>나랏글</x:String>
+            <x:String>천지인</x:String>
+        </ComboBox>
+        <TextBlock HorizontalAlignment="Left" Margin="20,284,0,0" Text="OS/스크린 리더" TextWrapping="Wrap" VerticalAlignment="Top" FontWeight="Bold" FontSize="24"/>
+        <RadioButton Content="iOS VoiceOver" Margin="123,338,0,0" VerticalAlignment="Top"/>
+        <RadioButton Content="Android TalkBack" Margin="123,383,0,0" VerticalAlignment="Top"/>
+        <RadioButton Content="WatchOS" Margin="123,426,0,0" VerticalAlignment="Top"/>
+        <!--ProgressRing은 나중에 추가 예정 -->
+        <!--<ProgressRing HorizontalAlignment="Left"  Margin="313,23,0,0" VerticalAlignment="Top" IsActive="{x:Bind toggleSwitch.IsOn, Mode=OneWay}"/>-->
+
+
+    </Grid>
+</Page>
+

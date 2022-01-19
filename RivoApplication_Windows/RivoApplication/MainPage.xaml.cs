@@ -30,8 +30,7 @@ namespace RivoApplication
     public sealed partial class MainPage : Page
     {
         public static MainPage Current { get; internal set; }
-        public string SelectedBleDeviceId;
-        public string SelectedBleDeviceName = "No device selected";
+        
         public MainPage()
         {
             this.InitializeComponent();

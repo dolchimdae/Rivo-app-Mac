@@ -23,8 +23,10 @@ namespace RivoApplication
     public sealed partial class RivoPage : Page
     {
         private MainPage rootPage = MainPage.Current;
-
+        public string SelectedBleDeviceId;
+        public string SelectedBleDeviceName = "No device selected";
         private ObservableCollection<BluetoothLEDeviceDisplay> KnownDevices = new ObservableCollection<BluetoothLEDeviceDisplay>();
+
         private List<DeviceInformation> UnknownDevices = new List<DeviceInformation>();
 
         private GattCharacteristic selectedCharacteristic;
@@ -39,25 +41,18 @@ namespace RivoApplication
         {
             this.InitializeComponent();
         }
-        private async void ConnectButton_Click(object sender, RoutedEventArgs e)
-        {
-            ConnectButton.IsEnabled = false;
-
-            var bleDeviceDisplay = ResultsListView.SelectedItem as BluetoothLEDeviceDisplay;
-            SelectedDeviceRun.Text = bleDeviceDisplay.Name;
-
-        }
-
+   
         protected override void OnNavigatedFrom(NavigationEventArgs e)
         {
             StopBleDeviceWatcher();
 
             var bleDeviceDisplay = ResultsListView.SelectedItem as BluetoothLEDeviceDisplay;
-            //Debug.WriteLine("BLE DEVICE : " + ResultsListView.SelectedItem);
+            Debug.WriteLine("BLE DEVICE : " + ResultsListView.SelectedItem);
             if (bleDeviceDisplay != null)
             {
-                rootPage.SelectedBleDeviceId = bleDeviceDisplay.Id; 
-                rootPage.SelectedBleDeviceName = bleDeviceDisplay.Name;
+               
+                SelectedBleDeviceId = bleDeviceDisplay.Id;
+                SelectedBleDeviceName = bleDeviceDisplay.Name;
             }
             //var success = await ClearBluetoothLEDeviceAsync();
             //if(!success)
@@ -65,6 +60,71 @@ namespace RivoApplication
             //    Console.WriteLine("Error: unable to reset app state");
             //}
         }
+        public void Listview_SelectionChanged(object sender, SelectionChangedEventArgs args) {
+            
+            var bleDeviceDisplay = ResultsListView.SelectedItem as BluetoothLEDeviceDisplay;
+            if (bleDeviceDisplay != null)
+            {
+                
+                SelectedBleDeviceId = bleDeviceDisplay.Id;
+                SelectedBleDeviceName = bleDeviceDisplay.Name;
+                Debug.WriteLine("connect to:"+SelectedBleDeviceId + SelectedBleDeviceName);
+            }
+
+        }
+        private async void ConnectButton_Click(object sender, RoutedEventArgs e)
+        {
+            ConnectButton.IsEnabled = false;
+
+       
+
+            try
+            {
+                // BT_Code: BluetoothLEDevice.FromIdAsync must be called from a UI thread because it may prompt for consent.
+                
+               
+                Debug.WriteLine("Device: " + SelectedBleDeviceId);
+                bluetoothLeDevice = await BluetoothLEDevice.FromIdAsync(SelectedBleDeviceId);
+
+                if (bluetoothLeDevice == null)
+                {
+                    Debug.WriteLine("Failed to connect to device.");
+                }
+            }
+            catch (Exception ex) when (ex.HResult == E_DEVICE_NOT_AVAILABLE)
+            {
+                Debug.WriteLine("Bluetooth radio is not on.");
+            }
+
+            if (bluetoothLeDevice != null)
+            {
+                Debug.WriteLine("Connected");
+                // Note: BluetoothLEDevice.GattServices property will return an empty list for unpaired devices. For all uses we recommend using the GetGattServicesAsync method.
+                // BT_Code: GetGattServicesAsync returns a list of all the supported services of the device (even if it's not paired to the system).
+                // If the services supported by the device are expected to change during BT usage, subscribe to the GattServicesChanged event.
+                GattDeviceServicesResult result = await bluetoothLeDevice.GetGattServicesAsync(BluetoothCacheMode.Uncached);
+
+                if (result.Status == GattCommunicationStatus.Success)
+                {
+                    var services = result.Services;
+                    Debug.WriteLine(String.Format("Found {0} services", services.Count));
+                    foreach (var service in services)
+                    {
+                        ServiceList.Items.Add(new ComboBoxItem { Content = DisplayHelpers.GetServiceName(service), Tag = service });
+                    }
+                    ConnectButton.Visibility = Visibility.Collapsed;
+                    ResultsListView.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    Debug.WriteLine("Device unreachable");
+                }
+            }
+            ConnectButton.IsEnabled = true;
+
+        }
+
+
 
 
         private void Search_Click()
@@ -189,7 +249,7 @@ namespace RivoApplication
             {
                 lock (this)
                 {
-                    Debug.WriteLine(String.Format("Updated {0}{1}", deviceInfoUpdate.Id, ""));
+                   
 
                     // Protect against race condition if the task runs after the app stopped the deviceWatcher.
                     if (sender == deviceWatcher)
@@ -277,6 +337,9 @@ namespace RivoApplication
         #region pairing
 
         private bool isBusy = false;
+
+        public int E_DEVICE_NOT_AVAILABLE { get; private set; }
+       
 
         private async void Pair_Click()
         {

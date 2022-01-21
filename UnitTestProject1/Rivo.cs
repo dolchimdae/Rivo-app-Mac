@@ -1,19 +1,29 @@
 using System;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Networking.Sockets;
+using System.Net;
+using System.Net.Sockets;
+using System.Threading;
+using Windows.Networking;
+using Windows.Storage.Streams;
+using System.Net.WebSockets;
+using UnitTestProject1;
+using System.Diagnostics;
+
 //getmtusize 함수 에뮬레이터로 작동하는지까지 확인하기
 
 namespace Rivo
 {
 
 
-    
+
 
     public abstract class RivoDevice
     {
 
-        int mtu = 20;
-        bool mtuconfirmed = false;
+        public int mtu = 20;
+        public bool mtuconfirmed = false;
 
 
 
@@ -22,7 +32,7 @@ namespace Rivo
 
         }
 
-        public static long byteToInt(byte[] bytes)
+        public long byteToInt(byte[] bytes)
         {
 
             long newValue = 0;
@@ -35,7 +45,7 @@ namespace Rivo
         }
 
 
-        static ushort CRC16(byte[] data)
+        public ushort CRC16(byte[] data)
         {
             ushort crc = 0xFFFF;
 
@@ -51,7 +61,7 @@ namespace Rivo
         }
 
 
-        public static bool CRC16_CHECK(byte[] data)
+        public bool CRC16_CHECK(byte[] data)
         {
             if (data[6] == 0x87)
             {
@@ -73,12 +83,10 @@ namespace Rivo
             if (crc == realCrc)
             {
                 return true;
-                Console.WriteLine("CRC Checking == TRUE");
             }
             else
             {
                 return false;
-                Console.WriteLine("CRC Checking == FALSE");
             }
         }
 
@@ -134,32 +142,94 @@ namespace Rivo
         public virtual async Task WritePacket(byte[] sendData)
         {
 
+
+            var client = new UdpClient();
+            client.Connect("127.0.0.1", 6999);
+            await client.SendAsync(sendData, sendData.Length);
         }
-        
-        
-         //베이스로직은여기에
-        public virtual async Task<byte[]> readPacket()
+
+
+        //베이스로직은여기에
+        public virtual async Task<byte[]> readPacket(IPEndPoint ep)
         {
-            // byte[] array = null;
-            return null;
-        }//베이스로직은여기에
+            var tcs = new TaskCompletionSource<byte[]>();
+            var socket = new DatagramSocket();
+
+            socket.MessageReceived += (sender, eventArgs) =>
+            {
+                uint len = eventArgs.GetDataReader().UnconsumedBufferLength;
+                byte[] buffer = new byte[len];
+                eventArgs.GetDataReader().ReadBytes(buffer);
+                //socket.Dispose();
+                tcs.TrySetResult(buffer);
+            };
+            return tcs.Task.Result;
+
+
+
+
+            /*
+            int timeout2 = 2000; //2 Second timeout
+
+            Action<object> action = (object obj) =>
+            {
+                Console.WriteLine("Task={0}, obj={1}, Thread={2}",
+                Task.CurrentId, obj,
+                Thread.CurrentThread.ManagedThreadId);
+            };
+
+            Task t1 = new Task(action, "alpha");
+            var task = t1;//without await keyword
+            if (await Task.WhenAny(task, Task.Delay(timeout2)) == task)
+            {
+            }
+            else
+            {
+
+            }
+            */
+
+
+            UdpClient listener = new UdpClient(6999);
+
+            IPEndPoint groupEP = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 6999);
+
+            byte[] receive_byte_array;
+
+
+
+            if (listener.Available > 0)
+
+            {
+
+                receive_byte_array = listener.Receive(ref groupEP);
+
+            }
+
+            return receive_byte_array;
+        }
+
+
+        //베이스로직은여기에
 
 
 
         
-        async Task<byte[]> SendAndReceive(string id, byte[] data)
+        public async Task<byte[]> SendAndReceive(string id, byte[] data)
         {
-
+            
             if (!mtuconfirmed)
             {
                 mtu = await GetMTUSize();//try 
                 mtuconfirmed = true;
-
             }
-            
+
             byte[] sendframe = composeSendframe(id, data);
 
             //int length = recvFrame[4] + recvFrame[5] * 256 - 2;
+
+
+            IPEndPoint groupEP = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 6999);
 
             int position;
             int framesize;
@@ -175,7 +245,7 @@ namespace Rivo
                 {
 
                     sendSize = Math.Min(mtu, framesize - position);
-                    
+
                     byte[] senddata = { };
                     Array.Copy(sendframe, position, senddata, 0, position + sendSize - 1);
                     await WritePacket(senddata);//Array.copy()
@@ -183,7 +253,7 @@ namespace Rivo
 
                     position += sendSize;
                 }
-                byte[] recvframe = await readPacket();
+                byte[] recvframe = await readPacket(groupEP);
                 int len;
                 if (recvframe[0] == (byte)'a' && recvframe[1] == (byte)'t')
                 {
@@ -191,7 +261,7 @@ namespace Rivo
                     len = recvframe[4] + recvframe[5] << 8 + 10;
                     while (recvframe.Length < len)
                     {
-                        byte[] temp = await readPacket();
+                        byte[] temp = await readPacket(groupEP);
                         Array.Copy(temp, 0, recvframe, recvframe.Length, temp.Length - 1);
 
                     }
@@ -205,12 +275,12 @@ namespace Rivo
                     //  byte opcode = recvframe[6];
                     byte result = recvframe[7];
 
-                    if (result != 0)
+                    if (result != 0)    
                     {
                         throw new Exception("Result code =" + result);
                     }
 
-                    byte[] temp2 = await readPacket();
+                    byte[] temp2 = await readPacket(groupEP);
                     Array.Copy(temp2, 0, recvframe, recvframe.Length, temp2.Length - 1);
                     return temp2;
                 }
@@ -218,9 +288,11 @@ namespace Rivo
             }
 
             throw new Exception("Retry failed");
+            
         }
-        
-        async Task<byte[]> SendAndReceive2(string id, byte[] data)
+
+
+        public async Task<byte[]> SendAndReceive2(string id, byte[] data)
         {
             int totalLength = data.Length + 10;
             byte[] frame = new byte[totalLength];
@@ -292,9 +364,10 @@ namespace Rivo
 
         public async Task<string> GetFirmwareVersion()
         {
-            var result = await SendAndReceive("FV", new byte[] { 0x0 });
+            var result = await SendAndReceive2("FV", new byte[] { 0x0 });
             return System.Text.Encoding.Default.GetString(result);
-        }   
+        }
+        /*
         public async Task<string> SetDateandTime()
         {
             var result = await SendAndReceive("DT", new byte[] { 0x0 });
@@ -321,10 +394,10 @@ namespace Rivo
             var result = await SendAndReceive("RV", new byte[] { 0x0, 0x0 });
             return System.Text.Encoding.Default.GetString(result);
         }
+        */
 
-        public async Task<UInt16> GetMTUSize()
+        public virtual async Task<UInt16> GetMTUSize()
         {
-            int framesize;
             for (int count = 0; count < 3; count++)
             {
                 //framesize = data.Length + 10;
@@ -333,7 +406,8 @@ namespace Rivo
 
                 await WritePacket(sendframe);
 
-                byte[] recvframe = await readPacket();
+                IPEndPoint groupEP = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 6999);
+                byte[] recvframe = await readPacket(groupEP);
                 int len;
 
                 int recvSize = recvframe.Length;
@@ -344,20 +418,21 @@ namespace Rivo
                     byte[] temp = { };
                     while (recvframe.Length < len)
                     {
-                        temp = await readPacket();
+                        temp = await readPacket(groupEP);
                         Array.Copy(temp, 0, recvframe, recvframe.Length, temp.Length - 1);
 
                     }
                     return (UInt16)(temp[8] + temp[9] << 8);
                 }
-                
-            }throw new Exception("exception");
+
+            }
+            throw new Exception("exception");
         }
 
 
 
 
-
+        /*
         public async Task<string> GetRIvoStatus()
         {
             var result = await SendAndReceive("RS", new byte[] { 0x0 });
@@ -392,8 +467,7 @@ namespace Rivo
             var result = await SendAndReceive("UM", new byte[] { 0x3 });
             return System.Text.Encoding.Default.GetString(result);
         }
-
+        */
 
     }
-
 }

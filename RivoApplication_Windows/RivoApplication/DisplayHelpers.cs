@@ -23,7 +23,7 @@ namespace RivoApplication
                     return serviceName.ToString();
                 }
             }
-            return "Custom Service: " + service.Uuid;
+            return service.Uuid.ToString();
         }
 
         public static string GetCharacteristicName(GattCharacteristic characteristic)
@@ -45,7 +45,7 @@ namespace RivoApplication
 
             else
             {
-                return "Custom Characteristic: " + characteristic.Uuid;
+                return characteristic.Uuid.ToString();
             }
         }
 

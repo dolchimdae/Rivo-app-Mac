@@ -30,13 +30,13 @@
     <AppXManifest Include="C:\Users\Jason\riVo\Rivo-app-PC\RivoApplication_Windows\RivoApplication\bin\x64\Debug\Core\AppxManifest.xml">
       <PackagePath>AppxManifest.xml</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2022-01-19T06:42:15.758</Modified>
+      <Modified>2022-01-23T02:59:11.408</Modified>
     </AppXManifest>
   </ItemGroup>
   <ItemGroup>
     <AppxPackagedFile Include="C:\Users\Jason\riVo\Rivo-app-PC\RivoApplication_Windows\RivoApplication\bin\x64\Debug\RivoApplication.exe">
       <PackagePath>entrypoint\RivoApplication.exe</PackagePath>
-      <Modified>2022-01-19T06:42:14.391</Modified>
+      <Modified>2022-01-23T02:59:10.144</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Jason\.nuget\packages\runtime.win10-x64.microsoft.netcore.universalwindowsplatform\6.2.12\runtimes\win10-x64\lib\uap10.0.15138\System.Runtime.dll">
       <PackagePath>System.Runtime.dll</PackagePath>
@@ -90,31 +90,31 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Jason\riVo\Rivo-app-PC\RivoApplication_Windows\RivoApplication\bin\x64\Debug\App.xbf">
       <PackagePath>App.xbf</PackagePath>
-      <Modified>2022-01-19T06:36:08.548</Modified>
+      <Modified>2022-01-23T02:59:09.841</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Jason\riVo\Rivo-app-PC\RivoApplication_Windows\RivoApplication\bin\x64\Debug\BatteryPage.xbf">
       <PackagePath>BatteryPage.xbf</PackagePath>
-      <Modified>2022-01-19T06:36:08.548</Modified>
+      <Modified>2022-01-23T02:59:09.841</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Jason\riVo\Rivo-app-PC\RivoApplication_Windows\RivoApplication\bin\x64\Debug\HelpPage.xbf">
       <PackagePath>HelpPage.xbf</PackagePath>
-      <Modified>2022-01-19T06:36:08.549</Modified>
+      <Modified>2022-01-23T02:59:09.841</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Jason\riVo\Rivo-app-PC\RivoApplication_Windows\RivoApplication\bin\x64\Debug\MainPage.xbf">
       <PackagePath>MainPage.xbf</PackagePath>
-      <Modified>2022-01-19T06:36:08.549</Modified>
+      <Modified>2022-01-23T02:59:09.842</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Jason\riVo\Rivo-app-PC\RivoApplication_Windows\RivoApplication\bin\x64\Debug\RivoPage.xbf">
       <PackagePath>RivoPage.xbf</PackagePath>
-      <Modified>2022-01-19T06:42:14.062</Modified>
+      <Modified>2022-01-23T02:59:09.842</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Jason\riVo\Rivo-app-PC\RivoApplication_Windows\RivoApplication\bin\x64\Debug\SettingPage.xbf">
       <PackagePath>SettingPage.xbf</PackagePath>
-      <Modified>2022-01-19T06:36:08.550</Modified>
+      <Modified>2022-01-23T02:59:09.842</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Jason\riVo\Rivo-app-PC\RivoApplication_Windows\RivoApplication\bin\x64\Debug\UpdatePage.xbf">
       <PackagePath>UpdatePage.xbf</PackagePath>
-      <Modified>2022-01-19T06:36:08.550</Modified>
+      <Modified>2022-01-23T02:59:09.842</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Program Files %28x86%29\Microsoft SDKs\Windows Kits\10\ExtensionSDKs\Microsoft.UniversalCRT.Debug\10.0.22000.0\\redist\Debug\X64\ucrtbased.dll">
       <PackagePath>ucrtbased.dll</PackagePath>
@@ -130,7 +130,7 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Jason\riVo\Rivo-app-PC\RivoApplication_Windows\RivoApplication\bin\x64\Debug\Core\RivoApplication.exe">
       <PackagePath>RivoApplication.exe</PackagePath>
-      <Modified>2022-01-19T06:42:15.753</Modified>
+      <Modified>2022-01-23T02:59:11.402</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Jason\.nuget\packages\microsoft.ui.xaml\2.7.0\build\..\lib\uap10.0\Microsoft.UI.Xaml.winmd">
       <PackagePath>Microsoft.UI.Xaml.winmd</PackagePath>

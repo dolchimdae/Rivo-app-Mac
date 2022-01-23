@@ -2,15 +2,18 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Text;
 using System.Threading.Tasks;
 using Windows.Devices.Bluetooth;
 using Windows.Devices.Bluetooth.GenericAttributeProfile;
 using Windows.Devices.Enumeration;
+using Windows.Security.Cryptography;
+using Windows.Storage.Streams;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
-
+using System.Runtime.InteropServices.WindowsRuntime;
 
 // 빈 페이지 항목 템플릿에 대한 설명은 https://go.microsoft.com/fwlink/?LinkId=234238에 나와 있습니다.
 
@@ -31,6 +34,7 @@ namespace RivoApplication
 
         private GattCharacteristic selectedCharacteristic;
         private GattCharacteristic registered;
+        private GattCharacteristic Commander;
         private GattPresentationFormat presentationFormat;
 
         private BluetoothLEDevice bluetoothLeDevice = null;
@@ -103,6 +107,10 @@ namespace RivoApplication
                 // BT_Code: GetGattServicesAsync returns a list of all the supported services of the device (even if it's not paired to the system).
                 // If the services supported by the device are expected to change during BT usage, subscribe to the GattServicesChanged event.
                 GattDeviceServicesResult result = await bluetoothLeDevice.GetGattServicesAsync(BluetoothCacheMode.Uncached);
+                var serviceuuid = "6e400001-b5a3-f393-e0a9-e50e24dcca9e";
+                var readuuid = "6e400003-b5a3-f393-e0a9-e50e24dcca9e";
+                var writeuuid = "6e400002-b5a3-f393-e0a9-e50e24dcca9e";
+            
 
                 if (result.Status == GattCommunicationStatus.Success)
                 {
@@ -110,7 +118,60 @@ namespace RivoApplication
                     Debug.WriteLine(String.Format("Found {0} services", services.Count));
                     foreach (var service in services)
                     {
+                        Debug.WriteLine(DisplayHelpers.GetServiceName(service));
                         ServiceList.Items.Add(new ComboBoxItem { Content = DisplayHelpers.GetServiceName(service), Tag = service });
+                        if (DisplayHelpers.GetServiceName(service) == serviceuuid) {
+                            Debug.WriteLine("Matching service found");
+                            
+                            var accessStatus = await service.RequestAccessAsync();
+                            if (accessStatus == DeviceAccessStatus.Allowed)
+                            {
+                                Debug.WriteLine("Success");
+                                var characteristicsResult = await service.GetCharacteristicsAsync(BluetoothCacheMode.Uncached);
+                                IReadOnlyList<GattCharacteristic> characteristics = null;
+                                 characteristics = characteristicsResult.Characteristics;
+                                foreach (GattCharacteristic c in characteristics)
+                                {
+                                   Debug.WriteLine( c.Uuid);
+                                    if (DisplayHelpers.GetCharacteristicName(c) == readuuid)
+                                    {
+                                        Debug.WriteLine("Characteristic");
+                                        selectedCharacteristic = c;
+                                    }
+                                    if (DisplayHelpers.GetCharacteristicName(c) == writeuuid)
+                                    {
+                                        Debug.WriteLine("Writer");
+                                        Commander = c;
+                                    }
+
+                                }
+                                selectedCharacteristic.ValueChanged += Characteristic_ValueChanged;
+                                byte[] writebuffer = new byte[11];
+                                writebuffer[0] = 0x41;
+                                writebuffer[1] = 0x54;
+                                writebuffer[2] = 0x46;
+                                writebuffer[3] = 0x56;
+                                writebuffer[4] = 0x01;
+                                writebuffer[5] = 0x00;
+                                writebuffer[6] = 0x00;
+                                writebuffer[7] = 0xF0;
+                                writebuffer[8] = 0x1E;
+                                writebuffer[9] = 0x0D;
+                                writebuffer[10] =0x0A;
+                                
+
+                                
+                              
+                                IBuffer buffer = writebuffer.AsBuffer();
+
+                                var results = await Commander.WriteValueWithResultAsync(buffer);
+
+                                Debug.WriteLine("what happened"+results.Status);
+
+
+
+                            }
+                        }
                     }
                     ConnectButton.Visibility = Visibility.Collapsed;
                     ResultsListView.Visibility = Visibility.Visible;
@@ -218,7 +279,7 @@ namespace RivoApplication
             {
                 lock (this)
                 {
-                    Debug.WriteLine(String.Format("Added {0}{1}", deviceInfo.Id, deviceInfo.Name));
+                   
 
                     // Protect against race condition if the task runs after the app stopped the deviceWatcher.
                     if (sender == deviceWatcher)
@@ -297,7 +358,7 @@ namespace RivoApplication
             {
                 lock (this)
                 {
-                    Debug.WriteLine(String.Format("Removed {0}{1}", deviceInfoUpdate.Id, ""));
+                   
 
                     // Protect against race condition if the task runs after the app stopped the deviceWatcher.
                     if (sender == deviceWatcher)
@@ -354,6 +415,25 @@ namespace RivoApplication
             DevicePairingResult result = await bleDeviceDisplay.DeviceInformation.Pairing.PairAsync();
 
             isBusy = false;
+        }
+        private async void Characteristic_ValueChanged(GattCharacteristic sender, GattValueChangedEventArgs args)
+        {
+            // BT_Code: An Indicate or Notify reported that the value has changed.
+            // Display the new value with a timestamp.
+            
+            var message = $"Value at {DateTime.Now:hh:mm:ss.FFF}: {"Notification"}";
+            var buffer=new byte[100];
+            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal,() => Debug.WriteLine(message));
+            GattReadResult result = await selectedCharacteristic.ReadValueAsync();
+            
+            byte[] data= { 0X77};
+                CryptographicBuffer.CopyToByteArray(result.Value, out data);
+            var readata=Encoding.UTF8.GetString(data);
+            Debug.WriteLine("Data:"+readata);
+                Debug.WriteLine("READ:"+ result.Status);
+            
+     
+
         }
 
         #endregion

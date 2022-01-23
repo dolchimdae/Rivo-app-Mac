@@ -44,10 +44,10 @@ struct Set: View {
                     .padding(10)
                     .frame(width: 555 , height: 25, alignment: .leading)
             }
-                .padding(10)
+            .padding(10)
             Divider()
                 .padding(-10)
-
+            
             VStack(spacing: 15) {
                 Group {
                     HStack {
@@ -65,7 +65,7 @@ struct Set: View {
                             .padding(15)
                     }
                 }
-    
+                
                 Divider()
                 
                 Group {
@@ -86,7 +86,7 @@ struct Set: View {
                             ForEach(0 ..< L3.count) {
                                 Text(self.L3[$0])
                             }
-    
+                            
                         }
                         
                         Picker (selection: $selectedL3I,label: Text("입력방식")){
@@ -124,7 +124,7 @@ struct Set: View {
                             .padding(15)
                         Spacer()
                     }
-
+                    
                     Picker (selection: $selectedfunc,label: Text("choose")){
                         ForEach(0 ..< functions.count) {
                             Text(self.functions[$0])
@@ -148,7 +148,7 @@ struct Update: View {
                     .padding(5)
                     .frame(width: 555 , height: 25, alignment: .leading)
             }
-                .padding(10)
+            .padding(10)
             Divider()
                 .padding(-10)
             
@@ -158,8 +158,8 @@ struct Update: View {
                     .padding(15)
                 Spacer()
                 Button (action: {
-//                    let getfirm: [UInt8] = [0x65, 0x84, 0x70, 0x86, 0x01, 0x00, 0x00,0x24,0x30, 0x13, 0x10]
-//                    let data = NSData(bytes: getfirm, length: getfirm.count)
+                    //                    let getfirm: [UInt8] = [0x65, 0x84, 0x70, 0x86, 0x01, 0x00, 0x00,0x24,0x30, 0x13, 0x10]
+                    //                    let data = NSData(bytes: getfirm, length: getfirm.count)
                     //bleManager.sendProtocol(data)
                     
                 }) {
@@ -181,145 +181,145 @@ struct MyRibo: View {
     
     
     var body: some View{
-            ScrollView {
-                HStack{
-                    Text("My리보")
-                        .font(/*@START_MENU_TOKEN@*/.title/*@END_MENU_TOKEN@*/)
-                        .padding(10)
-                        .frame(width: 555 , height: 25, alignment: .leading)
-                }
+        ScrollView {
+            HStack{
+                Text("My리보")
+                    .font(/*@START_MENU_TOKEN@*/.title/*@END_MENU_TOKEN@*/)
                     .padding(10)
-                Divider()
-                    .padding(-10)
-                VStack(spacing: 15){
-                    Group {
-
-                        HStack{
-                            Text("리보3 등록")
-                                .font(.title2.bold())
-                                .padding(15)
-                            Spacer()
-                            Button (action: {
-                                self.bleManager.startScanning()
-                            }) {
-                                Text("검색")
-                                    .foregroundColor(.black)
-                            }
+                    .frame(width: 555 , height: 25, alignment: .leading)
+            }
+            .padding(10)
+            Divider()
+                .padding(-10)
+            VStack(spacing: 15){
+                Group {
+                    
+                    HStack{
+                        Text("리보3 등록")
+                            .font(.title2.bold())
                             .padding(15)
+                        Spacer()
+                        Button (action: {
+                            self.bleManager.startScanning()
+                        }) {
+                            Text("검색")
+                                .foregroundColor(.black)
                         }
-                        List(bleManager.peripherals) { peripheral in
-                            VStack {
-                                HStack {
-                                    Text(peripheral.name)
-                                    Spacer()
-                                    Text(String(peripheral.rssi))
-                                    Button (action: {
-                                        print("select \(peripheral)")
-                                        bleManager.connect(peripheral)
-//                                        if(bleManager.isConnected){
-//                                            self.peripheralName = bleManager.peripheralName
-//                                        }
-
-
-                                    }) {
-                                        Text("등록")
-                                            .foregroundColor(.blue)
-                                    }
+                        .padding(15)
+                    }
+                    List(bleManager.peripherals) { peripheral in
+                        VStack {
+                            HStack {
+                                Text(peripheral.name)
+                                Spacer()
+                                Text(String(peripheral.rssi))
+                                Button (action: {
+                                    print("select \(peripheral)")
+                                    bleManager.connect(peripheral)
+                                    //                                        if(bleManager.isConnected){
+                                    //                                            self.peripheralName = bleManager.peripheralName
+                                    //                                        }
+                                    
+                                    
+                                }) {
+                                    Text("등록")
+                                        .foregroundColor(.blue)
                                 }
-                                Divider()
                             }
+                            Divider()
                         }
-                        .frame(width: 500, height: 200)
-
                     }
-                    Divider()
+                    .frame(width: 500, height: 200)
                     
-                    Group {
-                        HStack{
-                            Text("이름 변경")
-                                .font(.title2.bold())
-                                .padding(15)
-                            Spacer()
-                        }
-                        TextField("Enter device Name", text:$rivoName)
-                            .frame(width: 300, height: 80, alignment: .center)
-                        HStack{
-                            Button (action: {
-                                //let name: [UInt8] = Array(rivoName.utf8)
-                                //let len : Int = name.count
-                                //MYRIVO 6 +  op 1 = len -> 7
-//                                let op: [UInt8] = [0x01]
-//                                var name: [UInt8] = [0x4d, 0x59, 0x52, 0x49, 0x56, 0x4f]
-                               var sendpayload: [UInt8] = [0x01, 0x4d, 0x59, 0x52, 0x49, 0x56, 0x4f]
-////                                sendpayload.append(contentsOf: op)
-////                                sendpayload.append(contentsOf: name)
-//                                
-                                bleManager.device.write(cmd: "RV", data: sendpayload)
-                                //bleManager.sendprotocolRV()
-                                
-                            }) {
-                                Text("저장")
-                                    .foregroundColor(.blue)
-                            }
-                            Button (action: {
-
-                            }) {
-                                Text("삭제")
-                                    .foregroundColor(.black)
-                            }
-                            
-                        }
-                    }
-                    Divider()
-                    
-                    Group {
-                        HStack{
-                            Text("장치 정보")
-                                .font(.title2.bold())
-                                .padding(15)
-                            Spacer()
-                        }
-
-                        if(bleManager.isConnected){
-                            Text("이름: " + bleManager.peripheralName)
-                            
-                            Spacer()
-                            Text("버전: \(bleManager.peripheralversion)")
-                            Spacer()
-                            Text("시리얼: \(bleManager.serialnumber)")
-                        }
-                        else{
-                            Text(bleManager.peripheralName)
-                        }
-
-                    }
-                    Spacer()
-
-                    Group{
-                        HStack{
-                            Text("내 리보 찾기")
-                                .font(.title2.bold())
-                                .padding(15)
-                            Spacer()
-                        }
-                        
-                        HStack{
-                            Text("진동")
-                            SwiftUI.Toggle("", isOn: $Toggle_vibration)
-                                .toggleStyle(SwitchToggleStyle(tint: Color.green))
-                        }
-                        HStack{
-                            Text("소리")
-                            SwiftUI.Toggle("", isOn: $Toggle_sound)
-                                .toggleStyle(SwitchToggleStyle(tint: Color.green))
-                                
-                        }
+                }
+                Divider()
+                
+                Group {
+                    HStack{
+                        Text("이름 변경")
+                            .font(.title2.bold())
+                            .padding(15)
                         Spacer()
                     }
-                    Spacer()
+                    TextField("Enter device Name", text:$rivoName)
+                        .frame(width: 300, height: 80, alignment: .center)
+                    HStack{
+                        Button (action: {
+                            //let name: [UInt8] = Array(rivoName.utf8)
+                            //let len : Int = name.count
+                            //MYRIVO 6 +  op 1 = len -> 7
+                            //                                let op: [UInt8] = [0x01]
+                            //                                var name: [UInt8] = [0x4d, 0x59, 0x52, 0x49, 0x56, 0x4f]
+                            var sendpayload: [UInt8] = [0x01, 0x4d, 0x59, 0x52, 0x49, 0x56, 0x4f]
+                            ////                                sendpayload.append(contentsOf: op)
+                            ////                                sendpayload.append(contentsOf: name)
+                            //
+                            bleManager.device.write(cmd: "RV", data: sendpayload)
+                            //bleManager.sendprotocolRV()
+                            
+                        }) {
+                            Text("저장")
+                                .foregroundColor(.blue)
+                        }
+                        Button (action: {
+                            
+                        }) {
+                            Text("삭제")
+                                .foregroundColor(.black)
+                        }
+                        
+                    }
+                }
+                Divider()
+                
+                Group {
+                    HStack{
+                        Text("장치 정보")
+                            .font(.title2.bold())
+                            .padding(15)
+                        Spacer()
+                    }
                     
-                }//Vstack
-            }//ScrollView
+                    if(bleManager.isConnected){
+                        Text("이름: " + bleManager.peripheralName)
+                        
+                        Spacer()
+                        Text("버전: \(bleManager.peripheralversion)")
+                        Spacer()
+                        Text("시리얼: \(bleManager.serialnumber)")
+                    }
+                    else{
+                        Text(bleManager.peripheralName)
+                    }
+                    
+                }
+                Spacer()
+                
+                Group{
+                    HStack{
+                        Text("내 리보 찾기")
+                            .font(.title2.bold())
+                            .padding(15)
+                        Spacer()
+                    }
+                    
+                    HStack{
+                        Text("진동")
+                        SwiftUI.Toggle("", isOn: $Toggle_vibration)
+                            .toggleStyle(SwitchToggleStyle(tint: Color.green))
+                    }
+                    HStack{
+                        Text("소리")
+                        SwiftUI.Toggle("", isOn: $Toggle_sound)
+                            .toggleStyle(SwitchToggleStyle(tint: Color.green))
+                        
+                    }
+                    Spacer()
+                }
+                Spacer()
+                
+            }//Vstack
+        }//ScrollView
     }//Body
 }
 struct WebView: NSViewRepresentable {
@@ -346,7 +346,7 @@ struct Help: View {
                         .padding(10)
                         .frame(width: 555 , height: 25, alignment: .leading)
                 }
-                    .padding(10)
+                .padding(10)
                 Divider()
                     .padding(-10)
                 WebView(url: URL(string: url)!)

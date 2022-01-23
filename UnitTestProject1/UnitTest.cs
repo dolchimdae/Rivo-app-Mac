@@ -8,7 +8,7 @@ namespace UnitTestProject1
 {
     [TestClass]         
     public class UnitTest1
-    {
+    {/*
         [TestMethod]
         public async Task TestMethod1()
         { 
@@ -17,7 +17,7 @@ namespace UnitTestProject1
             Assert.AreEqual("Rivo 3.0.5,BL 3.0.5,BT 3.0.5", firmwareVersion);
 
         }
-        /*
+        
         [TestMethod]
         public async Task TestMethod2()
         {
@@ -62,16 +62,16 @@ namespace UnitTestProject1
             var device = new UDPDevice("127.0.0.1", 6999);
             var findmyrivo = await device.FindMyRivo();
         }
-        */
-
+        
+        
         [TestMethod]
-            public async Task TestMethod8()
+        public async Task TestMethod8()
         {
             var device = new UDPDevice("127.0.0.1", 6999);
             var mtusize = await device.GetMTUSize();
             
         }
-
+        
         
        
 

@@ -135,8 +135,6 @@ namespace Rivo
             return frame;
         }
 
-
-
         public abstract Task<byte[]> ReadAndWrite(byte[] sendData); //베이스로직은여기에
 
         public virtual async Task WritePacket(byte[] sendData)
@@ -152,61 +150,16 @@ namespace Rivo
         //베이스로직은여기에
         public virtual async Task<byte[]> readPacket(IPEndPoint ep)
         {
-            var tcs = new TaskCompletionSource<byte[]>();
-            var socket = new DatagramSocket();
+            
 
-            socket.MessageReceived += (sender, eventArgs) =>
-            {
-                uint len = eventArgs.GetDataReader().UnconsumedBufferLength;
-                byte[] buffer = new byte[len];
-                eventArgs.GetDataReader().ReadBytes(buffer);
-                //socket.Dispose();
-                tcs.TrySetResult(buffer);
-            };
-            return tcs.Task.Result;
+            var client = new UdpClient();
+            client.Connect("127.0.0.1", 6999);
+            UdpReceiveResult result = await client.ReceiveAsync().ConfigureAwait(false);
+            //UdpReceiveResult result = await client.ReceiveAsync();
 
+            return result.Buffer;
 
-
-
-            /*
-            int timeout2 = 2000; //2 Second timeout
-
-            Action<object> action = (object obj) =>
-            {
-                Console.WriteLine("Task={0}, obj={1}, Thread={2}",
-                Task.CurrentId, obj,
-                Thread.CurrentThread.ManagedThreadId);
-            };
-
-            Task t1 = new Task(action, "alpha");
-            var task = t1;//without await keyword
-            if (await Task.WhenAny(task, Task.Delay(timeout2)) == task)
-            {
-            }
-            else
-            {
-
-            }
-            */
-
-
-            UdpClient listener = new UdpClient(6999);
-
-            IPEndPoint groupEP = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 6999);
-
-            byte[] receive_byte_array;
-
-
-
-            if (listener.Available > 0)
-
-            {
-
-                receive_byte_array = listener.Receive(ref groupEP);
-
-            }
-
-            return receive_byte_array;
+          
         }
 
 

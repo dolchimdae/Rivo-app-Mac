@@ -27,19 +27,6 @@ namespace Rivo
 
         public override async Task WritePacket(byte[] sendData)
         {
-            /*
-            var tcs = new TaskCompletionSource<byte[]>();
-            var socket = new DatagramSocket();
-
-            var ostream = await socket.GetOutputStreamAsync(new HostName(hostname), port.ToString());
-            var writer = new DataWriter(ostream);
-            writer.WriteBytes(sendData);
-            await writer.StoreAsync();
-            // XXX TODO create receive timer
-            //return tcs.Task.Result;
-
-        */
-
 
             var client = new UdpClient();
             client.Connect("127.0.0.1", 6999);
@@ -48,7 +35,16 @@ namespace Rivo
 
         public override async Task<byte[]> readPacket(IPEndPoint ep)
         {
+            var client = new UdpClient();
+            client.Connect("127.0.0.1", 6999);
+            //UdpReceiveResult result = await client.ReceiveAsync().ConfigureAwait(false);
+            UdpReceiveResult result = await client.ReceiveAsync();
 
+            return result.Buffer;
+
+
+
+            /*
             //int timeout = 1000;
 
             using (var udp = new UdpClient(ep))
@@ -65,6 +61,7 @@ namespace Rivo
             }
 
             throw new TimeoutException();
+            */
         }
 
 

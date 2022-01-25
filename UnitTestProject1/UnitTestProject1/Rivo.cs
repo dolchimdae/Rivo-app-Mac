@@ -1,85 +1,41 @@
 ﻿using System;
+using System.Diagnostics;
+using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
+//getmtusize 함수 에뮬레이터로 작동하는지까지 확인하기
 
 namespace Rivo
 {
+
+
+
+
     public abstract class RivoDevice
     {
+
+        int mtu = 20;
+        bool mtuconfirmed = false;
+
+
+
         public RivoDevice()
         {
+
         }
-        
-        public abstract Task<byte[]> readAndWritePacket(byte[] sendData); 
-        
-        async Task<byte[]> SendAndReceive(string id, byte[] data)
+
+        public static long byteToInt(byte[] bytes)
         {
-            int totalLength = data.Length + 10;
-            byte[] frame = new byte[totalLength];
-            int i = 0;
-            frame[i++] = (byte)'A';
-            frame[i++] = (byte)'T';
-            frame[i++] = ((byte)id[0]);
-            frame[i++] = ((byte)id[1]);
-            frame[i++] = (byte)(data.Length); // assume little endian
-            frame[i++] = (byte)(data.Length >> 8);
-            data.CopyTo(frame, i);  
-            i += data.Length;
-            ushort crc = CRC16(data);
-            frame[i++] = (byte)(crc);
-            frame[i++] = (byte)(crc >> 8);
-            frame[i++] = 0x0d;
-            frame[i++] = 0x0a;
-            totalLength = i;
 
-            for (int count = 0; count < 3; count++)
-            {
-                try
-                {
-                    byte[] recvFrame = await readAndWritePacket(frame);     
-                    
-                    // parse recvFrame 
-                    int recvSize = recvFrame.Length;
-                    if (!(recvFrame[0] == (byte)'a' &&
-                          recvFrame[1] == (byte)'t' &&
-                          recvFrame[2] == ((byte)(id[0])) &&
-                          recvFrame[3] == ((byte)(id[1])) &&
-                          recvFrame[recvSize - 2] == 0x0d &&
-                          recvFrame[recvSize - 1] == 0x0a))
-                    {
-                        throw new Exception("Invalid frame");
-                    }
-                    byte opcode = recvFrame[6];
-                    byte result = recvFrame[7];
+            long newValue = 0;
+            newValue |= (((long)bytes[0]) << 24) & 0xFF000000;
+            newValue |= (((long)bytes[1]) << 16) & 0xFF0000;
+            newValue |= (((long)bytes[2]) << 8) & 0xFF00;
+            newValue |= (((long)bytes[3])) & 0xFF;
+            return newValue;
 
-                    if (result!=0)
-                    {
-                        throw new Exception("Result code =" + result);
-                    }
-
-                    int length = recvFrame[4] + recvFrame[5] * 256 - 2; //little endian, exclude opcode & result
-                    
-                    byte[] recvData = new byte[length];
-                    
-                    
-                   // CRC16_CHECK(recvFrame);// shoud check CRC!!!
-
-
-                    Array.Copy(recvFrame, 8, recvData, 0, length);
-                    // shoud check CRC!!!
-                    return recvData;
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-
-                }
-            }
-            throw new Exception("Retry failed");
         }
-
-
-
 
 
         static ushort CRC16(byte[] data)
@@ -98,12 +54,12 @@ namespace Rivo
         }
 
 
-        public static void CRC16_CHECK(byte[] data)
+        public static bool CRC16_CHECK(byte[] data)
         {
             if (data[6] == 0x87)
             {
                 Console.WriteLine("CRC Error");
-                return;
+                return false;
             }
 
             int bufferlen = data.Length - 10;
@@ -119,23 +75,232 @@ namespace Rivo
 
             if (crc == realCrc)
             {
+                return true;
                 Console.WriteLine("CRC Checking == TRUE");
             }
             else
             {
+                return false;
                 Console.WriteLine("CRC Checking == FALSE");
             }
         }
+
+        public bool recvFrameCheck(byte[] recvFrame, int recvSize, string id)
+        {
+            byte[] utf8bytes = System.Text.Encoding.UTF8.GetBytes(id);
+
+            if (!(recvFrame[0] == (byte)'a' &&
+                          recvFrame[1] == (byte)'t' &&
+                          recvFrame[2] == (byte)id[0] &&
+                          recvFrame[3] == (byte)id[1] &&
+                          recvFrame[recvSize - 2] == 0x0d &&
+                          recvFrame[recvSize - 1] == 0x0a))
+            {
+                return false;
+            }
+            else
+            {
+                if (CRC16_CHECK(recvFrame) == true) return true;
+                else return false;
+            }
+        }
+
+        public byte[] composeSendframe(string id, byte[] data)
+        {
+            byte[] utf8bytes = System.Text.Encoding.UTF8.GetBytes(id);
+
+            int totalLength = data.Length + 10;
+            byte[] frame = new byte[totalLength];
+            int i = 0;
+            frame[i++] = (byte)'A';
+            frame[i++] = (byte)'T';
+            frame[i++] = (utf8bytes[0]);
+            frame[i++] = (utf8bytes[1]);
+            frame[i++] = (byte)(data.Length); // assume little endian
+            frame[i++] = (byte)(data.Length >> 8);
+            data.CopyTo(frame, i);
+            i += data.Length;
+            ushort crc = CRC16(data);
+            frame[i++] = (byte)(crc);
+            frame[i++] = (byte)(crc >> 8);
+            frame[i++] = 0x0d;
+            frame[i++] = 0x0a;
+            //totalLength = i;
+
+            return frame;
+        }
+
+
+
+        public abstract Task<byte[]> ReadAndWrite(byte[] sendData); //베이스로직은여기에
+
+        public virtual async Task WritePacket(byte[] sendData)
+        {
+
+        }
+
+
+        //베이스로직은여기에
+        public virtual async Task<byte[]> readPacket()
+        {
+            // byte[] array = null;
+            return null;
+        }//베이스로직은여기에
+
+
+
+
+        async Task<byte[]> SendAndReceive(string id, byte[] data)
+        {
+
+            if (!mtuconfirmed)
+            {
+                mtu = await GetMTUSize();//try 
+                mtuconfirmed = true;
+
+            }
+
+            byte[] sendframe = composeSendframe(id, data);
+
+            //int length = recvFrame[4] + recvFrame[5] * 256 - 2;
+
+            int position;
+            int framesize;
+            int sendSize;
+            for (int count = 0; count < 3; count++)
+            {
+                position = 0;
+                framesize = data.Length + 10;
+
+
+                //todo write 
+                while (position < framesize)
+                {
+
+                    sendSize = Math.Min(mtu, framesize - position);
+
+                    byte[] senddata = { };
+                    Array.Copy(sendframe, position, senddata, 0, position + sendSize - 1);
+                    await WritePacket(senddata);//Array.copy()
+
+
+                    position += sendSize;
+                }
+                byte[] recvframe = await readPacket();
+                int len;
+                if (recvframe[0] == (byte)'a' && recvframe[1] == (byte)'t')
+                {
+
+                    len = recvframe[4] + recvframe[5] << 8 + 10;
+                    while (recvframe.Length < len)
+                    {
+                        byte[] temp = await readPacket();
+                        Array.Copy(temp, 0, recvframe, recvframe.Length, temp.Length - 1);
+
+                    }
+                }
+
+                int recvSize = recvframe.Length;
+
+
+                if (recvFrameCheck(recvframe, recvSize, id))
+                {
+                    //  byte opcode = recvframe[6];
+                    byte result = recvframe[7];
+
+                    if (result != 0)
+                    {
+                        throw new Exception("Result code =" + result);
+                    }
+
+                    byte[] temp2 = await readPacket();
+                    Array.Copy(temp2, 0, recvframe, recvframe.Length, temp2.Length - 1);
+                    return temp2;
+                }
+
+            }
+
+            throw new Exception("Retry failed");
+        }
+
+        async Task<byte[]> SendAndReceive2(string id, byte[] data)
+        {
+            int totalLength = data.Length + 10;
+            byte[] frame = new byte[totalLength];
+            int i = 0;
+            frame[i++] = (byte)'A';
+            frame[i++] = (byte)'T';
+            frame[i++] = ((byte)id[0]);
+            frame[i++] = ((byte)id[1]);
+            frame[i++] = (byte)(data.Length); // assume little endian
+            frame[i++] = (byte)(data.Length >> 8);
+            data.CopyTo(frame, i);
+            i += data.Length;
+            ushort crc = CRC16(data);
+            frame[i++] = (byte)(crc);
+            frame[i++] = (byte)(crc >> 8);
+            frame[i++] = 0x0d;
+            frame[i++] = 0x0a;
+            totalLength = i;
+
+            for (int count = 0; count < 3; count++)
+            {
+                try
+                {
+                    byte[] recvFrame = await ReadAndWrite(frame);
+
+                    // parse recvFrame 
+                    int recvSize = recvFrame.Length;
+                    if (!(recvFrame[0] == (byte)'a' &&
+                          recvFrame[1] == (byte)'t' &&
+                          recvFrame[2] == ((byte)(id[0])) &&
+                          recvFrame[3] == ((byte)(id[1])) &&
+                          recvFrame[recvSize - 2] == 0x0d &&
+                          recvFrame[recvSize - 1] == 0x0a))
+                    {
+                        throw new Exception("Invalid frame");
+                    }
+                    byte opcode = recvFrame[6];
+                    byte result = recvFrame[7];
+
+                    if (result != 0)
+                    {
+                        throw new Exception("Result code =" + result);
+                    }
+
+                    int length = recvFrame[4] + recvFrame[5] * 256 - 2; //little endian, exclude opcode & result
+
+                    byte[] recvData = new byte[length];
+
+
+                    CRC16_CHECK(recvFrame);// shoud check CRC!!!
+
+
+                    Array.Copy(recvFrame, 8, recvData, 0, length);
+                    // shoud check CRC!!!
+                    return recvData;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+
+                }
+            }
+            throw new Exception("Retry failed");
+        }
+
+
+
         //FV,LN,SR,VG,RN,IF,RV,MT
+
         public async Task<string> GetFirmwareVersion()
         {
-            var result = await SendAsync("FV", new byte[] { 0x0 });
+            var result = await SendAndReceive("FV", new byte[] { 0x0 });
             return System.Text.Encoding.Default.GetString(result);
         }
-        
-        public async Task<string> GetL3L4Language()
+        public async Task<string> SetDateandTime()
         {
-            var result = await SendAsync("LN", new byte[] { 0x0 });
+            var result = await SendAndReceive("DT", new byte[] { 0x0 });
             return System.Text.Encoding.Default.GetString(result);
         }
         public async Task<string> SetL3L4Language(string str)
@@ -143,89 +308,105 @@ namespace Rivo
             byte[] StrByte = Encoding.UTF8.GetBytes(str);
             byte[] resByte = { 0x1, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0 };
 
-            for (int i=1; i<StrByte.Length; i++)
-            {
-                resByte[i] = StrByte[i - 1];
-            }
-            //Array.Copy(StrByte, 0, resByte, 1, 1); 
+            Array.Copy(StrByte, 0, resByte, 1, 1);
 
-            var result = await SendAsync("LN", resByte);
-            
+            var result = await SendAndReceive("LN", resByte);
+
             return System.Text.Encoding.Default.GetString(result);
-            
         }
-        public async Task<string> GetScreenReader()
-        {
-            var result = await SendAsync("SR", new byte[] { 0x0 });
-            return System.Text.Encoding.Default.GetString(result);
-        }/*
         public async Task<string> SetScreenReader()
         {
-            var result = await SendAsync("SR", new byte[] { 0x1 });
+            var result = await SendAndReceive("SR", new byte[] { 0x1 });
             return System.Text.Encoding.Default.GetString(result);
-        }*/
-        public async Task<int> GetVoiceGuidance()
-        {
-            var result = await SendAsync("VG", new byte[] { 0x0 });
-            return result[0];
-        }/*
-        public async Task<string> SetVoiceGuidance()
-        {
-            var result = await SendAsync("VG", new byte[] { 0x0 });
-            return System.Text.Encoding.Default.GetString(result);
-        }*/
-        public async Task<string> GetRivoName()
-        {
-            var result = await SendAsync("RN", new byte[] { 0x0 });
-            return System.Text.Encoding.Default.GetString(result);
-        }/*
-        public async Task<string> SetRivoName()
-        {
-            var result = await SendAsync("VG", new byte[] { 0x0 });
-            return System.Text.Encoding.Default.GetString(result);
-        }*/
-        public async Task<string> GetDeviceInfo()
-        {
-            var result = await SendAsync("IF", new byte[] { 0x0 });
-            return System.Text.Encoding.Default.GetString(result);
-        }/*
-        public async Task<string> SetDeviceInfo()
-        {
-            var result = await SendAsync("IF", new byte[] { 0x0 });
-            return System.Text.Encoding.Default.GetString(result);
-        }*/
+        }
         public async Task<string> FindMyRivo()
         {
-            var result = await SendAsync("RV", new byte[] { 0x0 });
+            var result = await SendAndReceive("RV", new byte[] { 0x0, 0x0 });
             return System.Text.Encoding.Default.GetString(result);
         }
+
         public async Task<UInt16> GetMTUSize()
         {
-            var result = await SendAsync("MT", new byte[] { 0x0 });
-            return (UInt16)(result[0] + result[1] * 256);
+            Debug.WriteLine("hello");
+            int framesize;
+            for (int count = 0; count < 3; count++)
+            {
+                //framesize = data.Length + 10;
+
+                byte[] sendframe = composeSendframe("MT", new byte[] { 0x0 });
+
+                await WritePacket(sendframe);
+                var client = new UdpClient();
+              
+               
+                byte[] recvframe =await readPacket();
+       
+                int len;
+
+                int recvSize = recvframe.Length;
+                if (recvframe[0] == (byte)'a' && recvframe[1] == (byte)'t')
+                {
+                    recvFrameCheck(recvframe, recvSize, "MT");
+                    len = recvframe[4] + recvframe[5]*256 + 10;
+                    Debug.WriteLine(recvframe[4] + " "+recvframe[5]);
+                    byte[] temp = { };
+                    Debug.WriteLine(recvframe.Length + "len: "+ len);
+                    while (recvframe.Length < len)
+                    {
+                       
+                        temp = await readPacket();
+                        Array.Copy(temp, 0, recvframe, recvframe.Length, temp.Length - 1);
+
+                    }
+                    int mtu = recvframe[8] + recvframe[9] * 256;
+                    Debug.WriteLine(recvframe[8]+recvframe[9]*256);
+                    return (UInt16)mtu;
+                }
+
+            }
+            throw new Exception("exception");
         }
+
+
+
+
+
+        public async Task<string> GetRIvoStatus()
+        {
+            var result = await SendAndReceive("RS", new byte[] { 0x0 });
+            return System.Text.Encoding.Default.GetString(result);
+        }
+        public async Task<string> SetRIvoName()
+        {
+            var result = await SendAndReceive("RV", new byte[] { 0x0 });
+            return System.Text.Encoding.Default.GetString(result);
+        }
+
+
+
 
         public async Task<string> UpdateStart()
         {
-            var result = await SendAsync("UM", new byte[] { 0x0,0x0,0xff,0xff,0xff });
+            var result = await SendAndReceive("UM", new byte[] { 0x0 });
             return System.Text.Encoding.Default.GetString(result);
         }
         public async Task<UInt16> UpdateData()
         {
-            var result = await SendAsync("UM", new byte[] { 0x1 });
+            var result = await SendAndReceive("UM", new byte[] { 0x1 });
             return (UInt16)(result[0] + result[1] * 256);
         }
         public async Task<string> VerifyData()
         {
-            var result = await SendAsync("UM", new byte[] { 0x2 });
+            var result = await SendAndReceive("UM", new byte[] { 0x2 });
             return System.Text.Encoding.Default.GetString(result);
         }
         public async Task<string> UpdateEnd()
         {
-            var result = await SendAsync("UM", new byte[] { 0x3 });
+            var result = await SendAndReceive("UM", new byte[] { 0x3 });
             return System.Text.Encoding.Default.GetString(result);
         }
 
 
     }
+
 }

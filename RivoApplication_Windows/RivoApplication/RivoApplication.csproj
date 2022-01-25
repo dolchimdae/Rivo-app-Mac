@@ -130,6 +130,7 @@
       <DependentUpon>BatteryPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="BLEDevice.cs" />
+    <Compile Include="UDPDevice.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="DisplayHelpers.cs" />
     <Compile Include="HelpPage.xaml.cs">

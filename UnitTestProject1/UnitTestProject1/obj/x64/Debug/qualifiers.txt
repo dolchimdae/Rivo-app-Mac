@@ -1,4 +1,0 @@
-AlternateForm=UNPLATED
-Language=KO
-Scale=200
-TargetSize=24

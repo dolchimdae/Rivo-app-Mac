@@ -14,6 +14,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 using System.Runtime.InteropServices.WindowsRuntime;
+using Rivo;
 
 // 빈 페이지 항목 템플릿에 대한 설명은 https://go.microsoft.com/fwlink/?LinkId=234238에 나와 있습니다.
 
@@ -426,14 +427,26 @@ namespace RivoApplication
             await Dispatcher.RunAsync(CoreDispatcherPriority.Normal,() => Debug.WriteLine(message));
             GattReadResult result = await selectedCharacteristic.ReadValueAsync();
             
-            byte[] data= { 0X77};
+            byte[] data;
                 CryptographicBuffer.CopyToByteArray(result.Value, out data);
             var readata=Encoding.UTF8.GetString(data);
-            Debug.WriteLine("Data:"+readata);
+            Debug.WriteLine("Data:"+data);
                 Debug.WriteLine("READ:"+ result.Status);
-            
-     
+             result = await selectedCharacteristic.ReadValueAsync();
 
+           
+            CryptographicBuffer.CopyToByteArray(result.Value, out data);
+             readata = Encoding.UTF8.GetString(data);
+            Debug.WriteLine("Data Length:" + readata.Length+"bytedata:"+data);
+            for (int i = 0; i < data.Length; i++)
+            {
+                var a = data.GetValue(i);
+                char b = Convert.ToChar(a);
+                Debug.WriteLine("read"+i+"th character: "+a+"converted to "+b);
+            }
+            RivoDevice device = new UDPDevice();
+            bool Frame=device.recvFrameCheck(data,data.Length,"ID");
+            Debug.WriteLine("READ:" + result.Status+"GOOD FRame:"+Frame);
         }
 
         #endregion

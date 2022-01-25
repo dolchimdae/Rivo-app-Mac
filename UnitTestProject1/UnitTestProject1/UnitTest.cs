@@ -6,18 +6,18 @@ using System.Diagnostics;
 
 namespace UnitTestProject1
 {
-    [TestClass]         
+    [TestClass]
     public class UnitTest1
-    {/*
+    {
         [TestMethod]
         public async Task TestMethod1()
-        { 
+        {
             var device = new UDPDevice("127.0.0.1", 6999);
             var firmwareVersion = await device.GetFirmwareVersion();
             Assert.AreEqual("Rivo 3.0.5,BL 3.0.5,BT 3.0.5", firmwareVersion);
 
         }
-        
+        /*
         [TestMethod]
         public async Task TestMethod2()
         {
@@ -37,46 +37,23 @@ namespace UnitTestProject1
                 
         }
         
-        [TestMethod]
-        public async Task TestMethod3()
-        {
-            var device = new UDPDevice("127.0.0.1", 6999);
-
-            
-            var rivoname = await device.GetRivoName();
-            Assert.AreEqual("Rivo 3.0.5", rivoname);
-
-            
-
-        }
 
         [TestMethod]
         public async Task TestMethod4()
         {
             var device = new UDPDevice("127.0.0.1", 6999);
-            var screenreader = await device.GetScreenReader();
+            var screenreader = await device.SetScreenReader();
             Assert.AreEqual("3,11,11,iOS VoiceOver,21,Android TalkBack,12,watchOS", screenreader);
 
 
         }
 
         [TestMethod]
-        public async Task TestMethod5()
+        public async Task TestMethod5_2()
         {
             var device = new UDPDevice("127.0.0.1", 6999);
-            var voiceguidance = await device.GetVoiceGuidance();
-            Assert.AreEqual(1, voiceguidance);
-
-
-        }
-
-        [TestMethod]
-        public async Task TestMethod6()
-        {
-            var device = new UDPDevice("127.0.0.1", 6999);
-            var deviceinfo = await device.GetDeviceInfo();
-            Assert.AreEqual("ver:Rivo 3.0.5,sn:2233,etc:xxxx", deviceinfo);
-
+            var Rivostatus = await device.GetRIvoStatus();
+            Assert.AreEqual(1, Rivostatus);
         }
 
         [TestMethod]
@@ -84,25 +61,21 @@ namespace UnitTestProject1
         {
             var device = new UDPDevice("127.0.0.1", 6999);
             var findmyrivo = await device.FindMyRivo();
-
-
         }
+        */
 
         [TestMethod]
         public async Task TestMethod8()
         {
             var device = new UDPDevice("127.0.0.1", 6999);
             var mtusize = await device.GetMTUSize();
-            Assert.AreEqual(100, mtusize);
-
 
         }
 
-        */
 
 
 
-
+        /*
         [TestMethod]
         public async Task TestMethod9()
         {
@@ -113,11 +86,10 @@ namespace UnitTestProject1
 
         [TestMethod]
         public async Task TestMethod10()
-        {
+        {   
             var device = new UDPDevice("127.0.0.1", 6999);
             var verify = await device.VerifyData();
             Assert.AreEqual("", verify);
-
         }
 
         [TestMethod]
@@ -135,5 +107,6 @@ namespace UnitTestProject1
             var updatedata = await device.UpdateData();
             Assert.AreEqual("", updatedata);
         }
+        */
     }
-}       
+}

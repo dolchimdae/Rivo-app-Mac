@@ -15,7 +15,7 @@
           "build/Microsoft.Net.Native.Compiler.targets": {}
         }
       },
-      "Microsoft.NET.Test.Sdk/16.9.4": {
+      "Microsoft.NET.Test.Sdk/15.9.0": {
         "type": "package",
         "dependencies": {
           "Newtonsoft.Json": "9.0.1",
@@ -23,17 +23,11 @@
           "System.ComponentModel.TypeConverter": "4.1.0",
           "System.Runtime.InteropServices.RuntimeInformation": "4.0.0"
         },
-        "compile": {
-          "lib/uap10.0/_._": {}
-        },
-        "runtime": {
-          "lib/uap10.0/_._": {}
-        },
         "build": {
-          "build/uap10.0/Microsoft.NET.Test.Sdk.props": {}
+          "build/uap10.0/Microsoft.Net.Test.Sdk.props": {}
         },
         "buildMultiTargeting": {
-          "buildMultiTargeting/Microsoft.NET.Test.Sdk.props": {}
+          "buildMultiTargeting/Microsoft.Net.Test.Sdk.props": {}
         }
       },
       "Microsoft.Net.UWPCoreRuntimeSdk/2.2.12": {
@@ -566,7 +560,7 @@
           "build/Microsoft.Net.Native.Compiler.targets": {}
         }
       },
-      "Microsoft.NET.Test.Sdk/16.9.4": {
+      "Microsoft.NET.Test.Sdk/15.9.0": {
         "type": "package",
         "dependencies": {
           "Newtonsoft.Json": "9.0.1",
@@ -574,17 +568,11 @@
           "System.ComponentModel.TypeConverter": "4.1.0",
           "System.Runtime.InteropServices.RuntimeInformation": "4.0.0"
         },
-        "compile": {
-          "lib/uap10.0/_._": {}
-        },
-        "runtime": {
-          "lib/uap10.0/_._": {}
-        },
         "build": {
-          "build/uap10.0/Microsoft.NET.Test.Sdk.props": {}
+          "build/uap10.0/Microsoft.Net.Test.Sdk.props": {}
         },
         "buildMultiTargeting": {
-          "buildMultiTargeting/Microsoft.NET.Test.Sdk.props": {}
+          "buildMultiTargeting/Microsoft.Net.Test.Sdk.props": {}
         }
       },
       "Microsoft.Net.UWPCoreRuntimeSdk/2.2.12": {
@@ -1379,7 +1367,7 @@
           "build/Microsoft.Net.Native.Compiler.targets": {}
         }
       },
-      "Microsoft.NET.Test.Sdk/16.9.4": {
+      "Microsoft.NET.Test.Sdk/15.9.0": {
         "type": "package",
         "dependencies": {
           "Newtonsoft.Json": "9.0.1",
@@ -1387,17 +1375,11 @@
           "System.ComponentModel.TypeConverter": "4.1.0",
           "System.Runtime.InteropServices.RuntimeInformation": "4.0.0"
         },
-        "compile": {
-          "lib/uap10.0/_._": {}
-        },
-        "runtime": {
-          "lib/uap10.0/_._": {}
-        },
         "build": {
-          "build/uap10.0/Microsoft.NET.Test.Sdk.props": {}
+          "build/uap10.0/Microsoft.Net.Test.Sdk.props": {}
         },
         "buildMultiTargeting": {
-          "buildMultiTargeting/Microsoft.NET.Test.Sdk.props": {}
+          "buildMultiTargeting/Microsoft.Net.Test.Sdk.props": {}
         }
       },
       "Microsoft.Net.UWPCoreRuntimeSdk/2.2.12": {
@@ -2235,7 +2217,7 @@
           "build/Microsoft.Net.Native.Compiler.targets": {}
         }
       },
-      "Microsoft.NET.Test.Sdk/16.9.4": {
+      "Microsoft.NET.Test.Sdk/15.9.0": {
         "type": "package",
         "dependencies": {
           "Newtonsoft.Json": "9.0.1",
@@ -2243,17 +2225,11 @@
           "System.ComponentModel.TypeConverter": "4.1.0",
           "System.Runtime.InteropServices.RuntimeInformation": "4.0.0"
         },
-        "compile": {
-          "lib/uap10.0/_._": {}
-        },
-        "runtime": {
-          "lib/uap10.0/_._": {}
-        },
         "build": {
-          "build/uap10.0/Microsoft.NET.Test.Sdk.props": {}
+          "build/uap10.0/Microsoft.Net.Test.Sdk.props": {}
         },
         "buildMultiTargeting": {
-          "buildMultiTargeting/Microsoft.NET.Test.Sdk.props": {}
+          "buildMultiTargeting/Microsoft.Net.Test.Sdk.props": {}
         }
       },
       "Microsoft.Net.UWPCoreRuntimeSdk/2.2.12": {
@@ -3091,7 +3067,7 @@
           "build/Microsoft.Net.Native.Compiler.targets": {}
         }
       },
-      "Microsoft.NET.Test.Sdk/16.9.4": {
+      "Microsoft.NET.Test.Sdk/15.9.0": {
         "type": "package",
         "dependencies": {
           "Newtonsoft.Json": "9.0.1",
@@ -3099,17 +3075,11 @@
           "System.ComponentModel.TypeConverter": "4.1.0",
           "System.Runtime.InteropServices.RuntimeInformation": "4.0.0"
         },
-        "compile": {
-          "lib/uap10.0/_._": {}
-        },
-        "runtime": {
-          "lib/uap10.0/_._": {}
-        },
         "build": {
-          "build/uap10.0/Microsoft.NET.Test.Sdk.props": {}
+          "build/uap10.0/Microsoft.Net.Test.Sdk.props": {}
         },
         "buildMultiTargeting": {
-          "buildMultiTargeting/Microsoft.NET.Test.Sdk.props": {}
+          "buildMultiTargeting/Microsoft.Net.Test.Sdk.props": {}
         }
       },
       "Microsoft.Net.UWPCoreRuntimeSdk/2.2.12": {
@@ -3904,7 +3874,7 @@
           "build/Microsoft.Net.Native.Compiler.targets": {}
         }
       },
-      "Microsoft.NET.Test.Sdk/16.9.4": {
+      "Microsoft.NET.Test.Sdk/15.9.0": {
         "type": "package",
         "dependencies": {
           "Newtonsoft.Json": "9.0.1",
@@ -3912,17 +3882,11 @@
           "System.ComponentModel.TypeConverter": "4.1.0",
           "System.Runtime.InteropServices.RuntimeInformation": "4.0.0"
         },
-        "compile": {
-          "lib/uap10.0/_._": {}
-        },
-        "runtime": {
-          "lib/uap10.0/_._": {}
-        },
         "build": {
-          "build/uap10.0/Microsoft.NET.Test.Sdk.props": {}
+          "build/uap10.0/Microsoft.Net.Test.Sdk.props": {}
         },
         "buildMultiTargeting": {
-          "buildMultiTargeting/Microsoft.NET.Test.Sdk.props": {}
+          "buildMultiTargeting/Microsoft.Net.Test.Sdk.props": {}
         }
       },
       "Microsoft.Net.UWPCoreRuntimeSdk/2.2.12": {
@@ -4760,7 +4724,7 @@
           "build/Microsoft.Net.Native.Compiler.targets": {}
         }
       },
-      "Microsoft.NET.Test.Sdk/16.9.4": {
+      "Microsoft.NET.Test.Sdk/15.9.0": {
         "type": "package",
         "dependencies": {
           "Newtonsoft.Json": "9.0.1",
@@ -4768,17 +4732,11 @@
           "System.ComponentModel.TypeConverter": "4.1.0",
           "System.Runtime.InteropServices.RuntimeInformation": "4.0.0"
         },
-        "compile": {
-          "lib/uap10.0/_._": {}
-        },
-        "runtime": {
-          "lib/uap10.0/_._": {}
-        },
         "build": {
-          "build/uap10.0/Microsoft.NET.Test.Sdk.props": {}
+          "build/uap10.0/Microsoft.Net.Test.Sdk.props": {}
         },
         "buildMultiTargeting": {
-          "buildMultiTargeting/Microsoft.NET.Test.Sdk.props": {}
+          "buildMultiTargeting/Microsoft.Net.Test.Sdk.props": {}
         }
       },
       "Microsoft.Net.UWPCoreRuntimeSdk/2.2.12": {
@@ -5573,7 +5531,7 @@
           "build/Microsoft.Net.Native.Compiler.targets": {}
         }
       },
-      "Microsoft.NET.Test.Sdk/16.9.4": {
+      "Microsoft.NET.Test.Sdk/15.9.0": {
         "type": "package",
         "dependencies": {
           "Newtonsoft.Json": "9.0.1",
@@ -5581,17 +5539,11 @@
           "System.ComponentModel.TypeConverter": "4.1.0",
           "System.Runtime.InteropServices.RuntimeInformation": "4.0.0"
         },
-        "compile": {
-          "lib/uap10.0/_._": {}
-        },
-        "runtime": {
-          "lib/uap10.0/_._": {}
-        },
         "build": {
-          "build/uap10.0/Microsoft.NET.Test.Sdk.props": {}
+          "build/uap10.0/Microsoft.Net.Test.Sdk.props": {}
         },
         "buildMultiTargeting": {
-          "buildMultiTargeting/Microsoft.NET.Test.Sdk.props": {}
+          "buildMultiTargeting/Microsoft.Net.Test.Sdk.props": {}
         }
       },
       "Microsoft.Net.UWPCoreRuntimeSdk/2.2.12": {
@@ -6418,7 +6370,7 @@
   },
   "libraries": {
     "Microsoft.Net.Native.Compiler/2.2.10-rel-29722-00": {
-      "sha512": "RvrUhS53oMQfDRhz8CnV+d2RXnvyc7mqBJtcXpWhIHI36jEZwepOke4wLfbOQQzpyVauFWGu+jkQSzYNxpHJQA==",
+      "sha512": "zhPr5WeW8JQnt83lC0EM2kpp6zsKQQV9zQO48mh+f6aaK/eT8Zj/K7kmJ60KgP+WgWTfVGmrSp2TARd70jd62g==",
       "type": "package",
       "path": "microsoft.net.native.compiler/2.2.10-rel-29722-00",
       "hasTools": true,
@@ -6471,42 +6423,25 @@
         "tools/csc/mrt150.dll"
       ]
     },
-    "Microsoft.NET.Test.Sdk/16.9.4": {
-      "sha512": "M/k16vmS7Hz/+Kuy3p6XE743XPjYYMzfN5ZvpSLY44Ngh5IBMk0Je5Qed8oq6/kvzJA2DTrXa7YrfceHhbQKeQ==",
+    "Microsoft.NET.Test.Sdk/15.9.0": {
+      "sha512": "sGDhl1lTcyC4nbMA6vta+nADm50IEGnm9SW9+JNaie1zjtSmUdOPHu02+WK2SJND+3vbr9DWvgfi9qlSPfUAyw==",
       "type": "package",
-      "path": "microsoft.net.test.sdk/16.9.4",
+      "path": "microsoft.net.test.sdk/15.9.0",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
-        "Icon.png",
-        "LICENSE_NET.txt",
-        "build/net40/Microsoft.NET.Test.Sdk.props",
-        "build/net40/Microsoft.NET.Test.Sdk.targets",
-        "build/net45/Microsoft.NET.Test.Sdk.props",
-        "build/net45/Microsoft.NET.Test.Sdk.targets",
-        "build/netcoreapp1.0/Microsoft.NET.Test.Sdk.Program.cs",
-        "build/netcoreapp1.0/Microsoft.NET.Test.Sdk.Program.fs",
-        "build/netcoreapp1.0/Microsoft.NET.Test.Sdk.Program.vb",
-        "build/netcoreapp1.0/Microsoft.NET.Test.Sdk.props",
-        "build/netcoreapp1.0/Microsoft.NET.Test.Sdk.targets",
-        "build/netcoreapp2.1/Microsoft.NET.Test.Sdk.Program.cs",
-        "build/netcoreapp2.1/Microsoft.NET.Test.Sdk.Program.fs",
-        "build/netcoreapp2.1/Microsoft.NET.Test.Sdk.Program.vb",
-        "build/netcoreapp2.1/Microsoft.NET.Test.Sdk.props",
-        "build/netcoreapp2.1/Microsoft.NET.Test.Sdk.targets",
-        "build/uap10.0/Microsoft.NET.Test.Sdk.props",
-        "buildMultiTargeting/Microsoft.NET.Test.Sdk.props",
-        "lib/net40/_._",
-        "lib/net45/_._",
-        "lib/netcoreapp1.0/_._",
-        "lib/netcoreapp2.1/_._",
-        "lib/uap10.0/_._",
-        "microsoft.net.test.sdk.16.9.4.nupkg.sha512",
+        "build/net45/Microsoft.Net.Test.Sdk.props",
+        "build/net45/Microsoft.Net.Test.Sdk.targets",
+        "build/netcoreapp1.0/Microsoft.Net.Test.Sdk.props",
+        "build/netcoreapp1.0/Microsoft.Net.Test.Sdk.targets",
+        "build/uap10.0/Microsoft.Net.Test.Sdk.props",
+        "buildMultiTargeting/Microsoft.Net.Test.Sdk.props",
+        "microsoft.net.test.sdk.15.9.0.nupkg.sha512",
         "microsoft.net.test.sdk.nuspec"
       ]
     },
     "Microsoft.Net.UWPCoreRuntimeSdk/2.2.12": {
-      "sha512": "fIR9mPkUDSAkLhZrywzHtCCmzNdoiAMh5RPKfUTmMHKii+nT6q4fs545vlW39RgVtZ4XoyMPCAJTx5gIYX3p6A==",
+      "sha512": "IRpFXnKUrate/hZmDPhZv3ECd+q2Q/iD+NQ9oEd0JVQfvypxclAjeZr1mMggxF9eN6KWl9zBXIydxqD2yrt6vw==",
       "type": "package",
       "path": "microsoft.net.uwpcoreruntimesdk/2.2.12",
       "hasTools": true,
@@ -6556,7 +6491,7 @@
       ]
     },
     "Microsoft.NETCore.UniversalWindowsPlatform/6.2.12": {
-      "sha512": "4ooTwE4vT0HwyH361HZY0CUCImMqh/O8O3ANl6UwTm51YU8icNnG0zFBdZYdzT7/3f0kASzouUKY0Tnu3XnOaQ==",
+      "sha512": "df3mwtb9FHbMNE9ddOqNQVdK5S2CQc/i+jWsYfiJxBkq0V+uVmRw/VicTeHRf+cQgEcSynnkOg7xgqQJSifb7w==",
       "type": "package",
       "path": "microsoft.netcore.universalwindowsplatform/6.2.12",
       "files": [
@@ -7608,7 +7543,7 @@
       ]
     },
     "runtime.win10-arm-aot.Microsoft.NETCore.UniversalWindowsPlatform/6.2.12": {
-      "sha512": "Xit8LW8SmJbyrRUTYsl3Mj49CgzD56XoI1g/8XrCeXEC5oWtvfHocFsJxbxmz37xp1Ii+6nMsU0y1nUI8LxwdA==",
+      "sha512": "UkDORhMlESh/tiDICv3shSM+rFQxjCbWKlM9K+ld08hNPVOYBqqHo/e8kkXZTXXNrre4L2ChYnKCAYuoWd/sLg==",
       "type": "package",
       "path": "runtime.win10-arm-aot.microsoft.netcore.universalwindowsplatform/6.2.12",
       "files": [
@@ -7791,7 +7726,7 @@
       ]
     },
     "runtime.win10-arm.Microsoft.Net.Native.Compiler/2.2.10-rel-29722-00": {
-      "sha512": "U5fdIaJB17ioGmdEJXJPJ7enneGMD3AY6jUKxcP1/t33dBe0DKGzRkxbWJ+poNZJB5rYBXcZ53BADpzEbwopVg==",
+      "sha512": "MRdlU6RC5zHeX+fqqotY8tvr6uCDJztpvj8eJ+b0S8nmmGJmYs2qO/j4vzodmlHF374rUt78b8tT6vb9ehxmcQ==",
       "type": "package",
       "path": "runtime.win10-arm.microsoft.net.native.compiler/2.2.10-rel-29722-00",
       "hasTools": true,
@@ -8090,7 +8025,7 @@
       ]
     },
     "runtime.win10-arm.Microsoft.Net.Native.SharedLibrary/2.2.8-rel-29722-00": {
-      "sha512": "WDprEut4oOal4/tufMRvoJ+m0RQgEAys6lrutdbRCduENC2DrE9Dx/tjYLtDOL6ATO6+QDubTYywRlTD5zaHeQ==",
+      "sha512": "v55o4C2ps+Cp32oWn5ugVq0Ztc72ykpFCsCc/oO6Y5UwDkZ9txmgPjas9LUVJzFduhw1Cj0XehTaLyVHoETC+w==",
       "type": "package",
       "path": "runtime.win10-arm.microsoft.net.native.sharedlibrary/2.2.8-rel-29722-00",
       "hasTools": true,
@@ -8470,7 +8405,7 @@
       ]
     },
     "runtime.win10-arm.Microsoft.Net.UWPCoreRuntimeSdk/2.2.12": {
-      "sha512": "p7SkJXOE3YLc5XY6DeHEskofpFo3D2JGWUERbTkOGulJZFqwOjuP6BA1kK21OF5rBbTJCeBE6akAQ19X02ULuA==",
+      "sha512": "YX12L3el/LKr/+51sCsWivbdk1r5Zl1Fta8pQOyxAawbfTDdPATeGv4deBkB6DpEK1yu/ADa6X0ujopz6lzWmw==",
       "type": "package",
       "path": "runtime.win10-arm.microsoft.net.uwpcoreruntimesdk/2.2.12",
       "hasTools": true,
@@ -8491,7 +8426,7 @@
       ]
     },
     "runtime.win10-arm.Microsoft.NETCore.UniversalWindowsPlatform/6.2.12": {
-      "sha512": "imUC5+qrkRP0r7k8HUveUABxMjooh+mybyUEkIZwviHpj4zjfwNuQZvxqaXlCZxrb4gtU39XjvIq7bN9OMmz4A==",
+      "sha512": "3hGJ7Zxl7EKFME2bHR2EQKaZpFDL5pV0O5tq6PLamsuLOE3FoESCOQKXwB968mrxfrqoGofaMTb0AtLhB1krhQ==",
       "type": "package",
       "path": "runtime.win10-arm.microsoft.netcore.universalwindowsplatform/6.2.12",
       "files": [
@@ -8673,7 +8608,7 @@
       ]
     },
     "runtime.win10-arm64-aot.Microsoft.NETCore.UniversalWindowsPlatform/6.2.12": {
-      "sha512": "K7aqAJWVl//l9py7p96/8AZP6Nn+SsZxXMd9SM1eoXSSReUoVKNjKAZOJaJRfLMOTbCK3utkd4AJBJspWSdVNw==",
+      "sha512": "bo3TcaIGExe95KO4wiTm4+RfYyezzXY7IOZ6V4d33rAixJT7PN4zxN9STcaGSYVQeeAznZ2Q3L7mqF63kWPrJQ==",
       "type": "package",
       "path": "runtime.win10-arm64-aot.microsoft.netcore.universalwindowsplatform/6.2.12",
       "files": [
@@ -8856,7 +8791,7 @@
       ]
     },
     "runtime.win10-arm64.Microsoft.Net.Native.Compiler/2.2.10-rel-29722-00": {
-      "sha512": "3aGd2n8yz9EodSbl7quvo6HjNRAZMerYoHrBuX1xPsNzzFfnm/gHd0f8THNCXp0R7ix37t6WTP2uty+jqMBUHg==",
+      "sha512": "ZF/ualE2u58JjIGT0MUA4glqFzx8fQCRksm+LnCzQSUzlr6VlH//zBqRJMB77K8WLxSPDB4lIV5K0tvTtBnqoA==",
       "type": "package",
       "path": "runtime.win10-arm64.microsoft.net.native.compiler/2.2.10-rel-29722-00",
       "hasTools": true,
@@ -9034,7 +8969,7 @@
       ]
     },
     "runtime.win10-arm64.Microsoft.Net.Native.SharedLibrary/2.2.8-rel-29722-00": {
-      "sha512": "l75u2oTidczIVvHyDvqJHFmhhRu2hIUlMEen3guMKL/cQYSgpqdsHfAvM6z/ohKM9aBd8NMBs9Xtb4U0qGrj+A==",
+      "sha512": "IfrQPttlUx2fQTRsYNeF8ZpQAYmQOfcwSwTPvEXhMDVSRo2tjvi10jOiF4RxNX6Y+2plp/kkgJ/GgME8t1Jtvw==",
       "type": "package",
       "path": "runtime.win10-arm64.microsoft.net.native.sharedlibrary/2.2.8-rel-29722-00",
       "hasTools": true,
@@ -9416,7 +9351,7 @@
       ]
     },
     "runtime.win10-x64-aot.Microsoft.NETCore.UniversalWindowsPlatform/6.2.12": {
-      "sha512": "9oD8rtohqy7HMjb4aSB9z7kQXsO7DtvWZsBiJt6RmvIbxP1j9i8gpCrVoBE7N9UCEKAouTN+wkiNqK2VIs6NbQ==",
+      "sha512": "XntXWWqiIyBUCDBAF82Qu8ngsZQdUEgIErTFaaGeIHDH5HWMt8nJ9n9rwEmUFG1PWNf/5nEmm4o5bCrKomIVbA==",
       "type": "package",
       "path": "runtime.win10-x64-aot.microsoft.netcore.universalwindowsplatform/6.2.12",
       "files": [
@@ -9599,7 +9534,7 @@
       ]
     },
     "runtime.win10-x64.Microsoft.Net.Native.Compiler/2.2.10-rel-29722-00": {
-      "sha512": "euNK2KsXc1UcvvKAHOlv1A0A7YXcs2lfDq6258iTBDEO7Eusc1NlU+0uXjG1zVJfIsOxV42+V3T9QDfyLCF7fw==",
+      "sha512": "arU9AO6QIrVSRBV83+6jgbNXWe/oTGGeVtHZzb86TPezeEVOWDp+40m4YrBp/L90G0yDrUlt1ekZuwYFUawc8Q==",
       "type": "package",
       "path": "runtime.win10-x64.microsoft.net.native.compiler/2.2.10-rel-29722-00",
       "hasTools": true,
@@ -9892,7 +9827,7 @@
       ]
     },
     "runtime.win10-x64.Microsoft.Net.Native.SharedLibrary/2.2.8-rel-29722-00": {
-      "sha512": "4Yqmfetqpt+8X6cntqBp+XsCRvrkQHdHAI2iOB9PAYg60BFnyaO0rqfVdvR+P+g+YDncPXAfQCmkJNlnt2eXZA==",
+      "sha512": "tyHCWyzJccI/NsSYmQTq6HUPi4MVhbYMLD3JV58nGBrLzyJhva9JrZxQdwEmaMuI7j6l1fdcgsPlf/jRknZerw==",
       "type": "package",
       "path": "runtime.win10-x64.microsoft.net.native.sharedlibrary/2.2.8-rel-29722-00",
       "hasTools": true,
@@ -10272,7 +10207,7 @@
       ]
     },
     "runtime.win10-x64.Microsoft.Net.UWPCoreRuntimeSdk/2.2.12": {
-      "sha512": "qEKyLwxrvtVSk/oMsjDxnEThF66+Vf48F5Fam7IxXnbQQQmql6GlwTzl3fP/M2gTRqKle1tYa9HukHqAPVwDlw==",
+      "sha512": "hlbwt6KW5A+pCgDiBYt5BrTfSDZgsVuKeq4uMARX5j95otN2mrbyRT9WtV82tiW6sh4YCXvjiFVb9O57x0HrDg==",
       "type": "package",
       "path": "runtime.win10-x64.microsoft.net.uwpcoreruntimesdk/2.2.12",
       "hasTools": true,
@@ -10293,7 +10228,7 @@
       ]
     },
     "runtime.win10-x64.Microsoft.NETCore.UniversalWindowsPlatform/6.2.12": {
-      "sha512": "xmJ0GlQ7iFZ0O1XDIQLr//bkhuwMyRPZyYgP1ocvzP32VzY9V8z3AjbP3vmZWHDwFnNhbxPzAJer4ZyQfDUzVA==",
+      "sha512": "WkP2v+UV+S9Eaxw/IIwZSafjeX1/U2AJaBr3X+xpcBYu2s8136Z25LCHRQS4lSNFrXbOzV3xefHiIFFD53Jt4Q==",
       "type": "package",
       "path": "runtime.win10-x64.microsoft.netcore.universalwindowsplatform/6.2.12",
       "files": [
@@ -10475,7 +10410,7 @@
       ]
     },
     "runtime.win10-x86-aot.Microsoft.NETCore.UniversalWindowsPlatform/6.2.12": {
-      "sha512": "utTFw5HOBlhS22e3L/0OhTVmaVjHwPu+KvrusKgmnBu5+LiklrAFdNW+2CBUKDg3QMj+lURs0SR5yRwWptvt9A==",
+      "sha512": "saACFuL1P/Iu4cLvMcTM1zDB/M80zvsjlH6xUngz6LNrJL5ogEEHYJez8c3q3ccLECQgRaesX3oVfbiyPCL0Aw==",
       "type": "package",
       "path": "runtime.win10-x86-aot.microsoft.netcore.universalwindowsplatform/6.2.12",
       "files": [
@@ -10658,7 +10593,7 @@
       ]
     },
     "runtime.win10-x86.Microsoft.Net.Native.Compiler/2.2.10-rel-29722-00": {
-      "sha512": "9MYuqrIpSxWo5okkTrg3cZvhM7KnrxgtRlrYNiYcRs1TXfSRTjSo670/rffW0SeQPIf3l+MxPAQXFribvFODTA==",
+      "sha512": "/FwdIs704RTEkxdXEJ/UDPk0MGo951TPhxAAiQVeGPn13crroZr+LHjRvbhfHnv6Sl1aHglhLB+5FxClsHOTCw==",
       "type": "package",
       "path": "runtime.win10-x86.microsoft.net.native.compiler/2.2.10-rel-29722-00",
       "hasTools": true,
@@ -10951,7 +10886,7 @@
       ]
     },
     "runtime.win10-x86.Microsoft.Net.Native.SharedLibrary/2.2.8-rel-29722-00": {
-      "sha512": "nyERLcNkeCzseMd9JwYTOzYbrNhPlY+LM4o3SJ9DZdVQXMFvDB/2HYCdamw99+2XaldbcWkkiCt/12llkj7eGw==",
+      "sha512": "6GJiLd77ikW+coegj6QsHslJ3RtvsM0BlVw78EPNdvS9B2UKZHocShI2UvboV/vrg0A+2/v66KtY1xVEIRa+qQ==",
       "type": "package",
       "path": "runtime.win10-x86.microsoft.net.native.sharedlibrary/2.2.8-rel-29722-00",
       "hasTools": true,
@@ -11331,7 +11266,7 @@
       ]
     },
     "runtime.win10-x86.Microsoft.Net.UWPCoreRuntimeSdk/2.2.12": {
-      "sha512": "KguZgmTZNVn+pvATa2eVKrCocUXJ2su03NOLXp90l2iN9ZADyEKEtpHKlWrH9UHVypHZ6JbsDmVlNk0CNLyWfw==",
+      "sha512": "saSRotvYwwuShD6MGVrv5v3lKdlvimzxUHi8yTnXapgPCFwu5j+sIFhC+yy02ZK8zkBSUIFjEtFeXb/PpltqIg==",
       "type": "package",
       "path": "runtime.win10-x86.microsoft.net.uwpcoreruntimesdk/2.2.12",
       "hasTools": true,
@@ -11352,7 +11287,7 @@
       ]
     },
     "runtime.win10-x86.Microsoft.NETCore.UniversalWindowsPlatform/6.2.12": {
-      "sha512": "C086n7cyFL4EB7QBAsg6bb7rmhaowunYzfFSggG2zL4VgQ+DGrMqnJZ7HBJjJclWIs98S2y5gCLZ9dfy+T19Hg==",
+      "sha512": "xKqRlmPFq8Ym+cREqMcNs2488Qdu+5prYkKPl8yk3I9hEgDfrGw0ykErR5U3Ppnt7k9A7a89WAE0f0WypR1JbQ==",
       "type": "package",
       "path": "runtime.win10-x86.microsoft.netcore.universalwindowsplatform/6.2.12",
       "files": [
@@ -11709,12 +11644,11 @@
       ]
     },
     "System.IO/4.1.0": {
-      "sha512": "4BtDLz1xXzyI1dfz58wc7ueMr5lAehHDMG+RA67niWP4GEF/FO7FLwCW+iR5AKMeU70yJuBvDA+Thw2wsreDMQ==",
+      "sha512": "3KlTJceQc3gnGIaHZ7UBZO26SHL1SHE4ddrmiwumFnId+CEHP+O8r386tZKaE6zlk5/mF8vifMBzHj9SaXN+mQ==",
       "type": "package",
       "path": "system.io/4.1.0",
       "files": [
         ".nupkg.metadata",
-        ".signature.p7s",
         "ThirdPartyNotices.txt",
         "dotnet_library_license.txt",
         "lib/MonoAndroid10/_._",
@@ -11939,12 +11873,11 @@
       ]
     },
     "System.Resources.ResourceManager/4.0.1": {
-      "sha512": "UWWRbiWN04+oMnj7mNzicaleAJHBJ0uM9fF9iLnmKE96e/FFGUr+TyAlDMMa1xQUH54Gh88jX/BUYPtHzqDFJQ==",
+      "sha512": "TxwVeUNoTgUOdQ09gfTjvW411MF+w9MBYL7AtNVc+HtBCFlutPLhUCdZjNkjbhj3bNQWMdHboF0KIWEOjJssbA==",
       "type": "package",
       "path": "system.resources.resourcemanager/4.0.1",
       "files": [
         ".nupkg.metadata",
-        ".signature.p7s",
         "ThirdPartyNotices.txt",
         "dotnet_library_license.txt",
         "lib/MonoAndroid10/_._",
@@ -11996,12 +11929,11 @@
       ]
     },
     "System.Runtime/4.1.0": {
-      "sha512": "SwXraLtIWEZwfE/jOT+WFtP/tsX2KhIdgRQt330CQckx/pbRk7e/Aigak2hFjgdkRmdmVXz6lwkDXcdtj913Bg==",
+      "sha512": "v6c/4Yaa9uWsq+JMhnOFewrYkgdNHNG2eMKuNqRn8P733rNXeRCGvV5FkkjBXn2dbVkPXOsO0xjsEeM1q2zC0g==",
       "type": "package",
       "path": "system.runtime/4.1.0",
       "files": [
         ".nupkg.metadata",
-        ".signature.p7s",
         "ThirdPartyNotices.txt",
         "dotnet_library_license.txt",
         "lib/MonoAndroid10/_._",
@@ -12255,12 +12187,11 @@
       ]
     },
     "System.Threading/4.0.11": {
-      "sha512": "BcDdG7z87bb8bF8xHEGSCkd1+KKKYcoka2xlrYr9mwSIHTNXiArwAKwFb9Eh/Fw+wLVtb9YH4MJ+emORV8hePg==",
+      "sha512": "N+3xqIcg3VDKyjwwCGaZ9HawG9aC6cSDI+s7ROma310GQo8vilFZa86hqKppwTHleR/G0sfOzhvgnUxWCR/DrQ==",
       "type": "package",
       "path": "system.threading/4.0.11",
       "files": [
         ".nupkg.metadata",
-        ".signature.p7s",
         "ThirdPartyNotices.txt",
         "dotnet_library_license.txt",
         "lib/MonoAndroid10/_._",
@@ -12326,12 +12257,11 @@
       ]
     },
     "System.Threading.Tasks/4.0.11": {
-      "sha512": "+2bElqW0yIxctunXt9Ig4Q8vwK7RgUIDkPEvjZmGob0oKenxvwgLtjYc2Li0/8m2IiiN+kISSFnhvh6YG1z6ew==",
+      "sha512": "k1S4Gc6IGwtHGT8188RSeGaX86Qw/wnrgNLshJvsdNUOPP9etMmo8S07c+UlOAx4K/xLuN9ivA1bD0LVurtIxQ==",
       "type": "package",
       "path": "system.threading.tasks/4.0.11",
       "files": [
         ".nupkg.metadata",
-        ".signature.p7s",
         "ThirdPartyNotices.txt",
         "dotnet_library_license.txt",
         "lib/MonoAndroid10/_._",
@@ -12398,32 +12328,29 @@
     "UAP,Version=v10.0.17763": [
       "MSTest.TestAdapter >= 2.2.3",
       "MSTest.TestFramework >= 2.2.3",
-      "Microsoft.NET.Test.Sdk >= 16.9.4",
+      "Microsoft.NET.Test.Sdk >= 15.9.0",
       "Microsoft.NETCore.UniversalWindowsPlatform >= 6.2.12"
     ]
   },
   "packageFolders": {
-    "C:\\Users\\김재영\\.nuget\\packages\\": {},
-    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {},
+    "C:\\Users\\Jason\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft SDKs\\UWPNuGetPackages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\김재영\\source\\repos\\UnitTestProject1\\UnitTestProject1\\UnitTestProject1.csproj",
+      "projectUniqueName": "C:\\Users\\Jason\\riVo\\Rivo-app-PC\\UnitTestProject1\\UnitTestProject1\\UnitTestProject1.csproj",
       "projectName": "UnitTestProject1",
-      "projectPath": "C:\\Users\\김재영\\source\\repos\\UnitTestProject1\\UnitTestProject1\\UnitTestProject1.csproj",
-      "packagesPath": "C:\\Users\\김재영\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\김재영\\source\\repos\\UnitTestProject1\\UnitTestProject1\\obj\\",
+      "projectPath": "C:\\Users\\Jason\\riVo\\Rivo-app-PC\\UnitTestProject1\\UnitTestProject1\\UnitTestProject1.csproj",
+      "packagesPath": "C:\\Users\\Jason\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\Jason\\riVo\\Rivo-app-PC\\UnitTestProject1\\UnitTestProject1\\obj\\",
       "projectStyle": "PackageReference",
       "skipContentFileWrite": true,
       "fallbackFolders": [
-        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages",
         "C:\\Program Files (x86)\\Microsoft SDKs\\UWPNuGetPackages\\"
       ],
       "configFilePaths": [
-        "C:\\Users\\김재영\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+        "C:\\Users\\Jason\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -12452,7 +12379,7 @@
           },
           "Microsoft.NET.Test.Sdk": {
             "target": "Package",
-            "version": "[16.9.4, )"
+            "version": "[15.9.0, )"
           },
           "Microsoft.NETCore.UniversalWindowsPlatform": {
             "target": "Package",

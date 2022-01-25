@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -14,7 +15,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
-
+using Rivo;
 namespace UnitTestProject1
 {
     /// <summary>
@@ -28,6 +29,10 @@ namespace UnitTestProject1
         /// </summary>
         public App()
         {
+            
+            var device = new UDPDevice("127.0.0.1",6999);
+            var result= device.GetMTUSize();
+            Debug.WriteLine(result.Result);
             this.InitializeComponent();
             this.Suspending += OnSuspending;
         }
@@ -66,7 +71,7 @@ namespace UnitTestProject1
                 // Place the frame in the current Window
                 Window.Current.Content = rootFrame;
             }
-            
+
             Microsoft.VisualStudio.TestPlatform.TestExecutor.UnitTestClient.CreateDefaultUI();
 
             // Ensure the current window is active

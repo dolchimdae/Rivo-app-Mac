@@ -1,8 +1,11 @@
-﻿using System;
+﻿using Rivo;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
@@ -28,6 +31,15 @@ namespace UnitTestProject1
         /// </summary>
         public App()
         {
+            var device = new UDPDevice("127.0.0.1", 6999);
+            Task<string> task = device.GetFirmwareVersion();
+            
+            //Task<string> task2 = device.GetMTUSize().ToString();
+            //Debug.WriteLine(mtusize);
+
+            Debug.WriteLine(task);
+
+
             this.InitializeComponent();
             this.Suspending += OnSuspending;
         }

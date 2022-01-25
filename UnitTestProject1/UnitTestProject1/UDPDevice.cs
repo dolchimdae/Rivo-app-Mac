@@ -12,7 +12,7 @@ namespace Rivo
 {
     public class UDPDevice : RivoDevice
     {
-        UdpClient udp = new UdpClient(7000);
+        UdpClient udp = new UdpClient();
         String hostname = "127.0.0.1";
         int port = 7000;
         public UDPDevice(String hostname, int port)

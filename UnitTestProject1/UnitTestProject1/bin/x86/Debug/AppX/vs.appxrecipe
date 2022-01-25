@@ -30,17 +30,17 @@
     <AppXManifest Include="C:\Users\Jason\riVo\Rivo-app-PC\UnitTestProject1\UnitTestProject1\bin\x86\Debug\Core\AppxManifest.xml">
       <PackagePath>AppxManifest.xml</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2022-01-25T04:20:35.266</Modified>
+      <Modified>2022-01-25T14:25:44.684</Modified>
     </AppXManifest>
   </ItemGroup>
   <ItemGroup>
     <AppxPackagedFile Include="C:\Users\Jason\riVo\Rivo-app-PC\UnitTestProject1\UnitTestProject1\bin\x86\Debug\UnitTestProject1.exe">
       <PackagePath>entrypoint\UnitTestProject1.exe</PackagePath>
-      <Modified>2022-01-25T04:20:34.525</Modified>
+      <Modified>2022-01-25T14:25:43.936</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Jason\riVo\Rivo-app-PC\UnitTestProject1\UnitTestProject1\bin\x86\Debug\UnitTestProject1.pdb">
       <PackagePath>UnitTestProject1.pdb</PackagePath>
-      <Modified>2022-01-25T04:20:34.525</Modified>
+      <Modified>2022-01-25T14:25:43.936</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Program Files %28x86%29\Microsoft SDKs\Windows Kits\10\ExtensionSDKs\TestPlatform.Universal\15.5\References\CommonConfiguration\neutral\testhost.dll">
       <PackagePath>testhost.dll</PackagePath>
@@ -158,7 +158,7 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Jason\riVo\Rivo-app-PC\UnitTestProject1\UnitTestProject1\bin\x86\Debug\UnitTestApp.xbf">
       <PackagePath>UnitTestApp.xbf</PackagePath>
-      <Modified>2022-01-25T04:20:34.282</Modified>
+      <Modified>2022-01-25T14:22:35.896</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Program Files %28x86%29\Windows Kits\10\UnionMetadata\10.0.22000.0\Windows.winmd">
       <PackagePath>WinMetadata\Windows.winmd</PackagePath>
@@ -170,7 +170,7 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Jason\riVo\Rivo-app-PC\UnitTestProject1\UnitTestProject1\bin\x86\Debug\Core\UnitTestProject1.exe">
       <PackagePath>UnitTestProject1.exe</PackagePath>
-      <Modified>2022-01-25T04:20:35.261</Modified>
+      <Modified>2022-01-25T14:25:44.676</Modified>
     </AppxPackagedFile>
   </ItemGroup>
   <ItemGroup>

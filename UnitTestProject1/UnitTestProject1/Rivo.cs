@@ -153,15 +153,16 @@ namespace Rivo
         async Task<byte[]> SendAndReceive(string id, byte[] data)
         {
 
-            if (!mtuconfirmed)
+          /*  if (!mtuconfirmed)
             {
                 mtu = await GetMTUSize();//try 
                 mtuconfirmed = true;
 
             }
+            */
 
             byte[] sendframe = composeSendframe(id, data);
-
+            Debug.WriteLine("hi");
             //int length = recvFrame[4] + recvFrame[5] * 256 - 2;
 
             int position;
@@ -170,22 +171,27 @@ namespace Rivo
             for (int count = 0; count < 3; count++)
             {
                 position = 0;
-                framesize = data.Length + 10;
+                framesize = sendframe.Length ;
 
 
                 //todo write 
+                mtu = 125;
+                Debug.WriteLine(framesize);
                 while (position < framesize)
                 {
+                    
 
                     sendSize = Math.Min(mtu, framesize - position);
-
-                    byte[] senddata = { };
-                    Array.Copy(sendframe, position, senddata, 0, position + sendSize - 1);
+                    byte[] senddata = new byte[100];
+                    Array.Copy(sendframe, position, senddata, 0, sendSize);
+                    
                     await WritePacket(senddata);//Array.copy()
 
 
                     position += sendSize;
+                    
                 }
+          
                 byte[] recvframe = await readPacket();
                 int len;
                 if (recvframe[0] == (byte)'a' && recvframe[1] == (byte)'t')
@@ -327,7 +333,7 @@ namespace Rivo
 
         public async Task<UInt16> GetMTUSize()
         {
-            Debug.WriteLine("hello");
+           
             int framesize;
             for (int count = 0; count < 3; count++)
             {

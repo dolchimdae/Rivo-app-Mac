@@ -31,7 +31,7 @@ namespace UnitTestProject1
         {
             
             var device = new UDPDevice("127.0.0.1",6999);
-            var result= device.GetMTUSize();
+            var result= device.SetL3L4Language("as");
             Debug.WriteLine(result.Result);
             this.InitializeComponent();
             this.Suspending += OnSuspending;

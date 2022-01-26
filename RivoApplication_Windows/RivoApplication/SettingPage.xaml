@@ -24,7 +24,7 @@
             <x:String>EWQ</x:String>
             <x:String>ABC</x:String>
         </ComboBox>
-        <ComboBox Margin="192,215,0,0" PlaceholderText="언어 선택" Width="120">
+        <ComboBox Name="Language" Margin="192,215,0,0" PlaceholderText="언어 선택" Width="120" SelectionChanged="Language_SelectionChanged" >
             <x:String>한글</x:String>
             <x:String>숫자</x:String>
         </ComboBox>

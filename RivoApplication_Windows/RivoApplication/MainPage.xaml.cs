@@ -19,16 +19,46 @@ using Windows.UI.Xaml.Navigation;
 using Windows.Devices.Bluetooth;
 using Windows.Devices.Bluetooth.Advertisement;
 using Windows.Devices.Enumeration;
+using Windows.Devices.Bluetooth.GenericAttributeProfile;
 
 // 빈 페이지 항목 템플릿에 대한 설명은 https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x412에 나와 있습니다.
 
 namespace RivoApplication
 {
+    
     /// <summary>
     /// 자체적으로 사용하거나 프레임 내에서 탐색할 수 있는 빈 페이지입니다.
     /// </summary>
     public sealed partial class MainPage : Page
     {
+        public static string rand = "asdfssss";
+        public static BluetoothLEDevice device;
+        public static GattCharacteristic writer;
+        public static GattCharacteristic reader;
+        public void setBLEDevice(BluetoothLEDevice recv) {
+            device = recv;
+        }
+        public BluetoothLEDevice bleDeviceName() {
+            return device;
+
+        }
+        public void setwriter(GattCharacteristic recv)
+        {
+            writer = recv;
+        }
+        public GattCharacteristic writerName()
+        {
+            return writer;
+
+        }
+        public GattCharacteristic readerName() {
+            return reader;
+        }
+        public void setreader(GattCharacteristic recv) {
+
+            reader = recv;
+
+        }
         public static MainPage Current { get; internal set; }
         
         public MainPage()

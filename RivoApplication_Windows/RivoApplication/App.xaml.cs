@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
+using Windows.Devices.Bluetooth;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
@@ -17,6 +18,7 @@ using Windows.UI.Xaml.Navigation;
 
 namespace RivoApplication
 {
+    
     /// <summary>
     /// 기본 애플리케이션 클래스를 보완하는 애플리케이션별 동작을 제공합니다.
     /// </summary>
@@ -28,9 +30,11 @@ namespace RivoApplication
         /// </summary>
         public App()
         {
+           
             this.InitializeComponent();
             this.Suspending += OnSuspending;
         }
+   
 
         /// <summary>
         /// 최종 사용자가 애플리케이션을 정상적으로 시작할 때 호출됩니다. 다른 진입점은

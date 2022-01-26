@@ -38,7 +38,7 @@ namespace RivoApplication
         private GattCharacteristic Commander;
         private GattPresentationFormat presentationFormat;
 
-        private BluetoothLEDevice bluetoothLeDevice = null;
+        public static BluetoothLEDevice bluetoothLeDevice = null;
 
         private DeviceWatcher deviceWatcher;
         #region UI
@@ -90,7 +90,7 @@ namespace RivoApplication
                
                 Debug.WriteLine("Device: " + SelectedBleDeviceId);
                 bluetoothLeDevice = await BluetoothLEDevice.FromIdAsync(SelectedBleDeviceId);
-
+                MainPage.Current.setBLEDevice(bluetoothLeDevice);
                 if (bluetoothLeDevice == null)
                 {
                     Debug.WriteLine("Failed to connect to device.");
@@ -137,11 +137,13 @@ namespace RivoApplication
                                     if (DisplayHelpers.GetCharacteristicName(c) == readuuid)
                                     {
                                         Debug.WriteLine("Characteristic");
+                                        MainPage.Current.setreader(c);
                                         selectedCharacteristic = c;
                                     }
                                     if (DisplayHelpers.GetCharacteristicName(c) == writeuuid)
                                     {
                                         Debug.WriteLine("Writer");
+                                        MainPage.Current.setwriter(c);
                                         Commander = c;
                                     }
 
@@ -150,13 +152,13 @@ namespace RivoApplication
                                 byte[] writebuffer = new byte[11];
                                 writebuffer[0] = 0x41;
                                 writebuffer[1] = 0x54;
-                                writebuffer[2] = 0x46;
-                                writebuffer[3] = 0x56;
+                                writebuffer[2] = 0x4d;
+                                writebuffer[3] = 0x54;
                                 writebuffer[4] = 0x01;
                                 writebuffer[5] = 0x00;
                                 writebuffer[6] = 0x00;
                                 writebuffer[7] = 0xF0;
-                                writebuffer[8] = 0x1E;
+                                writebuffer[8] = 0xE1;
                                 writebuffer[9] = 0x0D;
                                 writebuffer[10] =0x0A;
                                 
@@ -191,6 +193,7 @@ namespace RivoApplication
 
         private void Search_Click()
         {
+            
             if (deviceWatcher == null)
             {
                 StartBleDeviceWatcher();
@@ -444,8 +447,8 @@ namespace RivoApplication
                 char b = Convert.ToChar(a);
                 Debug.WriteLine("read"+i+"th character: "+a+"converted to "+b);
             }
-            RivoDevice device = new UDPDevice();
-            bool Frame=device.recvFrameCheck(data,data.Length,"ID");
+            RivoDevice device = new BLEDevice();
+            bool Frame=device.recvFrameCheck(data,data.Length,"MT");
             Debug.WriteLine("READ:" + result.Status+"GOOD FRame:"+Frame);
         }
 

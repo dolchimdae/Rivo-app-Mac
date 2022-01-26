@@ -1,54 +1,46 @@
-﻿ //using System;
-//using System.Collections.Generic;
-//using System.Linq;
-//using System.Runtime.InteropServices;
-//using System.Text;
-//using System.Threading.Tasks;
-//using Windows.Devices.Bluetooth.Advertisement;
-//using Windows.Devices.Bluetooth.GenericAttributeProfile;
-//using Windows.Storage.Streams;
+﻿ using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Threading.Tasks;
+using Windows.Devices.Bluetooth.Advertisement;
+using Windows.Devices.Bluetooth.GenericAttributeProfile;
+using Windows.Storage.Streams;
+using Rivo;
+using System.Diagnostics;
+using Windows.Security.Cryptography;
+using System.Runtime.InteropServices.WindowsRuntime;
 
-//namespace RivoApplication
-//{
-//    public class BLEDevice : RivoDevice
-//    {
-//        string[] serviceString = { "6E400002-B5A3-F393-E0A9-E50E24DCCA9E", " 6E400003-B5A3-F393-E0A9-E50E24DCCA9E", "6E400004-B5A3-F393-E0A9-E50E24DCCA9E" };
-//        GattCharacteristicsResult result = await service.GetCharacteristicsAsync();
-//        GattCharacteristicProperties properties = characteristic.CharacteristicProperties;
-
-//        public async void initBLE(BluetoothLEAdvertisementDataTypes id)
-//        {
-
-//        }
-
-//        public override async Task<byte[]> SendAndReceive(byte[] data)
-//        {
-//            byte[] buffer = new byte[256];
-//            byte[] frame = new byte[256];
-//            var reader = new DataReader();
-//            var numRead = 0;
-//            var totalRead = 0;
-//            var totalSize = 99999;
-//            var readHeader = false;
-//            var payloadSize = 0;
-
-//            do
-//            {
-//                numRead = await reader.LoadAsync(512);
-//                reader.ReadBytes(buffer);
-//                Array.Copy(buffer, 0, frame, numRead, totalRead);
-//                totalRead += numRead;
-//                if (!readHeader && totalRead >= 6)
-//                {
-//                    payloadSize = frame[4] + frame[5] * 256;
-//                    totalSize = payloadSize;
-//                    readHeader = true;
-//                }
-
-//            } while (totalRead < totalSize);
+namespace RivoApplication
+    {
+    public class BLEDevice : RivoDevice
+       {
+        GattCharacteristic reader;
+        GattCharacteristic writer;
+        public BLEDevice(GattCharacteristic writer, GattCharacteristic reader) {
+            this.reader = reader;
+            this.writer = writer;
+        }
+        public BLEDevice() { }
 
 
-//        }
-//    }
+        public override async Task WritePacket(byte[] sendData)
+        {
+            IBuffer buffer = sendData.AsBuffer();
+            var result=await  writer.WriteValueWithResultAsync(buffer);
+            Debug.WriteLine("IDK Man:"+result.Status);
+        }
 
-//}
+        public override async Task<byte[]> readPacket()
+        {
+           GattReadResult buffer= await reader.ReadValueAsync();
+            Debug.WriteLine(buffer.Value);
+            byte[] data;
+            CryptographicBuffer.CopyToByteArray(buffer.Value, out data);
+            return data;
+        }
+
+    }
+
+}

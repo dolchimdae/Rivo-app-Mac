@@ -10,7 +10,7 @@
     <PackageArchitecture>x86</PackageArchitecture>
     <PackageIdentityName>f7175f8f-6a40-412a-a560-b07a518d00cf</PackageIdentityName>
     <PackageIdentityPublisher>CN=김재영</PackageIdentityPublisher>
-    <IntermediateOutputPath>C:\Users\Jason\riVo\Rivo-app-PC\UnitTestProject1\obj\x86\Debug\</IntermediateOutputPath>
+    <IntermediateOutputPath>C:\Users\Jason\Rivo-app-PC\UnitTestProject1\obj\x86\Debug\</IntermediateOutputPath>
     <RemoteDeploymentType>
     </RemoteDeploymentType>
     <PackageRegistrationPath>
@@ -18,7 +18,7 @@
     <RemoveNonLayoutFiles>true</RemoveNonLayoutFiles>
     <DeployOptionalPackages>false</DeployOptionalPackages>
     <WindowsSdkPath>C:\Program Files %28x86%29\Windows Kits\10\</WindowsSdkPath>
-    <LayoutDir>C:\Users\Jason\riVo\Rivo-app-PC\UnitTestProject1\bin\x86\Debug\AppX</LayoutDir>
+    <LayoutDir>C:\Users\Jason\Rivo-app-PC\UnitTestProject1\bin\x86\Debug\AppX</LayoutDir>
     <RegisteredManifestChecksum>15D62674B7DC388022A5BDFB22C7C69BB90AFF23EC6ED16671C517BAD30CD200</RegisteredManifestChecksum>
     <RegisteredPackageMoniker>f7175f8f-6a40-412a-a560-b07a518d00cf_1.0.0.0_x86__r978f2gvgqwgt</RegisteredPackageMoniker>
     <RegisteredUserModeAppID>f7175f8f-6a40-412a-a560-b07a518d00cf_r978f2gvgqwgt!vstest.executionengine.universal.App</RegisteredUserModeAppID>
@@ -27,20 +27,20 @@
     <RegisteredVersion>1.0.0.0</RegisteredVersion>
   </PropertyGroup>
   <ItemGroup>
-    <AppXManifest Include="C:\Users\Jason\riVo\Rivo-app-PC\UnitTestProject1\bin\x86\Debug\Core\AppxManifest.xml">
+    <AppXManifest Include="C:\Users\Jason\Rivo-app-PC\UnitTestProject1\bin\x86\Debug\Core\AppxManifest.xml">
       <PackagePath>AppxManifest.xml</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2022-01-26T06:01:50.952</Modified>
+      <Modified>2022-01-26T06:50:12.376</Modified>
     </AppXManifest>
   </ItemGroup>
   <ItemGroup>
-    <AppxPackagedFile Include="C:\Users\Jason\riVo\Rivo-app-PC\UnitTestProject1\bin\x86\Debug\UnitTestProject1.exe">
+    <AppxPackagedFile Include="C:\Users\Jason\Rivo-app-PC\UnitTestProject1\bin\x86\Debug\UnitTestProject1.exe">
       <PackagePath>entrypoint\UnitTestProject1.exe</PackagePath>
-      <Modified>2022-01-26T06:01:50.172</Modified>
+      <Modified>2022-01-26T06:50:10.253</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\Jason\riVo\Rivo-app-PC\UnitTestProject1\bin\x86\Debug\UnitTestProject1.pdb">
+    <AppxPackagedFile Include="C:\Users\Jason\Rivo-app-PC\UnitTestProject1\bin\x86\Debug\UnitTestProject1.pdb">
       <PackagePath>UnitTestProject1.pdb</PackagePath>
-      <Modified>2022-01-26T06:01:50.172</Modified>
+      <Modified>2022-01-26T06:50:10.253</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Program Files %28x86%29\Microsoft SDKs\Windows Kits\10\ExtensionSDKs\TestPlatform.Universal\15.5\References\CommonConfiguration\neutral\testhost.dll">
       <PackagePath>testhost.dll</PackagePath>
@@ -98,43 +98,43 @@
       <PackagePath>msdia140.dll</PackagePath>
       <Modified>2020-01-02T07:41:46.000</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\Jason\riVo\Rivo-app-PC\UnitTestProject1\Properties\Default.rd.xml">
+    <AppxPackagedFile Include="C:\Users\Jason\Rivo-app-PC\UnitTestProject1\Properties\Default.rd.xml">
       <PackagePath>Properties\Default.rd.xml</PackagePath>
-      <Modified>2022-01-17T14:34:50.776</Modified>
+      <Modified>2022-01-26T06:48:55.818</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\Jason\riVo\Rivo-app-PC\UnitTestProject1\Assets\LockScreenLogo.scale-200.png">
+    <AppxPackagedFile Include="C:\Users\Jason\Rivo-app-PC\UnitTestProject1\Assets\LockScreenLogo.scale-200.png">
       <PackagePath>Assets\LockScreenLogo.scale-200.png</PackagePath>
-      <Modified>2022-01-17T14:34:50.765</Modified>
+      <Modified>2022-01-26T06:48:55.789</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\Jason\riVo\Rivo-app-PC\UnitTestProject1\Assets\SplashScreen.scale-200.png">
+    <AppxPackagedFile Include="C:\Users\Jason\Rivo-app-PC\UnitTestProject1\Assets\SplashScreen.scale-200.png">
       <PackagePath>Assets\SplashScreen.scale-200.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2022-01-17T14:34:50.767</Modified>
+      <Modified>2022-01-26T06:48:55.791</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\Jason\riVo\Rivo-app-PC\UnitTestProject1\Assets\Square150x150Logo.scale-200.png">
+    <AppxPackagedFile Include="C:\Users\Jason\Rivo-app-PC\UnitTestProject1\Assets\Square150x150Logo.scale-200.png">
       <PackagePath>Assets\Square150x150Logo.scale-200.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2022-01-17T14:34:50.768</Modified>
+      <Modified>2022-01-26T06:48:55.793</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\Jason\riVo\Rivo-app-PC\UnitTestProject1\Assets\Square44x44Logo.scale-200.png">
+    <AppxPackagedFile Include="C:\Users\Jason\Rivo-app-PC\UnitTestProject1\Assets\Square44x44Logo.scale-200.png">
       <PackagePath>Assets\Square44x44Logo.scale-200.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2022-01-17T14:34:50.769</Modified>
+      <Modified>2022-01-26T06:48:55.798</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\Jason\riVo\Rivo-app-PC\UnitTestProject1\Assets\Square44x44Logo.targetsize-24_altform-unplated.png">
+    <AppxPackagedFile Include="C:\Users\Jason\Rivo-app-PC\UnitTestProject1\Assets\Square44x44Logo.targetsize-24_altform-unplated.png">
       <PackagePath>Assets\Square44x44Logo.targetsize-24_altform-unplated.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2022-01-17T14:34:50.770</Modified>
+      <Modified>2022-01-26T06:48:55.800</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\Jason\riVo\Rivo-app-PC\UnitTestProject1\Assets\StoreLogo.png">
+    <AppxPackagedFile Include="C:\Users\Jason\Rivo-app-PC\UnitTestProject1\Assets\StoreLogo.png">
       <PackagePath>Assets\StoreLogo.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2022-01-17T14:34:50.771</Modified>
+      <Modified>2022-01-26T06:48:55.801</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\Jason\riVo\Rivo-app-PC\UnitTestProject1\Assets\Wide310x150Logo.scale-200.png">
+    <AppxPackagedFile Include="C:\Users\Jason\Rivo-app-PC\UnitTestProject1\Assets\Wide310x150Logo.scale-200.png">
       <PackagePath>Assets\Wide310x150Logo.scale-200.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2022-01-17T14:34:50.772</Modified>
+      <Modified>2022-01-26T06:48:55.802</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Jason\.nuget\packages\mstest.testadapter\2.2.3\build\_common\ko\Microsoft.TestPlatform.AdapterUtilities.resources.dll">
       <PackagePath>ko\Microsoft.TestPlatform.AdapterUtilities.resources.dll</PackagePath>
@@ -152,25 +152,25 @@
       <PackagePath>ko\Microsoft.VisualStudio.TestPlatform.TestFramework.resources.dll</PackagePath>
       <Modified>2021-03-16T04:23:00.000</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\Jason\riVo\Rivo-app-PC\UnitTestProject1\bin\x86\Debug\UnitTestProject1.xr.xml">
+    <AppxPackagedFile Include="C:\Users\Jason\Rivo-app-PC\UnitTestProject1\bin\x86\Debug\UnitTestProject1.xr.xml">
       <PackagePath>UnitTestProject1.xr.xml</PackagePath>
-      <Modified>2022-01-26T05:58:58.809</Modified>
+      <Modified>2022-01-26T06:48:56.250</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\Jason\riVo\Rivo-app-PC\UnitTestProject1\bin\x86\Debug\UnitTestApp.xbf">
+    <AppxPackagedFile Include="C:\Users\Jason\Rivo-app-PC\UnitTestProject1\bin\x86\Debug\UnitTestApp.xbf">
       <PackagePath>UnitTestApp.xbf</PackagePath>
-      <Modified>2022-01-26T06:01:49.838</Modified>
+      <Modified>2022-01-26T06:50:09.941</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Program Files %28x86%29\Windows Kits\10\UnionMetadata\10.0.22000.0\Windows.winmd">
       <PackagePath>WinMetadata\Windows.winmd</PackagePath>
       <Modified>2021-09-11T13:28:18.000</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\Jason\riVo\Rivo-app-PC\UnitTestProject1\bin\x86\Debug\resources.pri">
+    <AppxPackagedFile Include="C:\Users\Jason\Rivo-app-PC\UnitTestProject1\bin\x86\Debug\resources.pri">
       <PackagePath>resources.pri</PackagePath>
-      <Modified>2022-01-26T05:59:00.634</Modified>
+      <Modified>2022-01-26T06:50:11.229</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\Jason\riVo\Rivo-app-PC\UnitTestProject1\bin\x86\Debug\Core\UnitTestProject1.exe">
+    <AppxPackagedFile Include="C:\Users\Jason\Rivo-app-PC\UnitTestProject1\bin\x86\Debug\Core\UnitTestProject1.exe">
       <PackagePath>UnitTestProject1.exe</PackagePath>
-      <Modified>2022-01-26T06:01:50.946</Modified>
+      <Modified>2022-01-26T06:50:12.367</Modified>
     </AppxPackagedFile>
   </ItemGroup>
   <ItemGroup>

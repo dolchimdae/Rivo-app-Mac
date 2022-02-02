@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.Networking;
 using Windows.Networking.Sockets;
@@ -14,7 +15,7 @@ namespace Rivo
     {
         UdpClient udp = new UdpClient(7000);
         String hostname = "127.0.0.1";
-        int port = 7000;    
+        int port = 7000;
         public UDPDevice(String hostname, int port)
         {
             this.hostname = hostname;
@@ -24,7 +25,7 @@ namespace Rivo
 
         public override async Task WritePacket(byte[] sendData)
         {
-          
+
             udp.Connect("127.0.0.1", 6999);
             await udp.SendAsync(sendData, sendData.Length);
         }
@@ -32,37 +33,28 @@ namespace Rivo
         public override async Task<byte[]> readPacket()
         {
             IPEndPoint RemoteIpEndPoint = new IPEndPoint(IPAddress.Any, 7000);
-            Byte[] receiveBytes = udp.Receive(ref RemoteIpEndPoint);
-            string returnData = Encoding.ASCII.GetString(receiveBytes);
-
-            Debug.WriteLine(returnData);
-            byte[] buffer = { 0x1 };
 
 
-            return receiveBytes;
-        }
-
-        public override async Task<byte[]> ReadAndWrite(byte[] sendData)
-        {
+            //var timeToWait = TimeSpan.FromSeconds(1000);
+            try
             {
-                var tcs = new TaskCompletionSource<byte[]>();
-                var socket = new DatagramSocket();
-                socket.MessageReceived += (sender, eventArgs) =>
-                {
-                    uint len = eventArgs.GetDataReader().UnconsumedBufferLength;
-                    byte[] buffer = new byte[len];
-                    eventArgs.GetDataReader().ReadBytes(buffer);
-                    socket.Dispose();
-                    tcs.TrySetResult(buffer);
-                };
 
-                var ostream = await socket.GetOutputStreamAsync(new HostName(hostname), port.ToString());
-                var writer = new DataWriter(ostream);
-                writer.WriteBytes(sendData);
-                await writer.StoreAsync();
-                // XXX TODO create receive timer
-                return tcs.Task.Result;
+                udp.Client.ReceiveTimeout = 5000;
+
+                Byte[] receiveBytes = udp.Receive(ref RemoteIpEndPoint);
+                string returnData = Encoding.ASCII.GetString(receiveBytes);
+
+                Debug.WriteLine(returnData);
+
+               // Thread.Sleep(40);
+               return receiveBytes;
             }
+            catch
+            {
+                throw new Exception("Exception");
+            }
+           
         }
+            
     }
 }

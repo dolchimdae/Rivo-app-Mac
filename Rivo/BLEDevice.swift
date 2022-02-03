@@ -3,14 +3,39 @@ import Network
 import Foundation
 import IOKit
 import CoreBluetooth
-
-/* cw UI 내 변수 공유 에러 수정, protocol 연결위한 read 함수 구현 필요 */
+ 
+/*
+ 22.02.04
+ 
+ timeout 구현할 필요 없을 듯
+ readvalue 부르면 update~ 무조건 호출되는데
+ 값 문제있으면 다시 send할거고(sendAndReceive에서)
+ 결국 retryfail 됨. retryfail에 대해서만 ui올리는 걸로.
+ 
+ &
+ 
+ mtu가 거의 120~ 이고 일반 함수 경우 절대 안넘으니 (펌웨어 예외. 얘는 maybe 따로 구현)
+ 제대로 안 온 경우(쪼개서 연속으로 보내는 경우-update control 2번연속-이 대부분)
+ 그냥 frame 단위로 쓰고 읽어도 될 듯
+ 제대로 안왔으면 그냥 또 write 하는(retry)
+ read를 통해 readValue 불러봤자 값 변화 없기 때문.
+ write 를 다시해야 updateValue가 호출되고, 결국 readPacket 으로 읽을수있게됨.
+ 
+ 마찬가지 이유로 sendFrame 에서도 쪼개서 보낼 필요 없어 보임.
+ 해당 sendframe 로직은 update control 파트에서 쓸듯.
+ 
+ */
 
 class BLEDevice : RivoDevice {
     
     var connection: CBPeripheral!
+    var continuationW : CheckedContinuation<(), Never>? = nil
+    var continuationR : CheckedContinuation<([UInt8]), Error>? = nil
+    var continuationU : CheckedContinuation<(), Error>? = nil
+   
     var UUID_GATT_NUS_COMMAND_ENDPOINT: CBCharacteristic?
     var UUID_GATT_NUS_RESPONSE_ENDPOINT: CBCharacteristic?
+    var UUID_GATT_NUS_DATA_ENDPOINT: CBCharacteristic?
     
     var ID: String = ""
     var isCheck: Bool = false
@@ -18,133 +43,89 @@ class BLEDevice : RivoDevice {
     var temp : [UInt8] = []
     var payloadvalue : [UInt8] = []
     var totallen = 0
+    var writeType: CBCharacteristicWriteType = .withResponse
     
-    override init() {
+    override init(){
+        super.init()
+        
     }
     
     init(_ peripheral : CBPeripheral, _ commandCharacteristic : CBCharacteristic) {
+       
         self.connection = peripheral
         self.UUID_GATT_NUS_COMMAND_ENDPOINT = commandCharacteristic
     }
-    
+    func setPeripheral(peripheral : CBPeripheral){
+        self.connection = peripheral
+    }
     func setRead(datapath: CBCharacteristic){
         self.UUID_GATT_NUS_RESPONSE_ENDPOINT = datapath
     }
-
-   
+    func setWrite(datapath: CBCharacteristic){
+        self.UUID_GATT_NUS_COMMAND_ENDPOINT =
+        datapath
+    }
+    
+    /// 데이터 Array를 Byte형식으로 주변기기에 전송합니다.
     override func writePacket(data: [UInt8]) async {
         
+        print("to write~ \(String(describing: self.UUID_GATT_NUS_COMMAND_ENDPOINT))")
+        print("write : \(data)")
         let data = Data(data) // convert byte array to Data
-        connection!.writeValue(data as Data, for: UUID_GATT_NUS_COMMAND_ENDPOINT!, type: CBCharacteristicWriteType.withResponse)
+       
+        return await withCheckedContinuation { continuation in
+            connection.writeValue(data, for: self.UUID_GATT_NUS_COMMAND_ENDPOINT!, type: writeType)
+            self.continuationW = continuation
+        }
     }
+    
+    var calledReadPacket : Bool = false
     
     override func readPacket() async throws -> [UInt8] {
         
+        print("to read~")
+        var result : [UInt8] = [0]
+        connection.readValue(for: self.UUID_GATT_NUS_RESPONSE_ENDPOINT!)
+        calledReadPacket = true
         
+        //update wait
+        try await withCheckedThrowingContinuation {
+            continuation in
+            self.continuationU = continuation
+        }
         
-        return [0]
+        result  =  [UInt8](UUID_GATT_NUS_RESPONSE_ENDPOINT!.value!)
+        //print("readpacket의 result는" ,result)
+        
+        return result
     }
     
-    // return type string ?
-    override func write(cmd: String, data: [UInt8]) {
-        /* Big endian
-        var sendframe = ("AT"+cmd).utf8.map{ UInt8($0) } // convert string into byte array
-        sendframe.append(UInt8(data.count>>8))
-        sendframe.append(UInt8(data.count&0xff))
-        sendframe.append(contentsOf: data)
-        let crc = self.CRC16(data: data)
-        sendframe.append(UInt8(crc>>8))
-        sendframe.append(UInt8(crc&0xff))
-        sendframe.append(0x0d)
-        sendframe.append(0x0a)
-        */
-        
-        //Little endian
-        var sendframe = ("AT"+cmd).utf8.map{ UInt8($0) } // convert string into byte array
-        sendframe.append(UInt8(data.count&0xff))
-        sendframe.append(UInt8((data.count>>8)&0xff))
-        sendframe.append(contentsOf: data)
-        let crc = RivoDevice().CRC16(data: data)
-    
-        sendframe.append(UInt8(crc&0xff))
-        sendframe.append(UInt8((crc>>8)&0xff))
-        sendframe.append(0x0d)
-        sendframe.append(0x0a)
-        let data = Data(sendframe) // convert byte array to Data
-        
-        connection!.writeValue(data as Data, for: UUID_GATT_NUS_COMMAND_ENDPOINT!, type: CBCharacteristicWriteType.withResponse)
-        
-    }
+
+    /*
+     func updateWaiter() async throws {
+         
+         return try await withCheckedThrowingContinuation {
+             continuation in
+             self.continuationU = continuation
+             
+         }
+     }
 
     override func read(sentCmd: String, onResponse: @escaping (String?) -> ())
     {
-//..
-//    let count = characteristic.value!.count
-//    temp.append(contentsOf: characteristic.value![0...count-1])
-//    totallen += count
-//    if(temp.count >= 6 && !isCheck){
-//        let STXID = temp[2...3]
-//        ID = String(decoding: STXID, as: UTF8.self)
-//
-//        let len = characteristic.value![4...5]
-//        var value : Int = 0
-//        for byte in len {
-//            value = value << 8
-//            value = value | Int(byte)
-//        }
-//        payloadlen = value>>8
-//
-//        isCheck = true
-//    }
-//    //device.read(sentCmd: ID, onResponse: <#T##(String?) -> ()#>)
-//
-//    if(temp.count == 10 + payloadlen){
-//
-//
-//        for i in 6...5+payloadlen{
-////                payloadvalue.append(contentsOf: temp[6...5+payloadlen])
-//            payloadvalue.append(temp[i])
-//        }
-//        //print(payloadvalue)
-//
-//        switch ID {
-//            case "FV": // getFirmware version
-//                let value = payloadvalue
-//                print(String(decoding: value, as: UTF8.self))
-//            case "IF":
-//                let value = payloadvalue
-//                var str = String(decoding: value, as: UTF8.self)
-//                var lower = str.index(str.startIndex, offsetBy: 25)
-//                var upper = str.index(str.startIndex, offsetBy: 32)
-//                peripheralversion = String(str[lower...upper])
-//                lower = str.index(str.startIndex, offsetBy: 42)
-//                upper = str.index(str.startIndex, offsetBy: 45)
-//                serialnumber = String(str[lower...upper])
-//                print(ID)
-//                print(payloadlen)
-//                print(String(decoding: value, as: UTF8.self))
-//            default:
-//                print("default")
-//        }
-//
-//        isCheck = false
-//        temp = []
-//        payloadvalue = []
-//        payloadlen = 0
-//        ID = ""
-//
-//    }
+
         let data = UUID_GATT_NUS_RESPONSE_ENDPOINT!.value
 
             let str = String(bytes: [UInt8](payload), encoding: String.Encoding.utf8)
             onResponse(str)
-
         } else {
             print("Data == nil")
             return
         }
     
+    }*/
     }
-}
+
+
 
 

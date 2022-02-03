@@ -4,6 +4,7 @@ import SwiftUI
 
 struct SettingContents: View {
     var menutitle: String
+    
     var body: some View {
         switch menutitle {
         case "설정" :
@@ -11,7 +12,7 @@ struct SettingContents: View {
         case "업데이트":
             Update()
         case "My리보":
-            MyRibo()
+            MyRivo()
         case "도움말":
             Help()
         default:
@@ -171,7 +172,7 @@ struct Update: View {
     }
 }
 
-struct MyRibo: View {
+struct MyRivo: View {
     @State private var Toggle_vibration = false
     @State private var Toggle_sound = false
     @ObservedObject var bleManager = CBController()
@@ -230,7 +231,6 @@ struct MyRibo: View {
                         }
                     }
                     .frame(width: 500, height: 200)
-                    
                 }
                 Divider()
                 
@@ -241,35 +241,34 @@ struct MyRibo: View {
                             .padding(15)
                         Spacer()
                     }
-                    TextField("Enter device Name", text:$rivoName)
+                    TextField("Enter device Name", text: $rivoName)
                         .frame(width: 300, height: 80, alignment: .center)
                     HStack{
-                        Button (action: {
-                            //let name: [UInt8] = Array(rivoName.utf8)
-                            //let len : Int = name.count
-                            //MYRIVO 6 +  op 1 = len -> 7
-                            //                                let op: [UInt8] = [0x01]
-                            //                                var name: [UInt8] = [0x4d, 0x59, 0x52, 0x49, 0x56, 0x4f]
-                            var sendpayload: [UInt8] = [0x01, 0x4d, 0x59, 0x52, 0x49, 0x56, 0x4f]
-                            ////                                sendpayload.append(contentsOf: op)
-                            ////                                sendpayload.append(contentsOf: name)
-                            //
-                            bleManager.device.write(cmd: "RV", data: sendpayload)
-                            //bleManager.sendprotocolRV()
-                            
-                        }) {
-                            Text("저장")
-                                .foregroundColor(.blue)
-                        }
-                        Button (action: {
-                            
-                        }) {
-                            Text("삭제")
-                                .foregroundColor(.black)
-                        }
-                        
+                        Button{
+                            async{
+                                do{
+                                    //let mtu = try await self.bleManager.device.getMTUSize()
+                                    let info = try await self.bleManager.device.getDeviceInfo()
+                                    let fv = try await self.bleManager.device.getFirmwareVersion()
+                                    let name = try await self.bleManager.device.getRivoName()
+                                    print("으아악~~~ \(info) \(fv) \(name)")
+                                }
+                                catch{
+                                    print("뭔 에런지 모르겠지만 떴구나.")
+                                }
+                            }
+                        } label :
+                    {
+                        Text("저장")
+                            .foregroundColor(.blue)
+                    }
+                    Button (action: {print("삭제 버튼을 눌렀구나?")})
+                    {
+                        Text("삭제")
+                            .foregroundColor(.black)
                     }
                 }
+            }
                 Divider()
                 
                 Group {
@@ -286,7 +285,7 @@ struct MyRibo: View {
                         Spacer()
                         Text("버전: \(bleManager.peripheralversion)")
                         Spacer()
-                        Text("시리얼: \(bleManager.serialnumber)")
+                        //Text("시리얼: \(bleManager.serialnumber)")
                     }
                     else{
                         Text(bleManager.peripheralName)
@@ -312,16 +311,15 @@ struct MyRibo: View {
                         Text("소리")
                         SwiftUI.Toggle("", isOn: $Toggle_sound)
                             .toggleStyle(SwitchToggleStyle(tint: Color.green))
-                        
                     }
                     Spacer()
                 }
                 Spacer()
-                
             }//Vstack
         }//ScrollView
     }//Body
 }
+
 struct WebView: NSViewRepresentable {
     let url: URL
     func makeNSView(context: NSViewRepresentableContext<WebView>) -> WKWebView { let webView: WKWebView = WKWebView()
@@ -332,8 +330,6 @@ struct WebView: NSViewRepresentable {
     }
     func updateNSView(_ webView: WKWebView, context: NSViewRepresentableContext<WebView>) {}
 }
-
-
 
 struct Help: View {
     let url : String = "https://rivo.me/ko/quickmanual"
@@ -357,4 +353,4 @@ struct Help: View {
     }//Body
 }
 
-
+                                

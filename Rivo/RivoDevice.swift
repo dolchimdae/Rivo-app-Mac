@@ -5,19 +5,19 @@
 //  Created by sunwoo Kim on 2021/11/07.
 //  Reborn by chaewon kee on 2022/01/14
 
-//  개선 사항 : 불필요한 else continue 삭제, compose send frame() 추가, write/reaedPAcket 내부로 continuation 삽입 - 둘다 async 로 수정
+//  개선 완료 : 불필요한 else continue 삭제, compose send frame() 추가, write/reaedPAcket 내부로 continuation 삽입 - 둘다 async 로 수정, 타임 아웃 추가
 //   에러 처리 다 propagate 되도록 수정 (각종 함수들)
+//  ble device read/write packet 구현 , 연결 및 동작 확인 <- n e w !
 
 /*
- 서버
  추가 작업 (예정)
-
- 타임 아웃 추가 : udp/ble 소켓에서 set 하는 경우 Or 혹시 없으면 함수 내부에서 처리하거나 (타임아웃(숫자 상수처리. 뜬금없이 숫자 있으면 안좋음) 처리 찾아보기
- 
- ble device read/write packet 구현 , 연결 및 동작 확인
+ Ui 연결..
  update control 파트 구현
  익셉션 처리 ->  ui 에 나타나게, unit test 구성
  */
+
+
+
 
 import Network
 import Foundation
@@ -34,13 +34,10 @@ enum defineError : Error {
 class RivoDevice {
     
     
+    var receivedComplete = true
+
     var mtuConfirmed = false
     var mtu = 20
-    /*
-    func RivoDevice(){
-        mtu = try await getMTUSize2()
-    }
-    */
     
     func CRC16(data: [UInt8]) -> UInt16
     {
@@ -67,12 +64,12 @@ class RivoDevice {
         return ~crc
     }
     
-    func rcframeCheck(id : String, frame: [UInt8]) -> Bool{ // check without at
-        // command error checking
+    func rcframeCheck(id : String, frame: [UInt8]) -> Bool{
+        // check without at
         let len = frame.count
+        print("id는..", id, [UInt8](id.utf8),frame[2...3] )
         
-        if (!(Array(frame[2...3]) == [UInt8](id.utf8) &&
-              frame[len-2] == 0x0d &&
+        if (!((Array(frame[2...3]) == [UInt8](id.utf8)) && frame[len-2] == 0x0d &&
               frame[len-1] == 0x0a)) {
             // error
             print("Invalid frame")
@@ -128,7 +125,7 @@ class RivoDevice {
         print("sendAndReceive 시작")
         
         if (!mtuConfirmed) {
-            mtu = try await getMTUSize2() //retry fail error
+            mtu = try await getMTUSize() //retry fail error
             mtuConfirmed = true
         }
         
@@ -136,42 +133,50 @@ class RivoDevice {
         
         var sendSize : Int
         
-        for _ in 0...2 {
+        for i in 0...5 {
             
-            var pos = 0
-            let frameSize = payload.count + 10
-           
-            //send frame
-            while pos < frameSize {
-                sendSize = min(mtu,frameSize-pos )
-                await writePacket(data: Array(sendFrame[pos...pos+sendSize-1]))
-                pos += sendSize
-            }
-            
-            //receive frame
-            var receiveFrame : [UInt8]
-        
-            receiveFrame = try await readPacket()
-            
-            if (receiveFrame[0] == UInt8(ascii:"a") &&
-                receiveFrame[1] == UInt8(ascii:"t")){
+                print("몇번째냐면 !! ",i)
+                var pos = 0
+                let frameSize = payload.count + 10
                 
-                let len = Int(receiveFrame[4]) + Int(receiveFrame[5]<<8) + 10
-                // 나머지 receive frame
-                //print("rcc \(receiveFrame.count) len \(len)")
-                while receiveFrame.count < len {
-                    receiveFrame += try await readPacket()
+                //send frame
+                while pos < frameSize {
+                    sendSize = min(mtu,frameSize-pos )
+                    await writePacket(data: Array(sendFrame[pos...pos+sendSize-1]))
+                    pos += sendSize
                 }
+                receivedComplete = false
                 
-                if rcframeCheck(id: id, frame: receiveFrame) {
-                    if (receiveFrame[7] != UInt8(0)) {
-                        throw defineError.resultNotZero(result: Int(receiveFrame[7]))
+                //receive frame
+                var receiveFrame : [UInt8]
+                
+                receiveFrame = try await readPacket()
+                
+                if(receiveFrame.count < 10){
+                    continue
+                }
+
+                if (receiveFrame[0] == UInt8(ascii:"a") &&
+                    receiveFrame[1] == UInt8(ascii:"t")){
+                    let len = Int(receiveFrame[4]) + Int(receiveFrame[5]<<8) + 10
+                    // 나머지 receive frame
+                    print("rcc \(receiveFrame.count) len \(len)")
+                    
+                    while receiveFrame.count < len {
+                        receiveFrame += try await readPacket()
                     }
-                    return Array(receiveFrame[6...(len-5)])
-                }//이 밑은 rcframeCheck fail(결국 다시 send Frame)
+                    receivedComplete = true
+                    
+                    if rcframeCheck(id: id, frame: receiveFrame) {
+                        if (receiveFrame[7] != UInt8(0)) {
+                            throw defineError.resultNotZero(result: Int(receiveFrame[7]))
+                        }
+                        return Array(receiveFrame[6...(len-5)])
+                    }//이 밑은 rcframeCheck fail(결국 다시 send Frame)
             } //이 밑은 at 부터 잘못되었을 경우(결국 다시 send Frame)
         }
         //for 문을 빠져나오면 무조건 retryFail을 throw
+        print("retryFail~")
         throw defineError.retryFail
     }
     
@@ -209,7 +214,6 @@ class RivoDevice {
         return String(bytes: payload, encoding: .utf8)
         
     }
-    
     
     /* L3/L4 Language */
     func getLanguage() async throws -> String? {
@@ -344,7 +348,7 @@ class RivoDevice {
     func setRivoName(name: String) async throws -> String? {
         var SRNdata = [UInt8]()
         SRNdata.append(UInt8(1))
-        SRNdata.append(UInt8(name)!)
+        SRNdata += [UInt8](name.utf8)
         
         let payload = try await sendAndReceive(id: "RN", payload: SRNdata)
         return String(bytes: payload, encoding: .utf8)
@@ -404,34 +408,40 @@ class RivoDevice {
      */
     
     /* MTU size */
-    /*
-     func getMTUSize() async -> String? {
-     write(cmd: "MT", data: [0])
-     return await withCheckedContinuation { continuation in
-     read(sentCmd: "MT", onResponse: {(str) -> () in
-     print("data received: ", str!.description)
-     continuation.resume(returning: str)
-     })
-     }
-     }
-     */
-    func getMTUSize2() async throws -> Int {
+ 
+    func getMTUSize() async throws -> Int {
         
         let sendFrame = composeSendframe(id: "MT", payload: [0])
+        let MTUFrameLen = 11
         
         for _ in 0...2 {
-            await writePacket(data: sendFrame)
-            var receiveFrame : [UInt8]
-            receiveFrame = try await readPacket()
-            
-            print("receiveFrame ~:! \(receiveFrame)")
-            if (receiveFrame[0] == UInt8(ascii:"a") && receiveFrame[1] == UInt8(ascii:"t")
-                && rcframeCheck(id: "MT", frame: receiveFrame)) == true {
-                if (receiveFrame[7] != UInt8(0)) {
-                    throw defineError.resultNotZero(result: Int(receiveFrame[7]))
+            do {
+                await writePacket(data: sendFrame)
+                receivedComplete = false
+                var receiveFrame : [UInt8]
+                receiveFrame = try await readPacket()
+                //수정해야함
+                while(receiveFrame.count < MTUFrameLen){
+                    receiveFrame += try await readPacket()
                 }
-                return Int(receiveFrame[8]) + Int(receiveFrame[9]<<8)
+                receivedComplete = true
+                print("MTUreceiveFrame ~:! \(receiveFrame)")
+                
+                if (receiveFrame[0] == UInt8(ascii:"a") &&
+                    receiveFrame[1] == UInt8(ascii:"t")){
+                    if(rcframeCheck(id: "MT", frame: receiveFrame)) {
+                        if (receiveFrame[7] != UInt8(0)) {
+                            throw defineError.resultNotZero(result: Int(receiveFrame[7]))
+                        }
+                        print("mtu는 ",Int(receiveFrame[8]) + Int(receiveFrame[9]<<8))
+                        return Int(receiveFrame[8]) + Int(receiveFrame[9]<<8)
+                    }
+                }
+            }catch{
+                print("다시 write~")
+                continue
             }
+            
         }
         throw defineError.retryFail
     }
@@ -503,7 +513,6 @@ class RivoDevice {
         
         let payload = try await sendAndReceive(id: "UM", payload: VDdata)
         return String(bytes: payload, encoding: .utf8)
-        
     }
     
     
@@ -544,3 +553,4 @@ class RivoDevice {
     }
     
 }
+

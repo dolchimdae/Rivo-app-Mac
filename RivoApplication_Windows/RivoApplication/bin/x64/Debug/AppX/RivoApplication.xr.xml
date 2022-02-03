@@ -72,6 +72,7 @@
       <RootProperty Name="Width" />
       <RootProperty Name="Name" />
       <RootProperty Name="OnContent" />
+      <RootEvent Name="Toggled" />
     </RootType>
     <RootType FullName="Windows.UI.Xaml.Documents.Run">
       <RootProperty Name="Text" />

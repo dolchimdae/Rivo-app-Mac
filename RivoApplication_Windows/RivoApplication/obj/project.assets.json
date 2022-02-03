@@ -8293,11 +8293,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Jason\\riVo\\Rivo-app-PC\\RivoApplication_Windows\\RivoApplication\\RivoApplication.csproj",
+      "projectUniqueName": "C:\\Users\\Jason\\Rivo-app-PC\\RivoApplication_Windows\\RivoApplication\\RivoApplication.csproj",
       "projectName": "RivoApplication",
-      "projectPath": "C:\\Users\\Jason\\riVo\\Rivo-app-PC\\RivoApplication_Windows\\RivoApplication\\RivoApplication.csproj",
+      "projectPath": "C:\\Users\\Jason\\Rivo-app-PC\\RivoApplication_Windows\\RivoApplication\\RivoApplication.csproj",
       "packagesPath": "C:\\Users\\Jason\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Jason\\riVo\\Rivo-app-PC\\RivoApplication_Windows\\RivoApplication\\obj\\",
+      "outputPath": "C:\\Users\\Jason\\Rivo-app-PC\\RivoApplication_Windows\\RivoApplication\\obj\\",
       "projectStyle": "PackageReference",
       "skipContentFileWrite": true,
       "fallbackFolders": [

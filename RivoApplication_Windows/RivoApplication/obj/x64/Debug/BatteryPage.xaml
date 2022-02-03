@@ -23,7 +23,7 @@
         <TextBlock HorizontalAlignment="Left" Margin="69,284,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="42" Height="23" FontWeight="Bold" FontSize="14"><Run Text="버전 : "/><LineBreak/><Run/></TextBlock>
         <TextBlock HorizontalAlignment="Left" Margin="64,313,0,0" Text="시리얼 :" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="14" FontWeight="Bold"/>
         <TextBlock HorizontalAlignment="Left" Margin="31,362,0,0" Text="내 리보 찾기" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="22" FontWeight="Bold"/>
-        <ToggleSwitch Header="" Margin="134,400,0,0" OffContent="" VerticalAlignment="Top" Width="49" Grid.RowSpan="2"/>
+        <ToggleSwitch x:ConnectionId='4' Header="" Margin="134,400,0,0" OffContent="" VerticalAlignment="Top" Width="49" Grid.RowSpan="2"                                />
         <TextBlock HorizontalAlignment="Left" Margin="70,410,0,0" Text="소리" TextWrapping="Wrap" VerticalAlignment="Top" FontWeight="Bold" FontSize="14" Grid.RowSpan="2"/>
         <TextBlock HorizontalAlignment="Left" Margin="70,20,0,0" Text="진동" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="14" FontWeight="Bold" Grid.Row="1"/>
         <ToggleSwitch Header="" OffContent="" Margin="134,9,0,0" VerticalAlignment="Top" Width="49" Grid.Row="1"/>

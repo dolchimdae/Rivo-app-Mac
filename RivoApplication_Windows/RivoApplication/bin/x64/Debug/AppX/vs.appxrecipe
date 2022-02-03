@@ -10,7 +10,7 @@
     <PackageArchitecture>x64</PackageArchitecture>
     <PackageIdentityName>7bef0b32-d777-47a7-9e81-cafe21433afd</PackageIdentityName>
     <PackageIdentityPublisher>CN=공부 ㅅㄱ~~</PackageIdentityPublisher>
-    <IntermediateOutputPath>C:\Users\Jason\riVo\Rivo-app-PC\RivoApplication_Windows\RivoApplication\obj\x64\Debug\</IntermediateOutputPath>
+    <IntermediateOutputPath>C:\Users\Jason\Rivo-app-PC\RivoApplication_Windows\RivoApplication\obj\x64\Debug\</IntermediateOutputPath>
     <RemoteDeploymentType>
     </RemoteDeploymentType>
     <PackageRegistrationPath>
@@ -18,7 +18,7 @@
     <RemoveNonLayoutFiles>true</RemoveNonLayoutFiles>
     <DeployOptionalPackages>false</DeployOptionalPackages>
     <WindowsSdkPath>C:\Program Files %28x86%29\Windows Kits\10\</WindowsSdkPath>
-    <LayoutDir>C:\Users\Jason\riVo\Rivo-app-PC\RivoApplication_Windows\RivoApplication\bin\x64\Debug\AppX</LayoutDir>
+    <LayoutDir>C:\Users\Jason\Rivo-app-PC\RivoApplication_Windows\RivoApplication\bin\x64\Debug\AppX</LayoutDir>
     <RegisteredManifestChecksum>04478AFBC2E60959C3343B56BD8BCD18F0C17778E45CB3B5AB221FF07A905981</RegisteredManifestChecksum>
     <RegisteredPackageMoniker>7bef0b32-d777-47a7-9e81-cafe21433afd_1.0.1.0_x64__c1fhevye6x76r</RegisteredPackageMoniker>
     <RegisteredUserModeAppID>7bef0b32-d777-47a7-9e81-cafe21433afd_c1fhevye6x76r!App</RegisteredUserModeAppID>
@@ -27,16 +27,16 @@
     <RegisteredVersion>1.0.1.0</RegisteredVersion>
   </PropertyGroup>
   <ItemGroup>
-    <AppXManifest Include="C:\Users\Jason\riVo\Rivo-app-PC\RivoApplication_Windows\RivoApplication\bin\x64\Debug\Core\AppxManifest.xml">
+    <AppXManifest Include="C:\Users\Jason\Rivo-app-PC\RivoApplication_Windows\RivoApplication\bin\x64\Debug\Core\AppxManifest.xml">
       <PackagePath>AppxManifest.xml</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2022-01-26T08:25:21.485</Modified>
+      <Modified>2022-02-02T01:32:31.955</Modified>
     </AppXManifest>
   </ItemGroup>
   <ItemGroup>
-    <AppxPackagedFile Include="C:\Users\Jason\riVo\Rivo-app-PC\RivoApplication_Windows\RivoApplication\bin\x64\Debug\RivoApplication.exe">
+    <AppxPackagedFile Include="C:\Users\Jason\Rivo-app-PC\RivoApplication_Windows\RivoApplication\bin\x64\Debug\RivoApplication.exe">
       <PackagePath>entrypoint\RivoApplication.exe</PackagePath>
-      <Modified>2022-01-26T08:25:19.399</Modified>
+      <Modified>2022-02-02T01:32:30.716</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Jason\.nuget\packages\runtime.win10-x64.microsoft.netcore.universalwindowsplatform\6.2.12\runtimes\win10-x64\lib\uap10.0.15138\System.Runtime.dll">
       <PackagePath>System.Runtime.dll</PackagePath>
@@ -46,75 +46,75 @@
       <PackagePath>Microsoft.UI.Xaml.Markup.winmd</PackagePath>
       <Modified>2021-09-11T09:48:58.000</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\Jason\riVo\Rivo-app-PC\RivoApplication_Windows\RivoApplication\Properties\Default.rd.xml">
+    <AppxPackagedFile Include="C:\Users\Jason\Rivo-app-PC\RivoApplication_Windows\RivoApplication\Properties\Default.rd.xml">
       <PackagePath>Properties\Default.rd.xml</PackagePath>
       <Modified>2022-01-17T14:34:50.222</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\Jason\riVo\Rivo-app-PC\RivoApplication_Windows\RivoApplication\Assets\LockScreenLogo.scale-200.png">
+    <AppxPackagedFile Include="C:\Users\Jason\Rivo-app-PC\RivoApplication_Windows\RivoApplication\Assets\LockScreenLogo.scale-200.png">
       <PackagePath>Assets\LockScreenLogo.scale-200.png</PackagePath>
       <Modified>2022-01-17T14:34:50.200</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\Jason\riVo\Rivo-app-PC\RivoApplication_Windows\RivoApplication\Assets\SplashScreen.scale-200.png">
+    <AppxPackagedFile Include="C:\Users\Jason\Rivo-app-PC\RivoApplication_Windows\RivoApplication\Assets\SplashScreen.scale-200.png">
       <PackagePath>Assets\SplashScreen.scale-200.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
       <Modified>2022-01-17T14:34:50.201</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\Jason\riVo\Rivo-app-PC\RivoApplication_Windows\RivoApplication\Assets\Square150x150Logo.scale-200.png">
+    <AppxPackagedFile Include="C:\Users\Jason\Rivo-app-PC\RivoApplication_Windows\RivoApplication\Assets\Square150x150Logo.scale-200.png">
       <PackagePath>Assets\Square150x150Logo.scale-200.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
       <Modified>2022-01-17T14:34:50.203</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\Jason\riVo\Rivo-app-PC\RivoApplication_Windows\RivoApplication\Assets\Square44x44Logo.scale-200.png">
+    <AppxPackagedFile Include="C:\Users\Jason\Rivo-app-PC\RivoApplication_Windows\RivoApplication\Assets\Square44x44Logo.scale-200.png">
       <PackagePath>Assets\Square44x44Logo.scale-200.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
       <Modified>2022-01-17T14:34:50.204</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\Jason\riVo\Rivo-app-PC\RivoApplication_Windows\RivoApplication\Assets\Square44x44Logo.targetsize-24_altform-unplated.png">
+    <AppxPackagedFile Include="C:\Users\Jason\Rivo-app-PC\RivoApplication_Windows\RivoApplication\Assets\Square44x44Logo.targetsize-24_altform-unplated.png">
       <PackagePath>Assets\Square44x44Logo.targetsize-24_altform-unplated.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
       <Modified>2022-01-17T14:34:50.205</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\Jason\riVo\Rivo-app-PC\RivoApplication_Windows\RivoApplication\Assets\StoreLogo.png">
+    <AppxPackagedFile Include="C:\Users\Jason\Rivo-app-PC\RivoApplication_Windows\RivoApplication\Assets\StoreLogo.png">
       <PackagePath>Assets\StoreLogo.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
       <Modified>2022-01-17T14:34:50.206</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\Jason\riVo\Rivo-app-PC\RivoApplication_Windows\RivoApplication\Assets\Wide310x150Logo.scale-200.png">
+    <AppxPackagedFile Include="C:\Users\Jason\Rivo-app-PC\RivoApplication_Windows\RivoApplication\Assets\Wide310x150Logo.scale-200.png">
       <PackagePath>Assets\Wide310x150Logo.scale-200.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
       <Modified>2022-01-17T14:34:50.207</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\Jason\riVo\Rivo-app-PC\RivoApplication_Windows\RivoApplication\bin\x64\Debug\RivoApplication.xr.xml">
+    <AppxPackagedFile Include="C:\Users\Jason\Rivo-app-PC\RivoApplication_Windows\RivoApplication\bin\x64\Debug\RivoApplication.xr.xml">
       <PackagePath>RivoApplication.xr.xml</PackagePath>
-      <Modified>2022-01-26T02:14:33.359</Modified>
+      <Modified>2022-02-02T01:29:52.511</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\Jason\riVo\Rivo-app-PC\RivoApplication_Windows\RivoApplication\bin\x64\Debug\App.xbf">
+    <AppxPackagedFile Include="C:\Users\Jason\Rivo-app-PC\RivoApplication_Windows\RivoApplication\bin\x64\Debug\App.xbf">
       <PackagePath>App.xbf</PackagePath>
-      <Modified>2022-01-26T08:25:19.080</Modified>
+      <Modified>2022-02-02T01:32:30.395</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\Jason\riVo\Rivo-app-PC\RivoApplication_Windows\RivoApplication\bin\x64\Debug\BatteryPage.xbf">
+    <AppxPackagedFile Include="C:\Users\Jason\Rivo-app-PC\RivoApplication_Windows\RivoApplication\bin\x64\Debug\BatteryPage.xbf">
       <PackagePath>BatteryPage.xbf</PackagePath>
-      <Modified>2022-01-26T08:25:19.080</Modified>
+      <Modified>2022-02-02T01:32:30.395</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\Jason\riVo\Rivo-app-PC\RivoApplication_Windows\RivoApplication\bin\x64\Debug\HelpPage.xbf">
+    <AppxPackagedFile Include="C:\Users\Jason\Rivo-app-PC\RivoApplication_Windows\RivoApplication\bin\x64\Debug\HelpPage.xbf">
       <PackagePath>HelpPage.xbf</PackagePath>
-      <Modified>2022-01-26T08:25:19.080</Modified>
+      <Modified>2022-02-02T01:32:30.395</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\Jason\riVo\Rivo-app-PC\RivoApplication_Windows\RivoApplication\bin\x64\Debug\MainPage.xbf">
+    <AppxPackagedFile Include="C:\Users\Jason\Rivo-app-PC\RivoApplication_Windows\RivoApplication\bin\x64\Debug\MainPage.xbf">
       <PackagePath>MainPage.xbf</PackagePath>
-      <Modified>2022-01-26T08:25:19.080</Modified>
+      <Modified>2022-02-02T01:32:30.396</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\Jason\riVo\Rivo-app-PC\RivoApplication_Windows\RivoApplication\bin\x64\Debug\RivoPage.xbf">
+    <AppxPackagedFile Include="C:\Users\Jason\Rivo-app-PC\RivoApplication_Windows\RivoApplication\bin\x64\Debug\RivoPage.xbf">
       <PackagePath>RivoPage.xbf</PackagePath>
-      <Modified>2022-01-26T08:25:19.081</Modified>
+      <Modified>2022-02-02T01:32:30.396</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\Jason\riVo\Rivo-app-PC\RivoApplication_Windows\RivoApplication\bin\x64\Debug\SettingPage.xbf">
+    <AppxPackagedFile Include="C:\Users\Jason\Rivo-app-PC\RivoApplication_Windows\RivoApplication\bin\x64\Debug\SettingPage.xbf">
       <PackagePath>SettingPage.xbf</PackagePath>
-      <Modified>2022-01-26T08:25:19.081</Modified>
+      <Modified>2022-02-02T01:32:30.396</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\Jason\riVo\Rivo-app-PC\RivoApplication_Windows\RivoApplication\bin\x64\Debug\UpdatePage.xbf">
+    <AppxPackagedFile Include="C:\Users\Jason\Rivo-app-PC\RivoApplication_Windows\RivoApplication\bin\x64\Debug\UpdatePage.xbf">
       <PackagePath>UpdatePage.xbf</PackagePath>
-      <Modified>2022-01-26T08:25:19.081</Modified>
+      <Modified>2022-02-02T01:32:30.396</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Program Files %28x86%29\Microsoft SDKs\Windows Kits\10\ExtensionSDKs\Microsoft.UniversalCRT.Debug\10.0.22000.0\\redist\Debug\X64\ucrtbased.dll">
       <PackagePath>ucrtbased.dll</PackagePath>
@@ -124,13 +124,13 @@
       <PackagePath>WinMetadata\Windows.winmd</PackagePath>
       <Modified>2021-09-11T13:28:18.000</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\Jason\riVo\Rivo-app-PC\RivoApplication_Windows\RivoApplication\bin\x64\Debug\resources.pri">
+    <AppxPackagedFile Include="C:\Users\Jason\Rivo-app-PC\RivoApplication_Windows\RivoApplication\bin\x64\Debug\resources.pri">
       <PackagePath>resources.pri</PackagePath>
-      <Modified>2022-01-26T08:25:20.011</Modified>
+      <Modified>2022-02-02T01:29:55.096</Modified>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="C:\Users\Jason\riVo\Rivo-app-PC\RivoApplication_Windows\RivoApplication\bin\x64\Debug\Core\RivoApplication.exe">
+    <AppxPackagedFile Include="C:\Users\Jason\Rivo-app-PC\RivoApplication_Windows\RivoApplication\bin\x64\Debug\Core\RivoApplication.exe">
       <PackagePath>RivoApplication.exe</PackagePath>
-      <Modified>2022-01-26T08:25:21.480</Modified>
+      <Modified>2022-02-02T01:32:31.950</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Jason\.nuget\packages\microsoft.ui.xaml\2.7.0\build\..\lib\uap10.0\Microsoft.UI.Xaml.winmd">
       <PackagePath>Microsoft.UI.Xaml.winmd</PackagePath>

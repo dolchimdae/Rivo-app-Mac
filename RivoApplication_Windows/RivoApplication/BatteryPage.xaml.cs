@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using Windows.Devices.Bluetooth.GenericAttributeProfile;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
@@ -40,6 +42,16 @@ namespace RivoApplication
         private void TextBlock_SelectionChanged(object sender, RoutedEventArgs e)
         {
 
+        }
+
+        private async void ToggleSwitch_Toggled(object sender, RoutedEventArgs e)
+        {
+            Debug.WriteLine(MainPage.Current.bleDeviceName().DeviceId);
+            GattCharacteristic writer = MainPage.Current.writerName();
+            GattCharacteristic reader = MainPage.Current.readerName();
+            BLEDevice device = new BLEDevice(writer, reader);
+             await device.FindMyRivo();
+       
         }
     }
 }

@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Text;
 using Windows.Devices.Bluetooth.GenericAttributeProfile;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
@@ -24,9 +25,24 @@ namespace RivoApplication
     /// </summary>
     public sealed partial class BatteryPage : Page
     {
+        private DispatcherTimer dispatcherTimer;
+
         public BatteryPage()
         {
             this.InitializeComponent();
+            dispatcherTimer = new DispatcherTimer();
+            
+            dispatcherTimer.Interval = new TimeSpan(0, 0, 2);
+            dispatcherTimer.Tick += new EventHandler<Object>(dispatcherTimer_Tick);
+        }
+
+        private void dispatcherTimer_Tick(object sender,object e)
+        {
+            MainPage root = MainPage.Current;
+            root.Denotify();
+            dispatcherTimer.Stop();
+
+            
         }
 
         private void Battery_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
@@ -39,19 +55,118 @@ namespace RivoApplication
 
         }
 
-        private void TextBlock_SelectionChanged(object sender, RoutedEventArgs e)
+        private async void TextBlock_SelectionChanged(object sender, RoutedEventArgs e)
         {
+            GattCharacteristic writer = MainPage.Current.writerName();
+            GattCharacteristic reader = MainPage.Current.readerName();
+            BLEDevice device = new BLEDevice(writer, reader);
+             await device.FindMyRivo();
+
 
         }
 
         private async void ToggleSwitch_Toggled(object sender, RoutedEventArgs e)
         {
-            Debug.WriteLine(MainPage.Current.bleDeviceName().DeviceId);
+            if (Vibration.IsOn==true)
+            {
+                GattCharacteristic writer = MainPage.Current.writerName();
+                GattCharacteristic reader = MainPage.Current.readerName();
+                BLEDevice device = new BLEDevice(writer, reader);
+                var result = await device.FindMyRivo();
+                MainPage root = MainPage.Current;
+                root.Notify("Success");
+                dispatcherTimer.Start();
+                Debug.WriteLine("result: " + result.GetValue(7));
+            }
+        }
+
+        private async void Button_Click(object sender, RoutedEventArgs e)
+        {
             GattCharacteristic writer = MainPage.Current.writerName();
             GattCharacteristic reader = MainPage.Current.readerName();
             BLEDevice device = new BLEDevice(writer, reader);
-             await device.FindMyRivo();
-       
+            var result = await device.GetRivoStatus();
+            MainPage root = MainPage.Current;
+           
+          
+            var real=System.Text.Encoding.UTF8.GetString(result);
+            root.Notify("Success: " +real);
+            int start = 1;
+            int end =1;
+            for (int a = 0; a < real.Length; a++) {
+                if (real[a] == ':')
+                {
+                    start = a;
+                    break;
+                }
+                        }
+            for (int a = 0; a < real.Length; a++)
+            {
+                if (real[a] == ',')
+                {
+                    end = a;
+                    break;
+                }
+            }
+            var batt=real.Substring(start+1,end-start-1);
+            Battery.Text = batt;
+            dispatcherTimer.Start();
+            
+            Debug.WriteLine("result: " + result.GetValue(7));
+        }
+
+        private async void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            GattCharacteristic writer = MainPage.Current.writerName();
+            GattCharacteristic reader = MainPage.Current.readerName();
+            BLEDevice device = new BLEDevice(writer, reader);
+            String name = Namebox.Text;
+            Debug.WriteLine("Name: "+name);
+            byte[] namebytes = Encoding.UTF8.GetBytes(name);
+            byte[] topass = new byte[namebytes.Length+1];
+            topass[0] = 0x1;
+            Array.Copy(namebytes,0,topass,1,namebytes.Length);
+            var result = await device.SetRivoName(topass);
+            MainPage root = MainPage.Current;
+            root.Notify("Namechange Success");
+            dispatcherTimer.Start();
+        }
+
+        private async void Button_Click_2(object sender, RoutedEventArgs e)
+        {
+            GattCharacteristic writer = MainPage.Current.writerName();
+            GattCharacteristic reader = MainPage.Current.readerName();
+            BLEDevice device = new BLEDevice(writer, reader);
+            MainPage root = MainPage.Current;
+            var result=await device.GetRivoInfo();
+            var real = System.Text.Encoding.UTF8.GetString(result);
+            int version = -1;
+            int versionend = -1;
+            int serial = -1;
+            for(int a=0; a<real.Length; a++)
+            {
+                if (real[a] == ',') {
+                    version = a;
+                    break;
+                }
+            }
+            for (int a = 0; a < real.Length; a++)
+            {
+                if (real[a] == ',')
+                {
+                    serial = a;
+                    break;
+                }
+            }
+            string present = real.Substring(0,version);
+            string serialn = real.Substring(version, serial);
+          
+
+            root.Notify("Success:"+real);
+            Name.Text = present;
+            Version.Text = serialn;
+            dispatcherTimer.Start();
+
         }
     }
 }

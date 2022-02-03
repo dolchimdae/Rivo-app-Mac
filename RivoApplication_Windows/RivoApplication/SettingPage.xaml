@@ -17,26 +17,39 @@
         <TextBlock HorizontalAlignment="Left" Margin="419,119,0,0" Text="입력방식" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="22" FontWeight="Bold"/>
         <TextBlock HorizontalAlignment="Left" Margin="113,215,0,0" Text="L4" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="22" FontWeight="Bold"/>
         <TextBlock HorizontalAlignment="Left" Margin="421,215,0,0" Text="입력방식" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="22" FontWeight="Bold"/>
-        <ComboBox Margin="192,119,0,0" PlaceholderText="언어 선택" Width="120">
-            <x:String>영어</x:String>
+        <ComboBox Margin="192,119,0,0" PlaceholderText="언어 선택" Width="120" SelectionChanged="ComboBox_SelectionChanged">
+            <ComboBoxItem Name="한글" Content="한글" />
+            <ComboBoxItem Name="숫자" Content="숫자" />
+            <ComboBoxItem Name="영어" Content="영어" />
         </ComboBox>
-        <ComboBox Margin="562,118,0,0" PlaceholderText="입력 선택" Width="120">
-            <x:String>EWQ</x:String>
-            <x:String>ABC</x:String>
+        <ComboBox  Margin="562,118,0,0" PlaceholderText="입력 선택" Width="120" SelectionChanged="L3Type_SelectionChanged">
+            <ComboBoxItem Name="리보" Content="리보" />
+            <ComboBoxItem Name="천지인" Content="천지인" />
+            <ComboBoxItem Name="나랏글" Content="나랏글" />
+            <ComboBoxItem Name="ABC" Content="ABC" />
+            <ComboBoxItem Name="EWQ" Content="EWQ" />
+
         </ComboBox>
-        <ComboBox Name="Language" Margin="192,215,0,0" PlaceholderText="언어 선택" Width="120" SelectionChanged="Language_SelectionChanged" >
-            <x:String>한글</x:String>
-            <x:String>숫자</x:String>
+        <ComboBox  Margin="192,215,0,0" PlaceholderText="언어 선택" Width="120" SelectionChanged="Language_SelectionChanged" >
+            <ComboBoxItem Name="한글1" Content="한글" />
+            <ComboBoxItem Name="숫자1" Content="숫자" />
+            <ComboBoxItem Name="영어1" Content="영어" />
+
         </ComboBox>
-        <ComboBox Margin="562,214,0,0" PlaceholderText="입력 선택" Width="120">
-            <x:String>리보</x:String>
-            <x:String>나랏글</x:String>
-            <x:String>천지인</x:String>
+        <ComboBox Margin="562,214,0,0" PlaceholderText="입력 선택" Width="120" SelectionChanged="L4Type_SelectionChanged" >
+            <ComboBoxItem Name="리보1" Content="리보" />
+            <ComboBoxItem Name="천지인1" Content="천지인" />
+            <ComboBoxItem Name="나랏글1" Content="나랏글" />
+            <ComboBoxItem Name="ABC1" Content="ABC" />
+            <ComboBoxItem Name="EWQ1" Content="EWQ" />
+
         </ComboBox>
         <TextBlock HorizontalAlignment="Left" Margin="20,284,0,0" Text="OS/스크린 리더" TextWrapping="Wrap" VerticalAlignment="Top" FontWeight="Bold" FontSize="24"/>
-        <RadioButton Content="iOS VoiceOver" Margin="123,338,0,0" VerticalAlignment="Top"/>
-        <RadioButton Content="Android TalkBack" Margin="123,383,0,0" VerticalAlignment="Top"/>
-        <RadioButton Content="WatchOS" Margin="123,426,0,0" VerticalAlignment="Top"/>
+        <RadioButton Content="iOS VoiceOver" Margin="123,338,0,0" VerticalAlignment="Top" Checked="RadioButton_Checked"/>
+        <RadioButton Content="Android TalkBack" Margin="123,383,0,0" VerticalAlignment="Top" Checked="RadioButton_Checked_1"/>
+        <RadioButton Content="WatchOS" Margin="123,426,0,0" VerticalAlignment="Top" Checked="RadioButton_Checked_2"/>
+        <Button Content="스크린리더 변경" Margin="450,-20,0,0" Width="230" Height="70" Click="Button_Click"/>
+        <Button Content="언어변경" Margin="750,-400,0,0" Width="230" Height="70" Click="Button_Click2"/>
         <!--ProgressRing은 나중에 추가 예정 -->
         <!--<ProgressRing HorizontalAlignment="Left"  Margin="313,23,0,0" VerticalAlignment="Top" IsActive="{x:Bind toggleSwitch.IsOn, Mode=OneWay}"/>-->
 

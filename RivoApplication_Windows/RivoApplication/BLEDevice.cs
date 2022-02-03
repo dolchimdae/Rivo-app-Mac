@@ -37,10 +37,25 @@ namespace RivoApplication
            GattReadResult buffer= await reader.ReadValueAsync();
             Debug.WriteLine(buffer.Value);
             byte[] data;
+            Debug.WriteLine("this");
             CryptographicBuffer.CopyToByteArray(buffer.Value, out data);
+            
+            var readata = Encoding.UTF8.GetString(data);
+            Debug.WriteLine("Data Length:" + readata.Length + "bytedata:" + data);
+            for (int i = 0; i < data.Length; i++)
+            {
+                var a = data.GetValue(i);
+                char b = Convert.ToChar(a);
+                Debug.WriteLine("read" + i + "th character: " + a + "converted to " + b);
+            }
+            Debug.WriteLine("memE:"+data);
             return data;
         }
 
+        public override Task<byte[]> ReadAndWrite(byte[] sendData)
+        {
+            throw new NotImplementedException();
+        }
     }
 
 }

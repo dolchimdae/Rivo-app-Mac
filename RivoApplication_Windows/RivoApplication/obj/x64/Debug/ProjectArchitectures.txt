@@ -1,1 +1,1 @@
-C:\Users\Jason\Rivo-app-PC\RivoApplication_Windows\RivoApplication\RivoApplication.csproj;x64
+C:\Users\Jason\riVo\Rivo-app-PC\RivoApplication_Windows\RivoApplication\RivoApplication.csproj;x64

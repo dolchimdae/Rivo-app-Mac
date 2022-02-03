@@ -148,7 +148,7 @@ namespace RivoApplication
                                     }
 
                                 }
-                                selectedCharacteristic.ValueChanged += Characteristic_ValueChanged;
+                              //  selectedCharacteristic.ValueChanged += Characteristic_ValueChanged;
                                 byte[] writebuffer = new byte[11];
                                 writebuffer[0] = 0x41;
                                 writebuffer[1] = 0x54;

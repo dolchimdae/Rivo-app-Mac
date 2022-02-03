@@ -110,8 +110,15 @@ namespace RivoApplication
                 ContentFrame.Navigate(_page, null, transitionInfo);
             }
         }
-
-
+        public void Notify(string message) {
+            StatusBorder.Visibility = Visibility.Visible;
+            StatusBorder.Background = new SolidColorBrush(Windows.UI.Colors.Green);
+            StatusBlock.Text = message;
+        }
+        public void Denotify() {
+            StatusBorder.Visibility = Visibility.Collapsed;
+        }
+      
     }
 
 }

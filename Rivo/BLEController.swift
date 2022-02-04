@@ -11,6 +11,8 @@ struct Peripheral: Identifiable {
     
 }
 
+//의미상 상태가 한개인 걸 .. 여러 변수로 표현하는건 별로. 복잡하니까
+
 var myCentral: CBCentralManager!
 var selectedPeripheral: CBPeripheral!
 
@@ -21,7 +23,6 @@ class CBController: NSObject, ObservableObject, CBCentralManagerDelegate{
     @Published var detectedPeripherals: [CBPeripheral] = []
     @Published var isConnected = false
     
- 
     
     //var rivoServiceUUID = CBUUID(string: "00001100-D102-11E1-9B23-00025B00A5A5")
     //var rivoCharacteristicUUID = CBUUID(string: "00001101-D102-11E1-9B23-00025B00A5A5")
@@ -182,17 +183,22 @@ extension CBController: CBPeripheralDelegate {
     func peripheral(_ peripheral: CBPeripheral, didDiscoverCharacteristicsFor service: CBService, error: Error?) {
         
         guard let characteristics = service.characteristics else { return }
+        
+        device.connection = selectedPeripheral
+        
         print("didDiscoverCharacteristicsFor")
+        
         for characteristic in service.characteristics! {
-            //print(characteristic)
+            print(characteristic)
             if characteristic.uuid == commandCharacteristicUUID {
                 UUID_GATT_NUS_COMMAND_ENDPOINT = characteristic
-                device = BLEDevice(selectedPeripheral, UUID_GATT_NUS_COMMAND_ENDPOINT!)
+                //device = BLEDevice(selectedPeripheral, UUID_GATT_NUS_COMMAND_ENDPOINT!) // 먼저 불린경우 의미없음
+                device.setWrite(datapath: characteristic)
             }
             if characteristic.uuid == responseCharacteristicUUID{
                 print("responseCharacter은 정해졌다!!!!!!")
+                print(characteristic.properties.rawValue&CBCharacteristicProperties.read.rawValue)
                 device.setRead(datapath: characteristic)
-                device.connection.setNotifyValue(true, for: characteristic)
             }
             if characteristic.uuid == dataCharacteristicUUID{
                 device.UUID_GATT_NUS_DATA_ENDPOINT = characteristic
@@ -213,40 +219,63 @@ extension CBController: CBPeripheralDelegate {
     }
     
     // peripheral으로부터 데이터를 전송받으면 호출되는 메서드
+    //didupdatefor 에서 한 프레임이 완성됐는지 판단.
     func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
         //peripheral이 새로운 데이터를 보낼 때 마다 콜백 호출
         print("didupdatevaluefor")
-        
-        if let error = error {
-            print("error \(characteristic.uuid): ",error)
-            //return
-        }
-        if(!(device.receivedComplete)){
-            print("received inComplete")
-            
-            if (!device.calledReadPacket) {
-                print("안불렀는데 불렸네",[UInt8](device.UUID_GATT_NUS_RESPONSE_ENDPOINT!.value!))
-                return
-            }
-            
-            let str = String(bytes: characteristic.value!, encoding : .utf8)
-            if(str == nil){
-                print("value str is NULL") //str이 nil 이어도 value 값 있음
-            }
-            else{
-                //print("\(characteristic.uuid): \(characteristic.value!.count) bytes")
-                print("value는 뭐냐면 \(str)")
-            }
-            device.continuationU?.resume()
-            device.calledReadPacket = false
-        }
-        else {
-            print("received Complete")
+        //다른 데서 continuation resume 했으면
+        if device.resumed {
             return
         }
-        
+        if let error = error {
+            print("error \(characteristic.uuid): ",error)
+            return
+        }
+        //readPacket에서 await 하고 있을 때.
+        if device.continuationR != nil {
+            let data = characteristic.value;
+            if (data == nil) {
+                print("read data is nil")
+                return
+            }
+            else {
+                device.receiveFrame += [UInt8](data!)
+                print("받은게..",device.receiveFrame)
+                
+                if (device.receiveFrame[0] == UInt8(ascii:"a") &&
+                    device.receiveFrame[1] == UInt8(ascii:"t")){
+                    if(device.receiveFrame.count < 3) {
+                        print("3보다 작다니, 더 올 게 있나본데.")
+                        return
+                    }
+                    let len = Int(device.receiveFrame[4]) + Int(device.receiveFrame[5]<<8) + 10
+                    // 나머지 receive frame
+                    print("rcc \(device.receiveFrame.count) len \(len)")
+                    if device.receiveFrame.count < len {
+                        print("len보다 작아서 return")
+                        return
+                    }
+                    if device.rcframeCheck(id: device.idNow, frame: device.receiveFrame){
+                        if (device.receiveFrame[7] != UInt8(0)) {
+                            device.continuationR?.resume(throwing: defineError.resultNotZero(result: Int(device.receiveFrame[7])))
+                        }
+                        print("으아 continuation return ")
+                        device.continuationR?.resume(returning: device.receiveFrame)
+                        device.resumed = true
+                    }
+                }
+                else{
+                    print("잘못된 패킷이 왔네.")
+                    device.continuationR?.resume(throwing: defineError.readPacketNWError)
+                }
+            }
+        }
+        else {
+            print("continuation nil")
+            return
+        }
     }
-    
+            
     
     func peripheral(_ peripheral: CBPeripheral, didUpdateNotificationStateFor characteristic: CBCharacteristic, error: Error?) {
         if let error = error {
@@ -281,6 +310,7 @@ extension CBController: CBPeripheralDelegate {
         selectedPeripheral!.writeValue(getfirmdata as Data, for: UUID_GATT_NUS_COMMAND_ENDPOINT, type: CBCharacteristicWriteType.withResponse)
     }
     */
+    
     func sendprotocolFV(){
         let data: [UInt8] = [0x41, 0x54, 0x46, 0x56, 0x01, 0x00, 0x00, 0xF0, 0x1E, 0x0D, 0x0A]
         let Ndata = NSData(bytes: data, length: data.count)

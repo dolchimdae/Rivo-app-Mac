@@ -7,7 +7,8 @@
 
 //  개선 완료 : 불필요한 else continue 삭제, compose send frame() 추가, write/reaedPAcket 내부로 continuation 삽입 - 둘다 async 로 수정, 타임 아웃 추가
 //   에러 처리 다 propagate 되도록 수정 (각종 함수들)
-//  ble device read/write packet 구현 , 연결 및 동작 확인 <- n e w !
+//  ble device read/write packet 구현 , 연결 및 동작 확인 - readValue안하고 continuation변수하나로 쓰는 걸로 수정.
+//  timeout 구현 <- n e w !
 
 /*
  추가 작업 (예정)
@@ -38,6 +39,11 @@ class RivoDevice {
 
     var mtuConfirmed = false
     var mtu = 20
+    
+    //notification 켜고 buffer clear하는 함수
+    func getReady(state : Bool){
+     //abstract
+    }
     
     func CRC16(data: [UInt8]) -> UInt16
     {
@@ -119,6 +125,7 @@ class RivoDevice {
         
         return sendFrame
     }
+    var idNow = ""
     
     func sendAndReceive(id : String, payload:[UInt8]) async throws -> [UInt8] {
         
@@ -132,30 +139,32 @@ class RivoDevice {
         let sendFrame = composeSendframe(id: id, payload: payload)
         
         var sendSize : Int
+        idNow = id
         
         for i in 0...5 {
-            
                 print("몇번째냐면 !! ",i)
                 var pos = 0
                 let frameSize = payload.count + 10
                 
+                getReady(state : true)
                 //send frame
                 while pos < frameSize {
                     sendSize = min(mtu,frameSize-pos )
                     await writePacket(data: Array(sendFrame[pos...pos+sendSize-1]))
                     pos += sendSize
                 }
-                receivedComplete = false
-                
+                //receivedComplete = false
+            do{
                 //receive frame
                 var receiveFrame : [UInt8]
-                
+            
                 receiveFrame = try await readPacket()
+            
                 
-                if(receiveFrame.count < 10){
+                if(receiveFrame.count < 2){
                     continue
                 }
-
+            
                 if (receiveFrame[0] == UInt8(ascii:"a") &&
                     receiveFrame[1] == UInt8(ascii:"t")){
                     let len = Int(receiveFrame[4]) + Int(receiveFrame[5]<<8) + 10
@@ -165,8 +174,8 @@ class RivoDevice {
                     while receiveFrame.count < len {
                         receiveFrame += try await readPacket()
                     }
-                    receivedComplete = true
-                    
+                    //receivedComplete = true
+                    getReady(state : false)
                     if rcframeCheck(id: id, frame: receiveFrame) {
                         if (receiveFrame[7] != UInt8(0)) {
                             throw defineError.resultNotZero(result: Int(receiveFrame[7]))
@@ -174,6 +183,10 @@ class RivoDevice {
                         return Array(receiveFrame[6...(len-5)])
                     }//이 밑은 rcframeCheck fail(결국 다시 send Frame)
             } //이 밑은 at 부터 잘못되었을 경우(결국 다시 send Frame)
+        }catch defineError.readPacketTimeout {
+            print("readPacketTimeout !")
+                continue
+            }
         }
         //for 문을 빠져나오면 무조건 retryFail을 throw
         print("retryFail~")
@@ -408,23 +421,29 @@ class RivoDevice {
      */
     
     /* MTU size */
- 
+    
     func getMTUSize() async throws -> Int {
         
         let sendFrame = composeSendframe(id: "MT", payload: [0])
         let MTUFrameLen = 11
         
         for _ in 0...2 {
-            do {
-                await writePacket(data: sendFrame)
-                receivedComplete = false
-                var receiveFrame : [UInt8]
+            
+            getReady(state : true)
+            idNow = "MT"
+            
+            await writePacket(data: sendFrame)
+            //receivedComplete = false
+            
+            var receiveFrame : [UInt8]
+            do{
                 receiveFrame = try await readPacket()
-                //수정해야함
-                while(receiveFrame.count < MTUFrameLen){
-                    receiveFrame += try await readPacket()
+                
+                if (receiveFrame.count < MTUFrameLen){
+                    continue
                 }
-                receivedComplete = true
+                getReady(state : false)
+                
                 print("MTUreceiveFrame ~:! \(receiveFrame)")
                 
                 if (receiveFrame[0] == UInt8(ascii:"a") &&
@@ -437,12 +456,13 @@ class RivoDevice {
                         return Int(receiveFrame[8]) + Int(receiveFrame[9]<<8)
                     }
                 }
-            }catch{
-                print("다시 write~")
+            }
+            catch defineError.readPacketTimeout{
+                print("readPacketTimeout !")
                 continue
             }
-            
         }
+        print("retryFail")
         throw defineError.retryFail
     }
     

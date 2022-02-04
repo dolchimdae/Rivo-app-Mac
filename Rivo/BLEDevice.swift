@@ -4,6 +4,8 @@ import Foundation
 import IOKit
 import CoreBluetooth
  
+    //notification on
+    
 /*
  22.02.04
  
@@ -25,13 +27,14 @@ import CoreBluetooth
  해당 sendframe 로직은 update control 파트에서 쓸듯.
  
  */
+let Timeout : Double = 0.001
 
 class BLEDevice : RivoDevice {
     
     var connection: CBPeripheral!
     var continuationW : CheckedContinuation<(), Never>? = nil
-    var continuationR : CheckedContinuation<([UInt8]), Error>? = nil
-    var continuationU : CheckedContinuation<(), Error>? = nil
+    var continuationR : CheckedContinuation<[UInt8], Error>? = nil
+
    
     var UUID_GATT_NUS_COMMAND_ENDPOINT: CBCharacteristic?
     var UUID_GATT_NUS_RESPONSE_ENDPOINT: CBCharacteristic?
@@ -65,6 +68,19 @@ class BLEDevice : RivoDevice {
         self.UUID_GATT_NUS_COMMAND_ENDPOINT =
         datapath
     }
+    var receiveFrame : [UInt8] = []
+    
+    override func getReady(state: Bool) {
+        //true : notification on, buffer clear
+        if(state){
+            connection.setNotifyValue(true, for: self.UUID_GATT_NUS_RESPONSE_ENDPOINT!)
+            receiveFrame = []
+        }
+        else{
+            //false : notification off
+            connection.setNotifyValue(false, for: self.UUID_GATT_NUS_RESPONSE_ENDPOINT!)
+        }
+    }
     
     /// 데이터 Array를 Byte형식으로 주변기기에 전송합니다.
     override func writePacket(data: [UInt8]) async {
@@ -79,24 +95,33 @@ class BLEDevice : RivoDevice {
         }
     }
     
-    var calledReadPacket : Bool = false
+    var resumed : Bool = false
     
     override func readPacket() async throws -> [UInt8] {
-        
+            
         print("to read~")
         var result : [UInt8] = [0]
-        connection.readValue(for: self.UUID_GATT_NUS_RESPONSE_ENDPOINT!)
-        calledReadPacket = true
-        
         //update wait
-        try await withCheckedThrowingContinuation {
+        result = try await withCheckedThrowingContinuation {
             continuation in
-            self.continuationU = continuation
+            resumed = false
+            self.continuationR = continuation
+        //timeout
+            let timer = Timer.scheduledTimer(withTimeInterval: Timeout, repeats: false) {
+                _ in
+                //다른 데서 continuation resume 했으면
+                if self.resumed {
+                    return
+                }
+                print("timeout!")
+                self.resumed = true
+                continuation.resume(throwing: defineError.readPacketTimeout)
+            }
+            RunLoop.main.add(timer, forMode: .common)
+            RunLoop.current.run()
         }
-        
-        result  =  [UInt8](UUID_GATT_NUS_RESPONSE_ENDPOINT!.value!)
-        //print("readpacket의 result는" ,result)
-        
+        continuationR = nil //readPacket에서 await 하고 있지않은데 resume 될까봐.
+        print("readpacket의 result는" ,result)
         return result
     }
     
@@ -111,19 +136,7 @@ class BLEDevice : RivoDevice {
          }
      }
 
-    override func read(sentCmd: String, onResponse: @escaping (String?) -> ())
-    {
-
-        let data = UUID_GATT_NUS_RESPONSE_ENDPOINT!.value
-
-            let str = String(bytes: [UInt8](payload), encoding: String.Encoding.utf8)
-            onResponse(str)
-        } else {
-            print("Data == nil")
-            return
-        }
-    
-    }*/
+   */
     }
 
 

@@ -4,6 +4,7 @@
 //
 //  Created by chaewon Kee on 2022/01/19.
 //
+
 import Network
 import Foundation
 import IOKit
@@ -15,9 +16,6 @@ import Cocoa
         
         let device = UDPDevice()
         
-        print("HELLO@@")
-        
-        //유닛 테스트
         //print("main runloop: \(RunLoop.current)");
 
         do{

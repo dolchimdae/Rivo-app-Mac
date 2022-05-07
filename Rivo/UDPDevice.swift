@@ -10,7 +10,7 @@ import Foundation
 import IOKit
 import AppKit
 
-let Timeout : Double = 3
+let Timeout : Double = 5
 
 class UDPDevice : RivoDevice {
     
@@ -36,7 +36,7 @@ class UDPDevice : RivoDevice {
         self.connection?.start(queue: .global())
     }
     
-    override func writePacket(data : [UInt8]) async {
+    override func writePacket(data : [UInt8], update : Bool) async {
         
         return await withCheckedContinuation { continuation in
             self.connection?.send(content: data, completion: NWConnection.SendCompletion.contentProcessed(({ (NWError) in

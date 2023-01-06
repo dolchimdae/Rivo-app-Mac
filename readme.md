@@ -3,7 +3,7 @@
 ## SKKU 산학협력단 x rivo
 
 
-### 시각 장애인의 스마트폰 사용을 위한 장치 'rivo'의 조작을 위한 프로그램
+### 시각 장애인의 스마트폰 사용을 위한 장치 'rivo' 의 조작을 위한 프로그램
 
 본 프로젝트는 PC 환경(Window / Mac OS)을 기반으로 구현되었으며, 
 기기와 BLE (Bluetooth Low Energy)를 이용해 

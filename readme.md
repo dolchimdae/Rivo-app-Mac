@@ -10,6 +10,6 @@
 PC - 장치 간 UDP 통신을 수행합니다.
 
 #### Features
-* 설정값 조정 (기기명, OS/screen reader, language/입력 방식, time, etc...) 
+* 설정값 조정 (기기명, OS/screen reader, language/입력 방식, date, time) 
 * 장치 찾기 (소리/진동 알림)
 * 펌웨어 업데이트
